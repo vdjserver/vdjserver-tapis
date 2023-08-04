@@ -1,0 +1,11 @@
+{
+  "id":"data-storage.vdjserver.org",
+  "description":"VDJServer test data system",
+  "host":"vdj-rep-01.tacc.utexas.edu",
+  "systemType":"LINUX",
+  "owner":"vdj",
+  "defaultAuthnMethod":"PKI_KEYS",
+  "effectiveUserId":"${apiUserId}",
+  "rootDir":"/vdjZ",
+  "canExec": false
+}
