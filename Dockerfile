@@ -24,9 +24,14 @@ RUN pip3 install \
     airr==v1.4.1 \
     tapipy
 
+RUN pip3 install --upgrade requests
+
 # Copy source
 RUN mkdir /vdjserver-tapis
 COPY . /vdjserver-tapis
 
 # old-style Agave V2 CLI
 #ENV PATH /vdjserver-agave/agave-cli/bin:$PATH
+
+RUN chmod +x /vdjserver-tapis/scripts/entrypoint.sh
+ENTRYPOINT ["/vdjserver-tapis/scripts/entrypoint.sh"]

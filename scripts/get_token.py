@@ -1,6 +1,7 @@
 
 from tapipy.tapis import Tapis
 import argparse
+import sys
 
 parser = argparse.ArgumentParser(description='Get Tapis V3 token.')
 parser.add_argument('username', type=str, help='username', metavar=('username'))
@@ -15,4 +16,7 @@ if args:
 
     # Call to Tokens API to get access token
     t.get_tokens()
-    print(t.access_token)
+    print(t.access_token.access_token)
+    sys.exit(0)
+
+sys.exit(1)
