@@ -70,6 +70,7 @@ credentials
 ===========
 
 * vdj-rep-01.credentials.json: credentials for vdj-rep-01 system, used as Corral storage proxy
+* ls6.credentials.json: credentials for Lonestar6 system
 
 storage
 =======
