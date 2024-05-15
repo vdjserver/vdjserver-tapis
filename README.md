@@ -9,7 +9,8 @@ docker build -t vdjserver/vdjserver-tapis:latest .
 Production
 ==========
 
+* bin: Tapis V3 helper programs/scripts
 * systems: JSON definitions for execution/storage systems
-* apps: 
-* common: Common scripts used by all applications
+* apps: Tapis V3 app definitions and code
+* scripts: Common scripts used by all applications
 

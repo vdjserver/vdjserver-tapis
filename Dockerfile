@@ -29,9 +29,6 @@ RUN pip3 install --upgrade requests
 # Copy source
 RUN mkdir /vdjserver-tapis
 COPY . /vdjserver-tapis
+ENV PATH /vdjserver-tapis/bin:$PATH
 
-# old-style Agave V2 CLI
-#ENV PATH /vdjserver-agave/agave-cli/bin:$PATH
-
-RUN chmod +x /vdjserver-tapis/scripts/entrypoint.sh
-ENTRYPOINT ["/vdjserver-tapis/scripts/entrypoint.sh"]
+ENTRYPOINT ["/vdjserver-tapis/bin/entrypoint.sh"]
