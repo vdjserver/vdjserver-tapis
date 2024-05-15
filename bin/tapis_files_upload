@@ -1,0 +1,41 @@
+#!/bin/bash
+
+#
+# Tapis V3 functions
+
+# VDJServer Analysis Portal
+# VDJServer Tapis applications
+# https://vdjserver.org
+#
+# Copyright (C) 2024 The University of Texas Southwestern Medical Center
+# Author: Scott Christley
+# Date: May 14, 2024
+#
+
+# bring in common settings
+if [[ "x${VDJSERVER_TAPIS_BIN}" == "x" ]]; then
+    VDJSERVER_TAPIS_BIN=/vdjserver-tapis/bin
+fi
+source ${VDJSERVER_TAPIS_BIN}/tapis_common.sh
+
+if [ $# -eq 2 ]; then
+    storage_system=$tapis_default_storage
+    use_path=$1
+    upload_file=$2
+else
+    if [ $# -eq 3 ]; then
+        storage_system=$1
+        use_path=$2
+        upload_file=$3
+    else
+        echo "usage: tapis_files_upload [system_id] path file"
+        exit 1
+    fi
+fi
+
+tapis_check_token
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
+curl -X POST -F "file=@"${upload_file} -H "X-Tapis-Token: $JWT" https://${tapis_default_host}/v3/files/ops/${storage_system}/${use_path} | jq
