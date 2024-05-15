@@ -5,7 +5,7 @@
   "systemType":"LINUX",
   "owner":"vdj",
   "defaultAuthnMethod":"PKI_KEYS",
-  "effectiveUserId":"${apiUserId}",
+  "effectiveUserId":"vdj",
   "rootDir":"/vdjZ",
   "canExec": false
 }
