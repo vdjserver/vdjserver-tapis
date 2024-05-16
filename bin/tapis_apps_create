@@ -29,4 +29,4 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-curl -X POST -H "content-type: application/json" -H "X-Tapis-Token: $JWT" https://${tapis_default_host}/v3/apps -d @$1
+curl -X POST -H "content-type: application/json" -H "X-Tapis-Token: $JWT" https://${tapis_default_host}/v3/apps -d @$1 | jq

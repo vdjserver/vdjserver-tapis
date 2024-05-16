@@ -1,0 +1,22 @@
+{
+    "name": "statistics_test",
+    "appId": "statistics-ls6",
+    "appVersion": "0.1",
+    "maxMinutes":60,
+    "fileInputs":[
+      { "name":"metadata_file", "sourceUrl":"tapis://data-storage.vdjserver.org/community/cache/138180023656967700-242ac114-0001-012/repertoires.airr.json", "targetPath":"repertoires.airr.json" },
+      { "name":"airr_tsv_file", "sourceUrl":"tapis://data-storage.vdjserver.org/community/cache/138180023656967700-242ac114-0001-012/6096696254733292012-242ac114-0001-012.airr.tsv.gz", "targetPath":"6096696254733292012-242ac114-0001-012.airr.tsv.gz" }
+    ],
+    "parameterSet": {
+        "schedulerOptions": [
+            { "name":"allocation", "arg":"-A MCB23006" }
+        ],
+        "containerArgs": [
+        ],
+        "appArgs": [
+        ],
+        "envVariables": [
+            {"key": "repertoire_id", "value": "6096696254733292012-242ac114-0001-012" }
+        ]
+    }
+}

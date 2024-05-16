@@ -22,5 +22,10 @@ if [[ -z "${JWT}" ]]; then
     echo JWT environment variable is not defined, need to run tapis_get_token?
     exit 1
 else
+    STR=$(curl -s -H "X-Tapis-Token: $JWT" https://vdjserver.tapis.io/v3/oauth2/userinfo)
+    if [[ "$STR" == *"error"* ]]; then
+        echo Invalid token
+        exit 1
+    fi
     exit 0
 fi

@@ -1,0 +1,29 @@
+{
+    "id":"statistics-ls6",
+    "version":"0.1",
+    "description":"statistics for irplus stats api",
+    "runtime":"ZIP",
+    "runtimeOptions": ["NONE"],
+    "containerImage":"tapis://data-storage.vdjserver.org/apps/statistics-ls6-0.1.tgz",
+    "jobType":"BATCH",
+    "jobAttributes": {
+        "description": "default job description",
+        "execSystemId": "test-ls6.tacc.utexas.edu",
+        "fileInputs":[
+          { "name":"repcalc_image", "inputMode": "FIXED", "envKey":"repcalc_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/repcalc-2.0-imm4.4.sif", "targetPath":"repcalc-2.0-imm4.4.sif" },
+          { "name":"germline_db", "inputMode": "FIXED", "envKey":"germline_db", "sourceUrl":"tapis://data-storage.vdjserver.org/irplus/data/germline/vdjserver_human_germline.airr.json", "targetPath":"vdjserver_human_germline.airr.json" },
+          { "name":"metadata_file", "inputMode": "REQUIRED", "envKey":"metadata_file", "targetPath":"." },
+          { "name":"airr_tsv_file", "inputMode": "REQUIRED", "envKey":"airr_tsv_file", "targetPath":"." }
+        ],
+        "parameterSet": {
+            "containerArgs": [
+            ],
+            "appArgs": [
+            ],
+            "envVariables": [
+                {"key": "repertoire_id", "inputMode": "REQUIRED" },
+                {"key": "file_type", "inputMode": "REQUIRED", "value": "rearrangement" }
+            ]
+        }
+    }
+}
