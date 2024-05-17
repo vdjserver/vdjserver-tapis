@@ -1,0 +1,11 @@
+{
+    "metadata": "",
+    "calculations": [
+        {
+            "type": "CDR3",
+            "operations": [ "distribution" ], 
+            "levels": [ ], 
+            "filters": [ ]
+        }
+    ]
+}

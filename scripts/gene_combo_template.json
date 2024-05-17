@@ -1,0 +1,11 @@
+{
+    "metadata": "",
+    "calculations": [
+        {
+            "type": "gene_segment",
+            "operations": [ "combo" ], 
+            "levels": [ "allele", "gene", "subgroup" ], 
+            "filters": [ ]
+        }
+    ]
+}

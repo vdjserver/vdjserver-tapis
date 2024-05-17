@@ -1,0 +1,17 @@
+{
+  "metadata": "",
+  "calculations": [
+    {
+      "type": "mutations",
+      "operations": [
+        "count",
+        "frequency"
+      ],
+      "levels": [
+        "repertoire",
+        "repertoire_group"
+      ],
+      "filters": [ ]
+    }
+  ]
+}

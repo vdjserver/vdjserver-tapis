@@ -1,0 +1,17 @@
+{
+  "metadata": "",
+  "rearrangement_files": [ ],
+  "calculations": [
+    {
+      "type": "mutations",
+      "operations": [
+        "count",
+        "frequency"
+      ],
+      "levels": [
+        "clone"
+      ],
+      "filters": [ ]
+    }
+  ]
+}

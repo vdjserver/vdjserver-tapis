@@ -1,0 +1,38 @@
+{
+    "id":"repcalc2-ls6",
+    "version":"0.1",
+    "description":"RepCalc on Lonestar6",
+    "runtime":"ZIP",
+    "runtimeOptions": ["NONE"],
+    "containerImage":"tapis://data-storage.vdjserver.org/apps/repcalc2-ls6-0.1.tgz",
+    "jobType":"BATCH",
+    "jobAttributes": {
+        "description": "default job description",
+        "execSystemId": "test-ls6.tacc.utexas.edu",
+        "fileInputs":[
+          { "name":"repcalc_image", "inputMode": "FIXED", "envKey":"repcalc_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/repcalc-2.0-imm4.4.sif", "targetPath":"repcalc-2.0-imm4.4.sif" },
+          { "name":"germline_db", "inputMode": "FIXED", "envKey":"germline_db", "sourceUrl":"tapis://data-storage.vdjserver.org/irplus/data/germline/vdjserver_human_germline.airr.json", "targetPath":"vdjserver_human_germline.airr.json" },
+          { "name":"StudyMetadata", "inputMode": "REQUIRED", "envKey":"StudyMetadata", "targetPath":"." },
+          { "name":"AIRRMetadata", "inputMode": "REQUIRED", "envKey":"AIRRMetadata", "targetPath":"." },
+          { "name":"RepertoireGroupMetadata", "inputMode": "OPTIONAL", "envKey":"RepertoireGroupMetadata", "targetPath":"." }
+        ],
+        "fileInputArrays":[
+          { "name":"JobFiles", "inputMode": "OPTIONAL", "envKey":"JobFiles", "targetDir":"." },
+          { "name":"AIRRFiles", "inputMode": "OPTIONAL", "envKey":"AIRRFiles", "targetDir":"." }
+        ],
+        "parameterSet": {
+            "containerArgs": [
+            ],
+            "appArgs": [
+            ],
+            "envVariables": [
+                {"key": "GeneSegmentFlag", "inputMode": "REQUIRED", "value": "0" },
+                {"key": "CDR3Flag", "inputMode": "REQUIRED", "value": "0" },
+                {"key": "DiversityFlag", "inputMode": "REQUIRED", "value": "0" },
+                {"key": "ClonalFlag", "inputMode": "REQUIRED", "value": "0" },
+                {"key": "LineageFlag", "inputMode": "REQUIRED", "value": "0" },
+                {"key": "MutationalFlag", "inputMode": "REQUIRED", "value": "0" }
+            ]
+        }
+    }
+}

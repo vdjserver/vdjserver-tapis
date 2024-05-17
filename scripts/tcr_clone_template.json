@@ -1,0 +1,12 @@
+{
+    "metadata": "",
+    "rearrangement_files": [ ],
+    "calculations": [
+        {
+            "type": "clonal_assignment",
+            "operations": [ "TCR" ], 
+            "levels": [ ], 
+            "filters": [ "productive" ]
+        }
+    ]
+}

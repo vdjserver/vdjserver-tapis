@@ -1,0 +1,11 @@
+{
+    "metadata": "",
+    "calculations": [
+        {
+            "type": "CDR3",
+            "operations": [ "shared" ], 
+            "levels": [ "aa", "nucleotide", "v,aa", "vj,aa", "v,nucleotide", "vj,nucleotide" ], 
+            "filters": [ ]
+        }
+    ]
+}
