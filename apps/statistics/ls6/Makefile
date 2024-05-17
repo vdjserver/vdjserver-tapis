@@ -1,7 +1,7 @@
 # helper commands for tapis v3 apps
 
 APP_NAME=statistics
-APP_VERSION=0.1
+APP_VERSION=0.2
 APP_SYSTEM=ls6
 
 APP_ID=${APP_NAME}-${APP_SYSTEM}
