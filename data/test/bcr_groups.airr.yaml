@@ -1,0 +1,66 @@
+RepertoireGroup:
+  - repertoire_group_id: subject_382
+    repertoires:
+      - repertoire_id: 382rNav_S26_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 382IgMmem_S30_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 382DN4_S25_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 382DN3_S24_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 382DN2_S23_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 382DN1_S22_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 382CSBmem_S29_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 382BTr_S27_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 382ASC_S21_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 382aNav_S28_L001_R1_001.fastq.merged.unique
+
+  - repertoire_group_id: subject_2180
+    repertoires:
+      - repertoire_id: 2180rNav_S36_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 2180IgMmem_S40_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 2180DN4_S35_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 2180DN3_S34_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 2180DN2_S33_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 2180DN1_S32_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 2180CSBmem_S39_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 2180BTr_S37_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 2180ASC_S31_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 2180aNav_S38_L001_R1_001.fastq.merged.unique
+
+  - repertoire_group_id: subject_2177
+    repertoires:
+      - repertoire_id: 2177rNav_S46_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 2177IgMmem_S50_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 2177DN4_S45_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 2177DN3_S44_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 2177DN2_S43_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 2177DN1_S42_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 2177CSBmem_S49_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 2177BTr_S47_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 2177ASC_S41_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 2177aNav_S48_L001_R1_001.fastq.merged.unique
+
+  - repertoire_group_id: subject_1455
+    repertoires:
+      - repertoire_id: 1455rNav_S6_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 1455IgMmem_S10_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 1455DN4_S5_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 1455DN3_S4_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 1455DN2_S3_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 1455DN1_S2_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 1455CSBmem_S9_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 1455BTr_S7_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 1455ASC_S1_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 1455aNav_S8_L001_R1_001.fastq.merged.unique
+
+  - repertoire_group_id: subject_1400
+    repertoires:
+      - repertoire_id: 1400rNav_S16_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 1400IgMmem_S20_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 1400DN4_S15_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 1400DN3_S14_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 1400DN2_S13_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 1400DN1_S12_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 1400CSBmem_S19_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 1400BTr_S17_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 1400ASC_S11_L001_R1_001.fastq.merged.unique
+      - repertoire_id: 1400aNav_S18_L001_R1_001.fastq.merged.unique
+
