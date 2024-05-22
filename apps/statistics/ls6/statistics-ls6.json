@@ -16,6 +16,10 @@
           { "name":"airr_tsv_file", "inputMode": "REQUIRED", "envKey":"airr_tsv_file", "targetPath":"." }
         ],
         "parameterSet": {
+            "logConfig": {
+                "stdoutFilename": "tapisjob.out",
+                "stderrFilename": "tapisjob.err"
+            },
             "containerArgs": [
             ],
             "appArgs": [
