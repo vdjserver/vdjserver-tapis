@@ -1,0 +1,78 @@
+{
+    "id":"vdjpipe-ls6",
+    "version":"0.1",
+    "description":"VDJPipe on Lonestar6",
+    "runtime":"ZIP",
+    "runtimeOptions": ["NONE"],
+    "containerImage":"tapis://data-storage.vdjserver.org/apps/vdjpipe-ls6-0.1.tgz",
+    "jobType":"BATCH",
+    "jobAttributes": {
+        "description": "default job description",
+        "execSystemId": "test-ls6.tacc.utexas.edu",
+        "fileInputs":[
+          { "name":"repcalc_image", "inputMode": "FIXED", "envKey":"repcalc_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/repcalc-2.0-imm4.4.sif", "targetPath":"repcalc-2.0-imm4.4.sif" },
+          { "name":"vdj_pipe_image", "inputMode": "FIXED", "envKey":"vdj_pipe_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/vdj_pipe-v0.1.7.sif", "targetPath":"vdj_pipe-v0.1.7.sif" },
+          { "name":"StudyMetadata", "inputMode": "OPTIONAL", "envKey":"StudyMetadata", "targetPath":"." },
+          { "name":"ProjectDirectory", "inputMode": "OPTIONAL", "envKey":"ProjectDirectory", "targetPath":"." },
+          { "name":"ForwardPrimerFile", "inputMode": "OPTIONAL", "envKey":"ForwardPrimerFile", "targetPath":"." },
+          { "name":"ReversePrimerFile", "inputMode": "OPTIONAL", "envKey":"ReversePrimerFile", "targetPath":"." },
+          { "name":"BarcodeFile", "inputMode": "OPTIONAL", "envKey":"BarcodeFile", "targetPath":"." }
+        ],
+        "fileInputArrays":[
+          { "name":"JobFiles", "inputMode": "OPTIONAL", "envKey":"JobFiles", "targetDir":"." },
+          { "name":"SequenceFASTQ", "inputMode": "OPTIONAL", "targetDir":"." },
+          { "name":"SequenceFASTA", "inputMode": "OPTIONAL", "envKey":"SequenceFASTA", "targetDir":"." },
+          { "name":"SequenceQualityFiles", "inputMode": "OPTIONAL", "envKey":"SequenceQualityFiles", "targetDir":"." },
+          { "name":"SequenceForwardPairedFiles", "inputMode": "OPTIONAL", "envKey":"SequenceForwardPairedFiles", "targetDir":"." },
+          { "name":"SequenceReversePairedFiles", "inputMode": "OPTIONAL", "envKey":"SequenceReversePairedFiles", "targetDir":"." },
+          { "name":"SequenceFASTQ", "inputMode": "OPTIONAL", "envKey":"SequenceFASTQ", "targetDir":"." }
+        ],
+        "parameterSet": {
+            "logConfig": {
+                "stdoutFilename": "tapisjob.out",
+                "stderrFilename": "tapisjob.err"
+            },
+            "containerArgs": [
+            ],
+            "appArgs": [
+            ],
+            "envVariables": [
+                {"key": "Workflow", "inputMode": "REQUIRED" },
+                {"key": "SecondaryInputsFlag", "inputMode": "REQUIRED", "value": "0" },
+                {"key": "SequenceFASTQ", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "SequenceFASTQMetadata", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "SequenceFASTAMetadata", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "SequenceQualityFilesMetadata", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "SequenceForwardPairedFilesMetadata", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "SequenceReversePairedFilesMetadata", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "ForwardPrimerFileMetadata", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "ReversePrimerFileMetadata", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "BarcodeFileMetadata", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "MergeMinimumScore", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "PreFilterStatisticsFlag", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "FilterFlag", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "MinimumAverageQuality", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "MinimumLength", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "MaximumHomopolymer", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "PostFilterStatisticsFlag", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "Barcode", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "BarcodeLocation", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "BarcodeDiscard", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "BarcodeGenerateHistogram", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "BarcodeMaximumMismatches", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "BarcodeTrim", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "BarcodeSearchWindow", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "BarcodeSplitFlag", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "ForwardPrimer", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "ForwardPrimerMaximumMismatches", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "ForwardPrimerTrim", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "ForwardPrimerSearchWindow", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "ReversePrimer", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "ReversePrimerMaximumMismatches", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "ReversePrimerTrim", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "ReversePrimerSearchWindow", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "FindUniqueFlag", "inputMode": "INCLUDE_BY_DEFAULT" }
+            ]
+        }
+    }
+}

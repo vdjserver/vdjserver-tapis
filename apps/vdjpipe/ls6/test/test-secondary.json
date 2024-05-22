@@ -1,0 +1,36 @@
+{
+  "name":"vdjpipe_secondary_test",
+  "appId": "vdj_pipe-ls6-0.1.7",
+  "maxRunTime": "01:00:00",
+  "memoryPerNode": "1GB",
+  "nodeCount": 1,
+  "archive": false,
+  "archiveSystem": "data.vdjserver.org",
+  "inputs": {
+    "StudyMetadata": ["agave://data.vdjserver.org//apps/vdj_pipe/0.1.7/ls6/test/study_metadata.json"],
+    "ProjectDirectory": ["agave://data.vdjserver.org//apps/vdj_pipe/0.1.7/ls6/test"],
+    "JobFiles": [ "agave://data.vdjserver.org//apps/vdj_pipe/0.1.7/ls6/test/testJob1.zip",
+    		  "agave://data.vdjserver.org//apps/vdj_pipe/0.1.7/ls6/test/testJob2.zip" ]
+  },
+  "parameters": {
+    "Creator": "vdj",
+    "Workflow": "paired",
+    "SecondaryInputsFlag": true,
+    "MergeMinimumScore": 10,
+    "PreFilterStatisticsFlag": true,
+    "FilterFlag": true,
+    "MinimumAverageQuality": 35,
+    "MinimumLength": 0,
+    "MaximumHomopolymer": 20,
+    "PostFilterStatisticsFlag": true,
+    "ForwardPrimer": true,
+    "ForwardPrimerMaximumMismatches": 1,
+    "ForwardPrimerTrim": true,
+    "ForwardPrimerSearchWindow": 30,
+    "ReversePrimer": true,
+    "ReversePrimerMaximumMismatches": 1,
+    "ReversePrimerTrim": true,
+    "ReversePrimerSearchWindow": 30,
+    "FindUniqueFlag": true
+  }
+}

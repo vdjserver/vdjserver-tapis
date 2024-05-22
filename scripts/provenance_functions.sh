@@ -40,6 +40,10 @@ function addConfigFile() {
     $PYTHON ./process_metadata.py --entry config "$1" "$2" "$3" "$4" "$5" "$6" "$7" process_metadata.json
 }
 
+function addStatisticsFile() {
+    $PYTHON ./process_metadata.py --entry statistics "$1" "$2" "$3" "$4" "$5" "$6" "$7" process_metadata.json
+}
+
 function addOutputFile() {
     $PYTHON ./process_metadata.py --entry output "$1" "$2" "$3" "$4" "$5" "$6" "$7" process_metadata.json
     # add file to list to be archived

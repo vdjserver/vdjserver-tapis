@@ -1,0 +1,40 @@
+{
+  "name":"vdjpipe_grieff_test",
+  "appId": "vdj_pipe-ls6-0.1.7",
+  "maxRunTime": "01:00:00",
+  "memoryPerNode": "1GB",
+  "nodeCount": 1,
+  "processorsPerNode": 1,
+  "archive": false,
+  "archiveSystem": "data.vdjserver.org",
+  "inputs": {
+    "SequenceForwardPairedFiles": ["agave://data.vdjserver.org//apps/vdj_pipe/0.1.7/ls6/test/ERR346600_2.fastq"],
+    "SequenceReversePairedFiles": ["agave://data.vdjserver.org//apps/vdj_pipe/0.1.7/ls6/test/ERR346600_1.fastq"],
+    "ForwardPrimerFile": "agave://data.vdjserver.org//apps/vdj_pipe/0.1.7/ls6/test/Greiff2014_VPrimers.fasta",
+    "ReversePrimerFile": "agave://data.vdjserver.org//apps/vdj_pipe/0.1.7/ls6/test/Greiff2014_CPrimers_rev.fasta"
+  },
+  "parameters": {
+    "Creator": "vdj",
+    "Workflow": "paired",
+    "SequenceForwardPairedFilesMetadata": ["1234"],
+    "SequenceReversePairedFilesMetadata": ["4567"],
+    "ForwardPrimerFileMetadata": "6789",
+    "ReversePrimerFileMetadata": "8901",
+    "MergeMinimumScore": 10,
+    "PreFilterStatisticsFlag": true,
+    "FilterFlag": true,
+    "MinimumAverageQuality": 35,
+    "MinimumLength": 0,
+    "MaximumHomopolymer": 20,
+    "PostFilterStatisticsFlag": true,
+    "ForwardPrimer": true,
+    "ForwardPrimerMaximumMismatches": 1,
+    "ForwardPrimerTrim": true,
+    "ForwardPrimerSearchWindow": 30,
+    "ReversePrimer": true,
+    "ReversePrimerMaximumMismatches": 1,
+    "ReversePrimerTrim": true,
+    "ReversePrimerSearchWindow": 30,
+    "FindUniqueFlag": true
+  }
+}

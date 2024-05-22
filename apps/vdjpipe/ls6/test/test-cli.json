@@ -1,0 +1,31 @@
+{
+    "name": "vdjpipe_test",
+    "appId": "vdjpipe-ls6",
+    "appVersion": "0.1",
+    "maxMinutes":60,
+    "nodeCount": 1,
+    "fileInputs":[
+      { "name":"SequenceFASTQ", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/Merged_2000.fastq", "targetPath":"Merged_2000.fastq" }
+    ],
+    "parameterSet": {
+        "schedulerOptions": [
+            { "name":"allocation", "arg":"-A MCB23006" }
+        ],
+        "containerArgs": [
+        ],
+        "appArgs": [
+        ],
+        "envVariables": [
+            {"key": "Workflow", "value": "single" },
+            {"key": "SequenceFASTQ", "value": "Merged_2000.fastq" },
+            {"key": "SequenceFASTQMetadata", "value": "1234567890" },
+            {"key": "PreFilterStatisticsFlag", "value": "1" },
+            {"key": "FilterFlag", "value": "1" },
+            {"key": "MinimumAverageQuality", "value": "35" },
+            {"key": "MinimumLength", "value": "0" },
+            {"key": "MaximumHomopolymer", "value": "20" },
+            {"key": "PostFilterStatisticsFlag", "value": "1" },
+            {"key": "FindUniqueFlag", "value": "1" }
+        ]
+    }
+}

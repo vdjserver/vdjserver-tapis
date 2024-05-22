@@ -1,0 +1,25 @@
+{
+  "name":"vdjpipe_paired_test",
+  "appId": "vdj_pipe-ls6-0.1.7",
+  "maxRunTime": "01:00:00",
+  "memoryPerNode": "1GB",
+  "nodeCount": 1,
+  "processorsPerNode": 1,
+  "archive": false,
+  "archiveSystem": "data.vdjserver.org",
+  "inputs": {
+    "SequenceForwardPairedFiles": ["agave://data.vdjserver.org//apps/vdj_pipe/0.1.7/ls6/test/test_r1.fastq"],
+    "SequenceReversePairedFiles": ["agave://data.vdjserver.org//apps/vdj_pipe/0.1.7/ls6/test/test_r2.fastq"]
+  },
+  "parameters": {
+    "Creator": "vdj",
+    "Workflow": "paired",
+    "SequenceForwardPairedFilesMetadata": ["7890"],
+    "SequenceReversePairedFilesMetadata": ["9012"],
+    "MergeMinimumScore": 10,
+    "FilterFlag": true,
+    "MinimumAverageQuality": 35,
+    "MinimumLength": 200,
+    "MaximumHomopolymer": 20
+  }
+}
