@@ -46,6 +46,7 @@ common-scripts:
 	cp ${SCRIPTS_DIR}/airr_metadata.py ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/process_metadata.py ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/repcalc_create_config.py ${BUILD_DIR}
+	cp ${SCRIPTS_DIR}/parse_changeo.py ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/gene_usage_template.json ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/gene_combo_template.json ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/junction_length_template.json ${BUILD_DIR}

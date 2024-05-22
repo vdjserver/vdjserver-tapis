@@ -27,8 +27,8 @@ source ./repcalc_common.sh
 # Launcher to use multicores on node
 export LAUNCHER_WORKDIR=$PWD
 export LAUNCHER_LOW_PPN=4
-export LAUNCHER_MID_PPN=12
-export LAUNCHER_MAX_PPN=32
+export LAUNCHER_MID_PPN=8
+export LAUNCHER_MAX_PPN=12
 export LAUNCHER_PPN=1
 export LAUNCHER_JOB_FILE=joblist
 export LAUNCHER_SCHED=interleaved

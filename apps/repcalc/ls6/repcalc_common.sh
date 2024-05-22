@@ -955,13 +955,13 @@ function run_repcalc_workflow() {
             if [[ $has_makedb_clone -eq 1 ]]; then
                 processing_stage=igblast.makedb.allele.clone
                 file=${rep_id}.${processing_stage}.airr.tsv
-                echo "apptainer exec -e ${repcalc_image} bash ./mutational_analysis.sh ${AIRRMetadata} $rep_id $germline_fasta $file $processing_stage" >> joblist-mutations
+                echo "apptainer exec -e ${repcalc_image} bash ./mutational_analysis.sh ${AIRRMetadata} $rep_id $germline_fasta $species $file $processing_stage" >> joblist-mutations
             fi
 
             if [[ $has_gene_clone -eq 1 ]]; then
                 processing_stage=igblast.makedb.gene.clone
                 file=${rep_id}.${processing_stage}.airr.tsv
-                echo "apptainer exec -e ${repcalc_image} bash ./mutational_analysis.sh ${AIRRMetadata} $rep_id $germline_fasta $file $processing_stage" >> joblist-mutations
+                echo "apptainer exec -e ${repcalc_image} bash ./mutational_analysis.sh ${AIRRMetadata} $rep_id $germline_fasta $species $file $processing_stage" >> joblist-mutations
             fi
 
             count=$(( $count + 1 ))
@@ -992,6 +992,7 @@ function run_repcalc_workflow() {
                 processing_stage=igblast.makedb.allele.clone
                 addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-mutations ${rep_id}.${processing_stage}.mutations.airr.tsv.gz "${rep_id} Mutations AIRR TSV (${processing_stage})" "tsv" null
                 gzipFile ${rep_id}.${processing_stage}.mutations.airr.tsv
+                addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-selection ${rep_id}.${processing_stage}.selection.tsv "${rep_id} Selection Pressure TSV (${processing_stage})" "tsv" null
                 addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-create_germlines "${rep_id}.${processing_stage}.germ.json" "${rep_id} Create Germlines Log (${processing_stage})" "json" null
                 #noArchive ${rep_id}.${processing_stage}.germ.log
                 #noArchive ${rep_id}.${processing_stage}.germ.airr.tsv
@@ -1008,6 +1009,7 @@ function run_repcalc_workflow() {
                 processing_stage=igblast.makedb.gene.clone
                 addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-mutations ${rep_id}.${processing_stage}.mutations.airr.tsv.gz "${rep_id} Mutations AIRR TSV (${processing_stage})" "tsv" null
                 gzipFile ${rep_id}.${processing_stage}.mutations.airr.tsv
+                addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-selection ${rep_id}.${processing_stage}.selection.tsv "${rep_id} Selection Pressure TSV (${processing_stage})" "tsv" null
                 addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-create_germlines "${rep_id}.${processing_stage}.germ.json" "${rep_id} Create Germlines Log (${processing_stage})" "json" null
                 #noArchive ${rep_id}.${processing_stage}.germ.log
                 #noArchive ${rep_id}.${processing_stage}.germ.airr.tsv

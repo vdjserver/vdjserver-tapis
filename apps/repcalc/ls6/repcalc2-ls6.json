@@ -21,6 +21,10 @@
           { "name":"AIRRFiles", "inputMode": "OPTIONAL", "envKey":"AIRRFiles", "targetDir":"." }
         ],
         "parameterSet": {
+            "logConfig": {
+                "stdoutFilename": "tapisjob.out",
+                "stderrFilename": "tapisjob.err"
+            },
             "containerArgs": [
             ],
             "appArgs": [

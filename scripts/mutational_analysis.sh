@@ -21,10 +21,12 @@ metadata_file=$1
 repertoire_id=$2
 # germline sequences
 germline_fasta=$3
+# species
+species=$4
 # input file
-file=$4
+file=$5
 # output prefix
-processing_stage=$5
+processing_stage=$6
 
 out_prefix=${repertoire_id}.${processing_stage}
 
@@ -33,7 +35,11 @@ bash ./create_germlines.sh ${file} ${out_prefix} ${germline_fasta}
 germFilename="${out_prefix}.germ.airr.tsv"
 
 # mutations
-Rscript ./mutational_analysis.R -d $germFilename -o ${out_prefix}
+if [ "$species" == "mouse" ]; then
+    Rscript ./mutational_analysis.R -d $germFilename -m MK_RS5NF -o ${out_prefix}
+else
+    Rscript ./mutational_analysis.R -d $germFilename -m HH_S5F -o ${out_prefix}
+fi
 
 # rename output
 mut_file=${out_prefix}.mutations.orig.airr.tsv
