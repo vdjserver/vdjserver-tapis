@@ -1,0 +1,32 @@
+#!/bin/bash
+
+#
+# Tapis V3 functions
+
+# VDJServer Analysis Portal
+# VDJServer Tapis applications
+# https://vdjserver.org
+#
+# Copyright (C) 2024 The University of Texas Southwestern Medical Center
+# Author: Scott Christley
+# Date: May 14, 2024
+#
+
+# bring in common settings
+if [[ "x${VDJSERVER_TAPIS_BIN}" == "x" ]]; then
+    VDJSERVER_TAPIS_BIN=/vdjserver-tapis/bin
+fi
+source ${VDJSERVER_TAPIS_BIN}/tapis_common.sh
+
+if [ $# -ne 1 ];
+then
+    echo "usage: tapis_systems_add_perms username"
+    exit 1
+fi
+
+tapis_check_token
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
+curl --data '{"permissions":["READ"]}' -H "content-type: application/json" -H "X-Tapis-Token: $JWT" https://${tapis_default_host}/v3/systems/perms/${tapis_default_storage}/user/$1 | jq
