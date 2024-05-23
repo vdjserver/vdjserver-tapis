@@ -19,13 +19,13 @@
           { "name":"BarcodeFile", "inputMode": "OPTIONAL", "envKey":"BarcodeFile", "targetPath":"." }
         ],
         "fileInputArrays":[
-          { "name":"JobFiles", "inputMode": "OPTIONAL", "envKey":"JobFiles", "targetDir":"." },
+          { "name":"JobFiles", "inputMode": "OPTIONAL", "targetDir":"." },
           { "name":"SequenceFASTQ", "inputMode": "OPTIONAL", "targetDir":"." },
-          { "name":"SequenceFASTA", "inputMode": "OPTIONAL", "envKey":"SequenceFASTA", "targetDir":"." },
-          { "name":"SequenceQualityFiles", "inputMode": "OPTIONAL", "envKey":"SequenceQualityFiles", "targetDir":"." },
-          { "name":"SequenceForwardPairedFiles", "inputMode": "OPTIONAL", "envKey":"SequenceForwardPairedFiles", "targetDir":"." },
-          { "name":"SequenceReversePairedFiles", "inputMode": "OPTIONAL", "envKey":"SequenceReversePairedFiles", "targetDir":"." },
-          { "name":"SequenceFASTQ", "inputMode": "OPTIONAL", "envKey":"SequenceFASTQ", "targetDir":"." }
+          { "name":"SequenceFASTA", "inputMode": "OPTIONAL", "targetDir":"." },
+          { "name":"SequenceQualityFiles", "inputMode": "OPTIONAL", "targetDir":"." },
+          { "name":"SequenceForwardPairedFiles", "inputMode": "OPTIONAL", "targetDir":"." },
+          { "name":"SequenceReversePairedFiles", "inputMode": "OPTIONAL", "targetDir":"." },
+          { "name":"SequenceFASTQ", "inputMode": "OPTIONAL", "targetDir":"." }
         ],
         "parameterSet": {
             "logConfig": {
@@ -39,11 +39,16 @@
             "envVariables": [
                 {"key": "Workflow", "inputMode": "REQUIRED" },
                 {"key": "SecondaryInputsFlag", "inputMode": "REQUIRED", "value": "0" },
+                {"key": "JobFiles", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "SequenceFASTQ", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "SequenceFASTQMetadata", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "SequenceFASTA", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "SequenceFASTAMetadata", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "SequenceQualityFiles", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "SequenceQualityFilesMetadata", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "SequenceForwardPairedFiles", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "SequenceForwardPairedFilesMetadata", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "SequenceReversePairedFiles", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "SequenceReversePairedFilesMetadata", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "ForwardPrimerFileMetadata", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "ReversePrimerFileMetadata", "inputMode": "INCLUDE_BY_DEFAULT" },

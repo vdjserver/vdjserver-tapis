@@ -27,7 +27,10 @@ help:
 	@echo "make clean     -- Clean build files"
 	@echo "make build     -- Build archive from app assets"
 	@echo "make deploy    -- Deploy app assets"
+	@echo ""
+	@echo "Testing:"
 	@echo "make test-job  -- Submit test job"
+	@echo "make test-all  -- Submit all test jobs"
 	@echo ""
 
 create:
@@ -60,3 +63,11 @@ deploy: build
 
 test-job:
 	tapis_jobs_submit test/test-cli.json
+
+test-all:
+	echo tapis_jobs_submit test/test-cli.json
+	tapis_jobs_submit test/test-grieff.json
+	tapis_jobs_submit test/test-mixed.json
+	tapis_jobs_submit test/test-paired.json
+	tapis_jobs_submit test/test-roche.json
+	tapis_jobs_submit test/test-secondary.json

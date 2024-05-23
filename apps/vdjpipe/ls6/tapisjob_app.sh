@@ -18,6 +18,7 @@ module load tacc-apptainer
 
 VDJ_PIPE="apptainer exec -e ${vdj_pipe_image} vdj_pipe"
 PYTHON="apptainer exec -e ${repcalc_image} python3"
+BIO_PYTHON="apptainer exec -e ${repcalc_image} python3"
 
 # bring in common functions
 source ./vdjpipe_common.sh

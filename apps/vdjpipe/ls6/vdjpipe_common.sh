@@ -334,19 +334,19 @@ function run_vdjpipe() {
             bash ./vdjpipe_barcodes.sh "${TotalOutputFilename}.fastq"
             rm -f vdjpipe_barcodes.sh
             addOutputFile $group $APP_NAME processed_sequence "${TotalOutputFilename}.fastq" "Total Post-Filter Sequences (${fileBasename})" "read" "${WasDerivedFrom}"
-            $BIO_PYTHON ./vdjpipe_barcodes.py --fileList "${TotalOutputFilename}-{MID}.fastq" $BarcodeFile >> .agave.archive
+            #$BIO_PYTHON ./vdjpipe_barcodes.py --fileList "${TotalOutputFilename}-{MID}.fastq" $BarcodeFile >> .agave.archive
 
             $BIO_PYTHON ./vdjpipe_barcodes.py --catFiles "${FindUniqueOutput}-{MID}.fasta" $BarcodeFile >vdjpipe_barcodes.sh
             bash ./vdjpipe_barcodes.sh "${FindUniqueOutput}.fasta"
             rm -f vdjpipe_barcodes.sh
             addOutputFile $group $APP_NAME sequence "${FindUniqueOutput}.fasta" "Unique Post-Filter Sequences (${fileBasename})" "read" "${WasDerivedFrom}"
-            $BIO_PYTHON ./vdjpipe_barcodes.py --fileList "${FindUniqueOutput}-{MID}.fasta" $BarcodeFile >> .agave.archive
+            #$BIO_PYTHON ./vdjpipe_barcodes.py --fileList "${FindUniqueOutput}-{MID}.fasta" $BarcodeFile >> .agave.archive
 
             $BIO_PYTHON ./vdjpipe_barcodes.py --catFiles "${FindUniqueDuplicates}-{MID}.tsv" $BarcodeFile >vdjpipe_barcodes.sh
             bash ./vdjpipe_barcodes.sh "${FindUniqueDuplicates}.tsv"
             rm -f vdjpipe_barcodes.sh
             addOutputFile $group $APP_NAME duplicates "${FindUniqueDuplicates}.tsv" "Unique Sequence Duplicates Table (${fileBasename})" "tsv" "${WasDerivedFrom}"
-            $BIO_PYTHON ./vdjpipe_barcodes.py --fileList "${FindUniqueDuplicates}-{MID}.tsv" $BarcodeFile >> .agave.archive
+            #$BIO_PYTHON ./vdjpipe_barcodes.py --fileList "${FindUniqueDuplicates}-{MID}.tsv" $BarcodeFile >> .agave.archive
         fi
     fi
 }

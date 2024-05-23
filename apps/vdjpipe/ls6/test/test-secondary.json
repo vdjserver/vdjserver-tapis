@@ -1,36 +1,43 @@
 {
-  "name":"vdjpipe_secondary_test",
-  "appId": "vdj_pipe-ls6-0.1.7",
-  "maxRunTime": "01:00:00",
-  "memoryPerNode": "1GB",
-  "nodeCount": 1,
-  "archive": false,
-  "archiveSystem": "data.vdjserver.org",
-  "inputs": {
-    "StudyMetadata": ["agave://data.vdjserver.org//apps/vdj_pipe/0.1.7/ls6/test/study_metadata.json"],
-    "ProjectDirectory": ["agave://data.vdjserver.org//apps/vdj_pipe/0.1.7/ls6/test"],
-    "JobFiles": [ "agave://data.vdjserver.org//apps/vdj_pipe/0.1.7/ls6/test/testJob1.zip",
-    		  "agave://data.vdjserver.org//apps/vdj_pipe/0.1.7/ls6/test/testJob2.zip" ]
-  },
-  "parameters": {
-    "Creator": "vdj",
-    "Workflow": "paired",
-    "SecondaryInputsFlag": true,
-    "MergeMinimumScore": 10,
-    "PreFilterStatisticsFlag": true,
-    "FilterFlag": true,
-    "MinimumAverageQuality": 35,
-    "MinimumLength": 0,
-    "MaximumHomopolymer": 20,
-    "PostFilterStatisticsFlag": true,
-    "ForwardPrimer": true,
-    "ForwardPrimerMaximumMismatches": 1,
-    "ForwardPrimerTrim": true,
-    "ForwardPrimerSearchWindow": 30,
-    "ReversePrimer": true,
-    "ReversePrimerMaximumMismatches": 1,
-    "ReversePrimerTrim": true,
-    "ReversePrimerSearchWindow": 30,
-    "FindUniqueFlag": true
-  }
+    "name": "vdjpipe_secondary_test",
+    "appId": "vdjpipe-ls6",
+    "appVersion": "0.1",
+    "maxMinutes":60,
+    "nodeCount": 1,
+    "fileInputs":[
+      { "name":"StudyMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/study_metadata.json", "targetPath":"study_metadata.json" }
+    ],
+    "fileInputArrays":[
+      { "name":"JobFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/testJob1.zip", "tapis://data-storage.vdjserver.org/apps/data/test/testJob2.zip" ]}
+    ],
+    "parameterSet": {
+        "schedulerOptions": [
+            { "name":"allocation", "arg":"-A MCB23006" }
+        ],
+        "containerArgs": [
+        ],
+        "appArgs": [
+        ],
+        "envVariables": [
+            {"key": "Workflow", "value": "paired" },
+            {"key": "JobFiles", "value": "testJob1.zip testJob2.zip" },
+            {"key": "SecondaryInputsFlag", "value": "1" },
+            {"key": "MergeMinimumScore", "value": "10" },
+            {"key": "PreFilterStatisticsFlag", "value": "1" },
+            {"key": "FilterFlag", "value": "1" },
+            {"key": "MinimumAverageQuality", "value": "35" },
+            {"key": "MinimumLength", "value": "0" },
+            {"key": "MaximumHomopolymer", "value": "20" },
+            {"key": "PostFilterStatisticsFlag", "value": "1" },
+            {"key": "ForwardPrimer", "value": "1" },
+            {"key": "ForwardPrimerMaximumMismatches", "value": "1" },
+            {"key": "ForwardPrimerTrim", "value": "1" },
+            {"key": "ForwardPrimerSearchWindow", "value": "30" },
+            {"key": "ReversePrimer", "value": "1" },
+            {"key": "ReversePrimerMaximumMismatches", "value": "1" },
+            {"key": "ReversePrimerTrim", "value": "1" },
+            {"key": "ReversePrimerSearchWindow", "value": "30" },
+            {"key": "FindUniqueFlag", "value": "1" }
+        ]
+    }
 }

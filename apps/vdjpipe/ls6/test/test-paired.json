@@ -1,25 +1,32 @@
 {
-  "name":"vdjpipe_paired_test",
-  "appId": "vdj_pipe-ls6-0.1.7",
-  "maxRunTime": "01:00:00",
-  "memoryPerNode": "1GB",
-  "nodeCount": 1,
-  "processorsPerNode": 1,
-  "archive": false,
-  "archiveSystem": "data.vdjserver.org",
-  "inputs": {
-    "SequenceForwardPairedFiles": ["agave://data.vdjserver.org//apps/vdj_pipe/0.1.7/ls6/test/test_r1.fastq"],
-    "SequenceReversePairedFiles": ["agave://data.vdjserver.org//apps/vdj_pipe/0.1.7/ls6/test/test_r2.fastq"]
-  },
-  "parameters": {
-    "Creator": "vdj",
-    "Workflow": "paired",
-    "SequenceForwardPairedFilesMetadata": ["7890"],
-    "SequenceReversePairedFilesMetadata": ["9012"],
-    "MergeMinimumScore": 10,
-    "FilterFlag": true,
-    "MinimumAverageQuality": 35,
-    "MinimumLength": 200,
-    "MaximumHomopolymer": 20
-  }
+    "name": "vdjpipe_paired_test",
+    "appId": "vdjpipe-ls6",
+    "appVersion": "0.1",
+    "maxMinutes":60,
+    "nodeCount": 1,
+    "fileInputArrays":[
+      { "name":"SequenceForwardPairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/test_r1.fastq" ]},
+      { "name":"SequenceReversePairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/test_r2.fastq" ]}
+    ],
+    "parameterSet": {
+        "schedulerOptions": [
+            { "name":"allocation", "arg":"-A MCB23006" }
+        ],
+        "containerArgs": [
+        ],
+        "appArgs": [
+        ],
+        "envVariables": [
+            {"key": "Workflow", "value": "paired" },
+            {"key": "SequenceForwardPairedFiles", "value": "test_r1.fastq" },
+            {"key": "SequenceForwardPairedFilesMetadata", "value": "12348" },
+            {"key": "SequenceReversePairedFiles", "value": "test_r2.fastq" },
+            {"key": "SequenceReversePairedFilesMetadata", "value": "4567" },
+            {"key": "MergeMinimumScore", "value": "10" },
+            {"key": "FilterFlag", "value": "1" },
+            {"key": "MinimumAverageQuality", "value": "35" },
+            {"key": "MinimumLength", "value": "200" },
+            {"key": "MaximumHomopolymer", "value": "20" }
+        ]
+    }
 }

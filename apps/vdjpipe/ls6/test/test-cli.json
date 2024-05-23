@@ -4,8 +4,8 @@
     "appVersion": "0.1",
     "maxMinutes":60,
     "nodeCount": 1,
-    "fileInputs":[
-      { "name":"SequenceFASTQ", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/Merged_2000.fastq", "targetPath":"Merged_2000.fastq" }
+    "fileInputArrays":[
+      { "name":"SequenceFASTQ", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/Merged_2000.fastq" ]}
     ],
     "parameterSet": {
         "schedulerOptions": [

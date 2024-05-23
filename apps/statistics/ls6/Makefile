@@ -27,6 +27,8 @@ help:
 	@echo "make clean     -- Clean build files"
 	@echo "make build     -- Build archive from app assets"
 	@echo "make deploy    -- Deploy app assets"
+	@echo ""
+	@echo "Testing:"
 	@echo "make test-job  -- Submit test job"
 	@echo ""
 
