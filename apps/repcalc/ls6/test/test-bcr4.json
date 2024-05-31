@@ -2,8 +2,8 @@
     "name": "repcalc_bcr4_test",
     "appId": "repcalc2-ls6",
     "appVersion": "0.1",
-    "maxMinutes": 120,
-  "nodeCount": 4,
+    "maxMinutes": 240,
+    "nodeCount": 4,
     "fileInputs":[
       { "name":"StudyMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/8503620248975109650-242ac117-0001-012/analyses/2023-07-13-19-33-29-99-my-job-13-jul-2023-2:32:50-pm/study_metadata.json", "targetPath":"study_metadata.json" },
       { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/8503620248975109650-242ac117-0001-012/analyses/2023-07-10-16-13-16-68-my-job-10-jul-2023-11:13:05-am/study_metadata.airr.json", "targetPath":"study_metadata.airr.json" }
