@@ -14,18 +14,24 @@ To list the systems:
 
 ```
 curl -H "X-Tapis-Token: $JWT" https://vdjserver.tapis.io/v3/systems?select=allAttributes
+# or inside docker
+tapis_systems_list
 ```
 
 To create a new system:
 
 ```
 curl -X POST -H "content-type: application/json" -H "X-Tapis-Token: $JWT" https://vdjserver.tapis.io/v3/systems -d @json_file
+# or inside docker
+tapis_systems_create json_file
 ```
 
 To update an existing system, note that the system id is part of the URL:
 
 ```
 curl -X PUT -H "content-type: application/json" -H "X-Tapis-Token: $JWT" https://vdjserver.tapis.io/v3/systems/<system_id> -d @json_file
+# or inside docker
+tapis_systems_update json_file
 ```
 
 After creating a system, need to define credentials for the `vdj` account. You will need the ssh private
@@ -55,12 +61,16 @@ To add credentials for the vdj account for the system, note that the system id i
 
 ```
 curl -X POST -H "content-type: application/json" -H "X-Tapis-Token: $JWT" https://vdjserver.tapis.io/v3/systems/credential/<system_id>/user/vdj -d @json_file
+# or inside docker
+tapis_systems_credentials system_id username json_file
 ```
 
 If the system and credentials are defined properly, you should be able to list files on the system:
 
 ```
 curl -H "X-Tapis-Token: $JWT" https://vdjserver.tapis.io/v3/files/ops/<system_id> | jq
+# or inside docker
+tapis_files_list path
 ```
 
 A system can be deleted but the id cannot be re-used. Deleting a system just removes it
