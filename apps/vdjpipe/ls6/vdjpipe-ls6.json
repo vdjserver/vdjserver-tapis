@@ -13,7 +13,7 @@
           { "name":"repcalc_image", "inputMode": "FIXED", "envKey":"repcalc_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/repcalc-2.0-imm4.4.sif", "targetPath":"repcalc-2.0-imm4.4.sif" },
           { "name":"vdj_pipe_image", "inputMode": "FIXED", "envKey":"vdj_pipe_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/vdj_pipe-v0.1.7.sif", "targetPath":"vdj_pipe-v0.1.7.sif" },
           { "name":"StudyMetadata", "inputMode": "OPTIONAL", "envKey":"StudyMetadata", "targetPath":"." },
-          { "name":"ProjectDirectory", "inputMode": "OPTIONAL", "envKey":"ProjectDirectory", "targetPath":"." },
+          { "name":"ProjectDirectory", "inputMode": "OPTIONAL", "envKey":"ProjectDirectory", "targetPath":"./project" },
           { "name":"ForwardPrimerFile", "inputMode": "OPTIONAL", "envKey":"ForwardPrimerFile", "targetPath":"." },
           { "name":"ReversePrimerFile", "inputMode": "OPTIONAL", "envKey":"ReversePrimerFile", "targetPath":"." },
           { "name":"BarcodeFile", "inputMode": "OPTIONAL", "envKey":"BarcodeFile", "targetPath":"." }

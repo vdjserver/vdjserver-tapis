@@ -5,10 +5,11 @@
     "maxMinutes":60,
     "nodeCount": 1,
     "fileInputs":[
-      { "name":"StudyMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/study_metadata.json", "targetPath":"study_metadata.json" }
+      { "name":"StudyMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/vdjpipe_study_metadata.json", "targetPath":"study_metadata.json" },
+      { "name":"ProjectDirectory", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test" }
     ],
     "fileInputArrays":[
-      { "name":"JobFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/testJob1.zip", "tapis://data-storage.vdjserver.org/apps/data/test/testJob2.zip" ]}
+      { "name":"JobFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/vdjpipe_testJob1.zip", "tapis://data-storage.vdjserver.org/apps/data/test/vdjpipe_testJob2.zip" ]}
     ],
     "parameterSet": {
         "schedulerOptions": [
@@ -20,7 +21,7 @@
         ],
         "envVariables": [
             {"key": "Workflow", "value": "paired" },
-            {"key": "JobFiles", "value": "testJob1.zip testJob2.zip" },
+            {"key": "JobFiles", "value": "vdjpipe_testJob1.zip vdjpipe_testJob2.zip" },
             {"key": "SecondaryInputsFlag", "value": "1" },
             {"key": "MergeMinimumScore", "value": "10" },
             {"key": "PreFilterStatisticsFlag", "value": "1" },
