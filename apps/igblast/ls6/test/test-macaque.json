@@ -1,0 +1,19 @@
+{
+  "name":"igblast_test_macaque",
+  "appId": "igblast-ls6-1.17",
+  "maxRunTime": "01:00:00",
+  "nodeCount": 1,
+  "archive": false,
+  "archiveSystem": "data.vdjserver.org",
+  "inputs": {
+    "query": ["agave://data.vdjserver.org//apps/igblast/1.17/ls6/test/mAb_HC.fasta"]
+  },
+  "parameters": {
+    "Creator": "vdj",
+    "species": "macaque",
+    "strain": "indian",
+    "ig_seqtype": "Ig",
+    "domain_system": "imgt",
+    "QueryFilesMetadata": [ "1234" ]
+  }
+}

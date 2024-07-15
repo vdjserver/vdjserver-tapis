@@ -1,0 +1,20 @@
+{
+  "name":"igblast_mixed_test",
+  "appId": "igblast-ls6-1.20",
+  "maxRunTime": "01:00:00",
+  "nodeCount": 1,
+  "archive": false,
+  "archiveSystem": "data.vdjserver.org",
+  "inputs": {
+    "query": ["agave://data.vdjserver.org//apps/data/test/Merged_2000.fastq",
+    	     "agave://data.vdjserver.org//apps/data/test/test_40000.fastq",
+    	     "agave://data.vdjserver.org//apps/data/test/Merged_40000.fastq"]
+  },
+  "parameters": {
+    "Creator": "vdj",
+    "species": "mouse",
+    "ig_seqtype": "TCR",
+    "domain_system": "imgt",
+    "QueryFilesMetadata": [ "1234", "3456", "5678" ]
+  }
+}

@@ -1,0 +1,28 @@
+{
+    "name": "igblast_big_test",
+    "appId": "igblast-ls6",
+    "appVersion": "0.1",
+    "maxMinutes": 120,
+    "nodeCount": 1,
+    "fileInputs":[
+    ],
+    "fileInputArrays":[
+      { "name":"query", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/Merged_400000.fastq.gz" ]}
+    ],
+    "parameterSet": {
+        "schedulerOptions": [
+            { "name":"allocation", "arg":"-A MCB23006" }
+        ],
+        "containerArgs": [
+        ],
+        "appArgs": [
+        ],
+        "envVariables": [
+            {"key": "query", "value": "Merged_400000.fastq.gz" },
+            {"key": "QueryFilesMetadata", "value": "1234" },
+            {"key": "species", "value": "mouse" },
+            {"key": "ig_seqtype", "value": "TCR" },
+            {"key": "ClonalTool", "value": "repcalc" }
+        ]
+    }
+}

@@ -1,0 +1,29 @@
+{
+    "name": "igblast_tcr_test",
+    "appId": "igblast-ls6",
+    "appVersion": "0.1",
+    "maxMinutes": 120,
+    "nodeCount": 1,
+    "fileInputs":[
+    ],
+    "fileInputArrays":[
+      { "name":"query", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/special_seqs.fasta",
+                                        "tapis://data-storage.vdjserver.org/apps/data/test/funky_ids.fasta" ]}
+    ],
+    "parameterSet": {
+        "schedulerOptions": [
+            { "name":"allocation", "arg":"-A MCB23006" }
+        ],
+        "containerArgs": [
+        ],
+        "appArgs": [
+        ],
+        "envVariables": [
+            {"key": "query", "value": "special_seqs.fasta funky_ids.fasta" },
+            {"key": "QueryFilesMetadata", "value": "1234 3456" },
+            {"key": "species", "value": "human" },
+            {"key": "ig_seqtype", "value": "TCR" },
+            {"key": "ClonalTool", "value": "repcalc" }
+        ]
+    }
+}

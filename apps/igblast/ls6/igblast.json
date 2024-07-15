@@ -1,0 +1,328 @@
+{
+  "name": "igblast-ls6",
+  "version": "1.20",
+  "helpURI": "http://www.ncbi.nlm.nih.gov/igblast/faq.html",
+  "label": "igblast",
+  "defaultQueue": "normal",
+  "defaultNodeCount": 1,
+  "defaultProcessorsPerNode": 128,
+  "defaultRequestedTime": "48:00:00",
+  "shortDescription": "IgBLAST on Lonestar6",
+  "longDescription": "IgBLAST was developed at NCBI to facilitate analysis of immunoglobulin variable domain sequences (IgBLAST has recently been extended to perform analysis for T cell receptor (TR) sequences). It uses BLAST search algorithm.",
+  "executionType": "HPC",
+  "executionSystem": "ls6.tacc.utexas.edu",
+  "parallelism": "PARALLEL",
+  "deploymentPath": "/apps/igblast/1.20/ls6/",
+  "deploymentSystem": "data.vdjserver.org",
+  "templatePath": "igblast.sh",
+  "testPath": "test/test.sh",
+  "ontology": [
+    "http://sswapmeet.sswap.info/agave/apps/Application"
+  ],
+  "modules": [
+    "purge",
+    "load TACC",
+    "load python3/3.9.7",
+    "load tacc-apptainer",
+    "load launcher/3.10"
+  ],
+  "inputs": [
+    {
+      "id": "igblast_image",
+      "details": {
+        "label": "",
+        "description": "IgBlast singularity image file",
+        "showAttribute": false
+      },
+      "semantics": {
+        "minCardinality": 1,
+        "maxCardinality": 1,
+        "ontology": [
+          "http://sswapmeet.sswap.info/mime/application/Json"
+        ],
+        "fileTypes": [
+          "text-0"
+        ]
+      },
+      "value": {
+        "default": "agave://data.vdjserver.org//singularity/igblast-1.20.0.sif",
+        "visible": false,
+        "required": true
+      }
+    },
+    {
+      "id": "repcalc_image",
+      "details": {
+        "label": "",
+        "description": "Singularity image file for RepCalc",
+        "showAttribute": false
+      },
+      "semantics": {
+        "minCardinality": 1,
+        "maxCardinality": 1,
+        "ontology": [
+          "http://sswapmeet.sswap.info/mime/application/Json"
+        ],
+        "fileTypes": [
+          "text-0"
+        ]
+      },
+      "value": {
+        "default": "agave://data.vdjserver.org//singularity/repcalc-2.0-imm4.2.sif",
+        "visible": false,
+        "required": true
+      }
+    },
+    {
+      "id": "StudyMetadata",
+      "details": {
+        "label": "Study Metadata",
+        "description": "",
+        "showAttribute": false
+      },
+      "semantics": {
+        "minCardinality": 1,
+        "maxCardinality": 1,
+        "ontology": [
+          "http://sswapmeet.sswap.info/mime/application/Json"
+        ],
+        "fileTypes": [
+          "text-0"
+        ]
+      },
+      "value": {
+        "default": "",
+        "visible": true,
+        "required": false
+      }
+    },
+    {
+      "id": "ProjectDirectory",
+      "details": {
+        "label": "Directory containing project files",
+        "description": "",
+        "showAttribute": false
+      },
+      "semantics": {
+        "minCardinality": 1,
+        "maxCardinality": 1,
+        "ontology": [
+          "http://sswapmeet.sswap.info/mime/application/Json"
+        ],
+        "fileTypes": [
+          "text-0"
+        ]
+      },
+      "value": {
+        "default": "",
+        "visible": true,
+        "required": false
+      }
+    },
+    {
+      "id": "JobFiles",
+      "details": {
+        "label": "Directory containing files from jobs",
+        "description": "",
+        "showAttribute": false
+      },
+      "semantics": {
+        "minCardinality": 0,
+        "maxCardinality": -1,
+        "ontology": [
+          "http://sswapmeet.sswap.info/mime/application/Json"
+        ],
+        "fileTypes": [
+          "text-0"
+        ]
+      },
+      "value": {
+        "default": "",
+        "visible": true,
+        "required": false
+      }
+    },
+    {
+      "id": "query",
+      "details": {
+        "label": "FASTA file containing IgBLAST queries",
+        "showAttribute": false
+      },
+      "semantics": {
+        "minCardinality": 0,
+        "maxCardinality": -1,
+        "ontology": [
+          "http://sswapmeet.sswap.info/mime/text/X-multiFasta"
+        ],
+        "fileTypes": [
+          "fasta-0"
+        ]
+      },
+      "value": {
+        "type": "string",
+        "default": "",
+        "required": false,
+        "visible": true
+      }
+    }
+  ],
+  "parameters": [
+    {
+      "id": "Creator",
+      "value": {
+        "visible": true,
+        "required": true,
+        "type": "string",
+        "default": ""
+      },
+      "details": {
+        "label": "Creator",
+        "description": "Username that created this job."
+      },
+      "semantics": {
+        "minCardinality": 1,
+        "maxCardinality": 1,
+        "ontology": [
+          "xsd:string"
+        ]
+      }
+    },
+    {
+      "id": "SecondaryInputsFlag",
+      "value": {
+        "visible": true,
+        "required": false,
+        "type": "bool",
+        "order": 0,
+        "enquote": false,
+        "default": false,
+        "validator": null
+      },
+      "details": {
+        "label": "Secondary inputs",
+        "description": "Specify if secondary inputs are specified in the study metadata file.",
+        "argument": null,
+        "showArgument": false,
+        "repeatArgument": false
+      },
+      "semantics": {
+        "minCardinality": 0,
+        "maxCardinality": 1,
+        "ontology": [
+          "xsd:boolean"
+        ]
+      }
+    },
+    {
+      "id": "QueryFilesMetadata",
+      "details": {
+        "label": "Metadata UUID for FASTA files containing IgBLAST queries",
+        "showAttribute": false
+      },
+      "semantics": {
+        "minCardinality": 0,
+        "maxCardinality": -1,
+        "ontology": [
+          "http://sswapmeet.sswap.info/mime/text/X-multiFasta"
+        ],
+        "fileTypes": [
+          "fasta-0"
+        ]
+      },
+      "value": {
+        "type": "string",
+        "default": "",
+        "required": false,
+        "visible": true
+      }
+    },
+    {
+      "id": "species",
+      "details": {
+        "label": "Organism species for query sequence",
+        "description": "",
+        "showAttribute": false
+      },
+      "semantics": {
+        "ontology": [
+          "xs:string"
+        ]
+      },
+      "value": {
+        "type": "enumeration",
+        "default": "mouse",
+        "enum_values": [
+          {"mouse": "Mouse"},
+          {"human": "Human"},
+          {"macaque": "Rhesus Macaque"}
+        ],
+        "required": true,
+        "visible": true
+      }
+    },
+    {
+      "id": "strain",
+      "details": {
+        "label": "Organism strain for query sequence",
+        "description": "",
+        "showAttribute": false
+      },
+      "semantics": {
+        "ontology": [
+          "xs:string"
+        ]
+      },
+      "value": {
+        "type": "string",
+        "default": "",
+        "required": false,
+        "visible": true
+      }
+    },
+    {
+      "id": "ig_seqtype",
+      "details": {
+        "label": "Sequence type (Ig or TCR)",
+        "showAttribute": false
+      },
+      "semantics": {
+        "ontology": [
+          "xs:string"
+        ]
+      },
+      "value": {
+        "default": "Ig",
+        "type": "enumeration",
+        "enum_values": [
+          {"Ig": "Ig"},
+          {"TCR": "TCR"}
+        ],
+        "visible": true,
+        "required": true
+      }
+    },
+    {
+      "id": "domain_system",
+      "details": {
+        "label": "IMGT or Kabat numbering",
+        "showAttribute": false
+      },
+      "semantics": {
+        "ontology": [
+          "xs:string"
+        ]
+      },
+      "value": {
+        "default": "imgt",
+        "type": "enumeration",
+        "enum_values": [
+          {"imgt": "IMGT"},
+          {"kabat": "Kabat"}
+        ],
+        "visible": true,
+        "required": true
+      }
+    }
+  ],
+  "checkpointable": false
+}

@@ -1,0 +1,31 @@
+{
+    "name": "igblast_secondary_test",
+    "appId": "igblast-ls6",
+    "appVersion": "0.1",
+    "maxMinutes": 120,
+    "nodeCount": 1,
+    "fileInputs":[
+      { "name":"StudyMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/study_metadata.json", "targetPath":"study_metadata.json" },
+      { "name":"ProjectDirectory", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test", "targetPath":"project" }
+    ],
+    "fileInputArrays":[
+      { "name":"JobFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/testJob1.zip", "tapis://data-storage.vdjserver.org/apps/data/test/testJob2.zip" ]}
+    ],
+    "parameterSet": {
+        "schedulerOptions": [
+            { "name":"allocation", "arg":"-A MCB23006" }
+        ],
+        "containerArgs": [
+        ],
+        "appArgs": [
+        ],
+        "envVariables": [
+            {"key": "ProjectDirectory", "value": "project" },
+            {"key": "SecondaryInputsFlag", "value": "1" },
+            {"key": "JobFiles", "value": "testJob1.zip testJob2.zip" },
+            {"key": "species", "value": "human" },
+            {"key": "ig_seqtype", "value": "Ig" },
+            {"key": "ClonalTool", "value": "changeo" }
+        ]
+    }
+}

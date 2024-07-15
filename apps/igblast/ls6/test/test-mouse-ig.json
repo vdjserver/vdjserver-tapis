@@ -1,0 +1,19 @@
+{
+  "name":"igblast_test_mouse_ig",
+  "appId": "igblast-ls6-1.20",
+  "maxRunTime": "01:00:00",
+  "memoryPerNode": "1GB",
+  "nodeCount": 1,
+  "archive": false,
+  "archiveSystem": "data.vdjserver.org",
+  "inputs": {
+    "query": ["agave://data.vdjserver.org//apps/data/test/ERR346600_2.merged.unique.fasta"]
+  },
+  "parameters": {
+    "Creator": "vdj",
+    "species": "mouse",
+    "ig_seqtype": "Ig",
+    "domain_system": "imgt",
+    "QueryFilesMetadata": [ "1234" ]
+  }
+}
