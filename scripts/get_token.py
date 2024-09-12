@@ -2,6 +2,7 @@
 from tapipy.tapis import Tapis
 import argparse
 import sys
+import os
 
 parser = argparse.ArgumentParser(description='Get Tapis V3 token.')
 parser.add_argument('username', type=str, help='username', metavar=('username'))
@@ -10,7 +11,10 @@ parser.add_argument('password', type=str, help='password', metavar=('password'))
 args = parser.parse_args()
 if args:
     # Create python Tapis client for user
-    t = Tapis(base_url= "https://vdjserver.tapis.io",
+    host = "vdjserver.tapis.io"
+    if os.environ['tapis_default_host']:
+        host = os.environ['tapis_default_host']
+    t = Tapis(base_url= "https://" + host,
               username=args.username,
               password=args.password)
 
