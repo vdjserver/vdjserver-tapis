@@ -1,0 +1,5 @@
+argparse>=1.2.1
+airr>=1.5.1
+tapipy>=1.6.3
+jsonschema
+openapi-schema-validator

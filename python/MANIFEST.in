@@ -1,0 +1,2 @@
+include versioneer.py
+include vdjserver/_version.py
