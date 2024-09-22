@@ -6,8 +6,6 @@ Interface functions for Client operations
 import json
 import sys
 import os
-import itertools
-from tapipy.tapis import Tapis
 import vdjserver.defaults
 
 #### Clients ####

@@ -62,13 +62,6 @@ def token_get_cmd(username, password=None, system_id=None, token=None):
     #tapis_obj = init_tapis(token)
     return vdjserver.tokens.get_token(username, password)
 
-def files_list_cmd(path, system_id=None, token=None):
-    if system_id is None:
-        system_id = vdjserver.defaults.storage_system_id
-    print(system_id)
-    tapis_obj = init_tapis(token)
-    return vdjserver.files.files_list(tapis_obj, system_id, path)
-
 def apps_list_cmd(system_id=None, token=None):
     tapis_obj = init_tapis(token)
     return vdjserver.apps.apps_list(tapis_obj)
@@ -181,7 +174,7 @@ def define_args():
                                             description='List files.')
     group_files = parser_files.add_argument_group('list files arguments')
     group_files.add_argument('path',type=str,help="File path")
-    parser_files.set_defaults(func=files_list_cmd)
+    parser_files.set_defaults(func=vdjserver.files.files_list_cmd)
 
     # Subparser for App operations
     parser_apps = subparsers.add_parser('apps', parents=[common_parser],

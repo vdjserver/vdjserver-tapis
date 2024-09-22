@@ -30,6 +30,7 @@ Default settings
 
 import os
 import sys
+import itertools
 
 from tapipy.tapis import Tapis
 
