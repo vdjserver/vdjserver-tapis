@@ -6,11 +6,11 @@ Interface functions for Client operations
 import json
 import sys
 import os
+import itertools
 from tapipy.tapis import Tapis
 import vdjserver.defaults
 
 #### Clients ####
-spacer = 3
 
 def clients_list_cmd(system_id=None, token=None):
     fields = [ 'client_id', 'client_key', 'display_name', 'callback_url', 'owner']
@@ -22,32 +22,19 @@ def clients_list_cmd(system_id=None, token=None):
         # determine max widths
         for obj in res:
             for i in range(0, len(fields)):
-                if len(obj.get(fields[i])) > field_widths[i]:
-                    field_widths[i] = len(obj.get(fields[i]))
-        # add spacer
-        field_widths = [ n + spacer for n in field_widths ]
+                if len(str(obj.get(fields[i]))) > field_widths[i]:
+                    field_widths[i] = len(str(obj.get(fields[i])))
+
+        # add custom fields
+        fields.append('active')
+        field_widths.append(6)
 
         # headers
-        for i in range(0, len(fields)):
-            value = fields[i]
-            width = field_widths[i]
-            print(f"{value:{width}}", end='')
-        print(f"active")
-        for i in range(0, len(fields)):
-            width = field_widths[i] - spacer
-            value = '-' * width
-            print(f"{value:{width}}", end='')
-            print(' ' * spacer, end='')
-        print(f"------")
+        vdjserver.defaults.print_table_headers(fields, field_widths)
 
         # print values
         for obj in res:
-            for i in range(0, len(fields)):
-                value = obj.get(fields[i])
-                width = field_widths[i]
-                print(f"{value:{width}}", end='')
-            value = str(obj.get('active'))
-            width = 6
-            print(f"{value:{width}}")
+            vdjserver.defaults.print_table_row(fields, field_widths, obj)
+
     else:
         print('no clients')

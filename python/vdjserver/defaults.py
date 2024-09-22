@@ -53,3 +53,28 @@ def init_tapis(token):
         sys.exit(1)
 
     return tapis_obj
+
+# standard tables
+spacer = 3
+
+def print_table_intro():
+    pass
+
+def print_table_headers(fields, field_widths):
+    for (value, width) in zip(fields, field_widths):
+        width += spacer
+        print(f"{value:{width}}", end='')
+    print('')
+    for i in range(0, len(fields)):
+        width = field_widths[i]
+        value = '-' * width
+        print(f"{value:{width}}", end='')
+        print(' ' * spacer, end='')
+    print('')
+
+def print_table_row(fields, field_widths, obj):
+    for (field, width) in zip(fields, field_widths):
+        value = str(obj.get(field))
+        width += spacer
+        print(f"{value:{width}}", end='')
+    print('')
