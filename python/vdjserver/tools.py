@@ -39,6 +39,7 @@ from tapipy.tapis import Tapis
 from vdjserver import __version__
 import vdjserver.defaults
 import vdjserver.tokens
+import vdjserver.clients
 import vdjserver.files
 import vdjserver.apps
 
@@ -122,6 +123,22 @@ def define_args():
                               help='''Password.''')
     parser_token.set_defaults(func=token_get_cmd)
 
+    # Subparser for Client operations
+    parser_sub = subparsers.add_parser('clients', parents=[common_parser],
+                                            add_help=False,
+                                            help='Tapis Client API operations.',
+                                            description='Tapis Client API operations.')
+    group_subparser = parser_sub.add_subparsers(title='subcommands', metavar='')
+
+    # Subparser to list clients
+    parser_sub = group_subparser.add_parser('list', parents=[common_parser],
+                                            add_help=False,
+                                            help='List clients.',
+                                            description='List clients.')
+    #group_files = parser_sub.add_argument_group('list files arguments')
+    #group_files.add_argument('path',type=str,help="File path")
+    parser_sub.set_defaults(func=vdjserver.clients.clients_list_cmd)
+
     #
     # Subparser for Meta operations
     #
@@ -178,7 +195,7 @@ def define_args():
                                             add_help=False,
                                             help='List apps.',
                                             description='List apps.')
-    group_apps = parser_apps.add_argument_group('list apps arguments')
+    #group_apps = parser_apps.add_argument_group('list apps arguments')
     #group_apps.add_argument('path',type=str,help="appID")
     parser_apps.set_defaults(func=apps_list_cmd)
 
