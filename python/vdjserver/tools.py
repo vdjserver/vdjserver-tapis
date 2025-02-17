@@ -167,6 +167,7 @@ def define_args():
                                             description='Tapis Files API operations.')
     files_subparser = parser_files.add_subparsers(title='subcommands', metavar='')
 
+
     # Subparser to list files
     parser_files = files_subparser.add_parser('list', parents=[common_parser],
                                             add_help=False,
@@ -175,7 +176,126 @@ def define_args():
     group_files = parser_files.add_argument_group('list files arguments')
     group_files.add_argument('path',type=str,help="File path")
     parser_files.set_defaults(func=vdjserver.files.files_list_cmd)
+    
+    
+    # Subparser to make directory    
+    # Define the 'mkdir' subcommand to create a new directory
+    parser_files_mkdir = files_subparser.add_parser('mkdir', parents=[common_parser],
+                                                    add_help=False,
+                                                    help='Create a new directory.',
+                                                    description='Create a new directory in the storage system.')
+    # Group arguments related to directory creation
+    group_files_mkdir = parser_files_mkdir.add_argument_group('Directory creation arguments')
+    # Add an argument for the directory path
+    group_files_mkdir.add_argument('path', type=str, help="Path of the new directory (e.g., '/folderA/folderB/newDirectory')")
+    # Set the function to be called when the subcommand is invoked
+    parser_files_mkdir.set_defaults(func=vdjserver.files.tapis_files_mkdir)
 
+    
+    
+    # Add the 'upload' subcommand to the parser
+    parser_files_upload = files_subparser.add_parser('upload', parents=[common_parser],
+                                                    add_help=False,
+                                                    help='Upload a file.',
+                                                    description='Upload a file to the specified path.')
+    # Group arguments related to uploading a file
+    group_files_upload = parser_files_upload.add_argument_group('upload file arguments')
+    # Add arguments for the source file and destination path
+    group_files_upload.add_argument('source_file_path', type=str, help="Path to the source file (e.g., 'someFile.txt')")
+    group_files_upload.add_argument('dest_file_path', type=str, help="Destination path (e.g., '/folderA/folderB/someFile.txt')")
+    # Set the default function to handle the upload
+    parser_files_upload.set_defaults(func=vdjserver.files.tapis_files_upload)
+    
+    
+    # Define the 'delete' subcommand to delete a file
+    parser_files_delete = files_subparser.add_parser('delete', parents=[common_parser],
+                                                    add_help=False,
+                                                    help='Delete a file.',
+                                                    description='Delete a file from the storage system.')
+    # Group arguments related to file deletion
+    group_files_delete = parser_files_delete.add_argument_group('File deletion arguments')
+    # Add an argument for the file path
+    group_files_delete.add_argument('path', type=str, help="Path of the file to be deleted (e.g., '/folderA/folderB/someFile.txt')")
+    # Optional argument for specifying the storage system
+    group_files_delete.add_argument('--system_id', type=str, help="Storage system ID (optional, default will be used if not provided)")
+    # Set the function to be called when the subcommand is invoked
+    parser_files_delete.set_defaults(func=vdjserver.files.tapis_files_delete)
+
+    
+    ##Files permissions
+    
+    # Define the 'get-permission' subcommand to get file permissions
+    parser_files_get_permission = files_subparser.add_parser('get-permission', parents=[common_parser],
+                                                              add_help=False,
+                                                              help='Get file permissions.',
+                                                              description='Get the permissions for a file or directory on the storage system.')
+
+    # Group arguments related to file permission retrieval
+    group_files_get_permission = parser_files_get_permission.add_argument_group('File permission arguments')
+    # Add an argument for the file path
+    group_files_get_permission.add_argument('path', type=str, help="Path of the file or directory (e.g., '/folderA/folderB/someFile.txt')")
+    # Optional argument for specifying the username (if not provided, the requester's username will be used)
+    group_files_get_permission.add_argument('--username', type=str, help="Username whose permissions are to be retrieved (optional)")
+    # Optional argument for specifying the storage system
+    group_files_get_permission.add_argument('--system_id', type=str, help="Storage system ID (optional, default will be used if not provided)")
+    # Set the function to be called when the subcommand is invoked
+    parser_files_get_permission.set_defaults(func=vdjserver.files.tapis_files_get_permission)
+    
+    
+    # Subparser for granting file permissions
+    parser_files_grant_perms = files_subparser.add_parser('grant-permission', parents=[common_parser],
+                                                        add_help=False,
+                                                        help='Grant permissions to a user for a file or directory.',
+                                                        description='Grant permissions (READ or MODIFY) to a user for a file or directory in the storage system.')
+    # Group arguments related to granting permissions
+    group_files_grant_perms = parser_files_grant_perms.add_argument_group('Grant permission arguments')
+    # Add an argument for the file path
+    group_files_grant_perms.add_argument('path', type=str, help="Path of the file or directory (e.g., '/folderA/folderB/file.txt')")
+    # Add an argument for the username
+    group_files_grant_perms.add_argument('username', type=str, help="Username to whom permission will be granted.")
+    # Add an argument for specifying the permission type (READ or MODIFY)
+    group_files_grant_perms.add_argument('permission', type=str, choices=['READ', 'MODIFY'], help="Permission type to grant (READ or MODIFY).")
+    # Optional argument for specifying the storage system
+    group_files_grant_perms.add_argument('--system_id', type=str, help="Storage system ID (optional, default will be used if not provided)")
+    # Set the function to be called when the subcommand is invoked
+    parser_files_grant_perms.set_defaults(func=vdjserver.files.tapis_files_grant_permission)
+    
+
+    # Subparser for revoking permissions
+    revoke_permission_parser = files_subparser.add_parser('revoke-permission', parents=[common_parser],
+                                                     add_help=False,
+                                                     help='Revoke permissions for a user on a file or directory.',
+                                                     description='Revoke permissions for a user for a file or directory in the storage system.')
+    
+    # Group arguments related to revoking permissions
+    group_revoke_permission = revoke_permission_parser.add_argument_group('Revoke Permission Arguments')
+    # Path of the file or directory
+    group_revoke_permission.add_argument('path', type=str, help="Path of the file or directory (e.g., '/folderA/folderB/someFile.txt')")
+    # Username to whom permission will be revoked
+    group_revoke_permission.add_argument('username', type=str, help="Username whose permission will be revoked")
+    # Optional argument for the system ID
+    group_revoke_permission.add_argument('--system_id', type=str, help="Storage system ID (optional, default will be used if not provided)")
+    # Set the function to be called when the subcommand is invoked
+    revoke_permission_parser.set_defaults(func=vdjserver.files.tapis_files_revoke_permission)
+    
+
+    # Subparser for downloading a file or directory as a ZIP
+    parser_files_download = files_subparser.add_parser('download', parents=[common_parser],
+                                                    add_help=False,
+                                                    help='Download a file or directory as a ZIP.',
+                                                    description='Download a file or directory from the storage system as a ZIP file.')
+    # Group arguments related to file download
+    group_files_download = parser_files_download.add_argument_group('Download arguments')
+    # Add an argument for the file or directory path
+    group_files_download.add_argument('path', type=str, help="Path of the file or directory to be downloaded (e.g., '/folderA/folderB/file.txt')")
+    # Optional argument for specifying the output filename
+    group_files_download.add_argument('--output_filename', type=str, help="The name of the file to save the ZIP as (optional, defaults to path's last part with .zip)")
+    # Optional argument for specifying the storage system
+    group_files_download.add_argument('--system_id', type=str, help="Storage system ID (optional, default will be used if not provided)")
+    # Set the function to be called when the subcommand is invoked
+    parser_files_download.set_defaults(func=vdjserver.files.tapis_files_download)
+
+    
     # Subparser for App operations
     parser_apps = subparsers.add_parser('apps', parents=[common_parser],
                                             add_help=False,
