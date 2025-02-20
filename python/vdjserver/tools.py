@@ -42,6 +42,7 @@ import vdjserver.tokens
 import vdjserver.clients
 import vdjserver.files
 import vdjserver.apps
+import vdjserver.adc_cache
 
 def init_tapis(token):
     try:
@@ -294,6 +295,47 @@ def define_args():
     group_files_download.add_argument('--system_id', type=str, help="Storage system ID (optional, default will be used if not provided)")
     # Set the function to be called when the subcommand is invoked
     parser_files_download.set_defaults(func=vdjserver.files.tapis_files_download)
+
+    # Subparser for Postit operations
+    parser_postits = subparsers.add_parser('postits', parents=[common_parser],
+                                            add_help=False,
+                                            help='Tapis Files Postits API operations.',
+                                            description='Tapis Files Postits API operations.')
+    postits_subparser = parser_postits.add_subparsers(title='subcommands', metavar='')
+
+
+    # Subparser to list postits
+    parser_postits = postits_subparser.add_parser('list', parents=[common_parser],
+                                            add_help=False,
+                                            help='List postits.',
+                                            description='List postits.')
+    group_postits = parser_postits.add_argument_group('list postits arguments')
+    group_postits.add_argument('--uuid', type=str, help="List postit by uuid")
+    parser_postits.set_defaults(func=vdjserver.files.postits_list_cmd)
+
+    # Subparser for ADC Download Cache operations
+    parser_cache = subparsers.add_parser('adc_cache', parents=[common_parser],
+                                            add_help=False,
+                                            help='ADC Download Cache API operations.',
+                                            description='ADC Download Cache API operations.')
+    cache_subparser = parser_cache.add_subparsers(title='subcommands', metavar='')
+
+
+    # Subparser to get ADC Download Cache status
+    parser_cache = cache_subparser.add_parser('status', parents=[common_parser],
+                                            add_help=False,
+                                            help='Get ADC Download Cache status.',
+                                            description='Get ADC Download Cache status.')
+    parser_cache.set_defaults(func=vdjserver.adc_cache.cache_get_status_cmd)
+
+    # Subparser to update ADC Download Cache status
+    parser_cache = cache_subparser.add_parser('update', parents=[common_parser],
+                                            add_help=False,
+                                            help='Update ADC Download Cache status.',
+                                            description='Update ADC Download Cache status.')
+    group_cache = parser_cache.add_argument_group('update ADC Download Cache arguments')
+    group_cache.add_argument('update', type=str, help="Update ADC Download Cache status")
+    parser_cache.set_defaults(func=vdjserver.adc_cache.cache_update_status_cmd)
 
     
     # Subparser for App operations

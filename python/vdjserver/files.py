@@ -247,6 +247,34 @@ def tapis_files_download(path, system_id=None, token=None, output_filename=None)
     except Exception as e:
         print(f"Error: {str(e)}")
 
+def postits_list_cmd(uuid, system_id=None, token=None):
+    if system_id is None:
+        system_id = vdjserver.defaults.storage_system_id
+
+    fields = [ 'id', 'created', 'timesUsed', 'path', 'redeemUrl' ]
+    field_widths = [ len(obj) for obj in fields ]
+
+    tapis_obj = vdjserver.defaults.init_tapis(token)
+    res = tapis_obj.files.listPostIts()
+
+    if len(res) > 0:
+        # determine max widths
+        for obj in res:
+            print(obj)
+            for i in range(0, len(fields)):
+                if len(str(obj.get(fields[i]))) > field_widths[i]:
+                    field_widths[i] = len(str(obj.get(fields[i])))
+
+        # headers
+        vdjserver.defaults.print_table_headers(fields, field_widths)
+
+        # print values
+        for obj in res:
+            vdjserver.defaults.print_table_row(fields, field_widths, obj)
+
+    else:
+        print('no postits!')
+
 ##Show all TAPIS functions
 # def list_tapis_functions(system_id = None, token = None):
 #     # Get all available attributes and methods of the Tapis class
