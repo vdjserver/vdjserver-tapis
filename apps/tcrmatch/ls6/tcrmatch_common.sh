@@ -81,7 +81,6 @@ function run_tcrmatch_workflow() {
         | sed '/^C.*[WF]$/ s/^.\(.*\).$/\1/' \
         | sort -u \
         | egrep "^[ABCDEFGHIKLMNPQRSTVWYZ]*$" \
-	| head -1000 \
 	> ${fileBasename}_cdr3.tsv
 
 

@@ -25,8 +25,6 @@ source ./provenance_functions.sh
 # Workflow
 
 function print_versions() {
-    echo "VERSIONS:"
-    apptainer exec ${olga_image} olga_compute_pgen -v
     echo -e "\nSTART at $(date)"
 }
 
@@ -36,7 +34,6 @@ function print_parameters() {
     echo "airr_tsv_file=${airr_tsv_file}"
     echo ""
     echo "Application parameters:"
-    echo "threshold=${threshold}"
     echo "file_type=${file_type}"
 }
 
@@ -83,14 +80,14 @@ function run_olga_workflow() {
 	return
     fi
 
-    # Check to see if there is only one cell type in the data.
+    # Check to see if there is only one locus type in the data.
     if [ ${#repertoire_locus[@]} != 1 ]
     then
         echo "ERROR: Olga analysis requires a single locus (loci = ${repertoire_locus[@]})."
         return
     fi
 
-    # If there is only one, check to see if it is TR cell type, if so then we are good,
+    # If there is only one, check to see if it is a valid locus, if so then we are good,
     # if not it is an error.
     repertoire_locus=${repertoire_locus[0]}
 
@@ -114,17 +111,19 @@ function run_olga_workflow() {
         return
     fi
 
-    tail -n +2 ${file} | awk -F"\t" -v junction_column=${junction_column} -v junction_aa_column=${junction_aa_column} -v v_call_column=${v_call_column} -v j_call_column=${j_call_column} '{printf("%s\t%s\t%s\t%s\n",$junction_column,$junction_aa_column,"",$v_call_column,$j_call_column)}' | head -100 >> $fileBasename-tmp.tsv
+    TMP_TSVFILE=${fileBasename}-tmp.tsv
+    tail -n +2 ${file} | awk -F"\t" -v junction_column=${junction_column} -v junction_aa_column=${junction_aa_column} -v v_call_column=${v_call_column} -v j_call_column=${j_call_column} '{printf("%s\t%s\t%s\t%s\n",$junction_column,$junction_aa_column,"",$v_call_column,$j_call_column)}' > ${TMP_TSVFILE}
 
     # Run olga 
     if [[ "$file_type" == "rearrangement" ]] ; then
-        PGEN_OUTPUT_FILE=$fileBasename-pgen.tsv
+        PGEN_OUTPUT_FILE=${fileBasename}-pgen.tsv
         echo -e "Junction NT sequence\tJunction NT PGEN\tJunction AA sequence\tJunction AA PGEN" > ${PGEN_OUTPUT_FILE}
 
-	PGEN_TMP_FILE=$(mktemp)
-	apptainer exec -e ${olga_image} olga-compute_pgen --display_off --time_updates_off --${germline_set} -i ${fileBasename}-tmp.tsv -o ${PGEN_TMP_FILE} >&2
-	cat ${PGEN_TMP_FILE} >> ${PGEN_OUTPUT_FILE}
-	rm $PGEN_TMP_FILE
+	PGEN_TMP_OUTFILE=${fileBasename}-tmp-pgen.tsv
+	echo "apptainer exec -e ${olga_image} olga-compute_pgen --display_off --time_updates_off --${germline_set} -i ${TMP_TSVFILE} -o ${PGEN_TMP_OUTFILE} >&2"
+	apptainer exec -e ${olga_image} olga-compute_pgen --display_off --time_updates_off --${germline_set} -i ${TMP_TSVFILE} -o ${PGEN_TMP_OUTFILE} >&2
+	cat ${PGEN_TMP_OUTFILE} >> ${PGEN_OUTPUT_FILE}
+	#rm $PGEN_TMP_OUTFILE
 
     fi
 

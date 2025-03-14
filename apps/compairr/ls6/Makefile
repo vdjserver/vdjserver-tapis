@@ -59,3 +59,6 @@ deploy: build
 test-job:
 	tapis_jobs_submit test/test-cli.json
 
+test-cache:
+	tapis_jobs_submit test/test-cache.json
+
