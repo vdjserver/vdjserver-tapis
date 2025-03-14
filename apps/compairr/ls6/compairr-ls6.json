@@ -1,0 +1,30 @@
+{
+    "id":"compairr-ls6",
+    "version":"0.1",
+    "description":"CompAIRR analysis for AKC",
+    "runtime":"ZIP",
+    "runtimeOptions": ["NONE"],
+    "containerImage":"tapis://data-storage.vdjserver.org/akc/apps/compairr-ls6-0.1.tgz",
+    "jobType":"BATCH",
+    "jobAttributes": {
+        "description": "default job description",
+        "fileInputs":[
+          { "name":"compairr_image", "inputMode": "FIXED", "envKey":"compairr_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/ir_compairr-1.13.0.sif", "targetPath":"ir_compairr-1.13.0.sif" },
+          { "name":"airr_tsv_file", "inputMode": "REQUIRED", "envKey":"airr_tsv_file", "targetPath":"." }
+        ],
+        "parameterSet": {
+            "logConfig": {
+                "stdoutFilename": "tapisjob.out",
+                "stderrFilename": "tapisjob.err"
+            },
+            "containerArgs": [
+            ],
+            "appArgs": [
+            ],
+            "envVariables": [
+                {"key": "analysis_type", "inputMode": "REQUIRED", "value": "product" },
+                {"key": "file_type", "inputMode": "REQUIRED", "value": "rearrangement" }
+            ]
+        }
+    }
+}
