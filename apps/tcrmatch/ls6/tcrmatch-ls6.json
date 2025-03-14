@@ -1,0 +1,30 @@
+{
+    "id":"tcrmatch-ls6",
+    "version":"0.1",
+    "description":"TCRMatch analysis for AKC",
+    "runtime":"ZIP",
+    "runtimeOptions": ["NONE"],
+    "containerImage":"tapis://data-storage.vdjserver.org/akc/apps/tcrmatch-ls6-0.1.tgz",
+    "jobType":"BATCH",
+    "jobAttributes": {
+        "description": "default job description",
+        "fileInputs":[
+          { "name":"tcrmatch_image", "inputMode": "FIXED", "envKey":"tcrmatch_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/ir_tcrmatch-1.1.1.sif", "targetPath":"ir_tcrmatch-1.1.1.sif" },
+          { "name":"airr_tsv_file", "inputMode": "REQUIRED", "envKey":"airr_tsv_file", "targetPath":"." }
+        ],
+        "parameterSet": {
+            "logConfig": {
+                "stdoutFilename": "tapisjob.out",
+                "stderrFilename": "tapisjob.err"
+            },
+            "containerArgs": [
+            ],
+            "appArgs": [
+            ],
+            "envVariables": [
+                {"key": "threshold", "inputMode": "REQUIRED", "value": "0.97" },
+                {"key": "file_type", "inputMode": "REQUIRED", "value": "rearrangement" }
+            ]
+        }
+    }
+}
