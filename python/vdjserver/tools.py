@@ -43,6 +43,7 @@ import vdjserver.clients
 import vdjserver.files
 import vdjserver.apps
 import vdjserver.adc_cache
+import vdjserver.jobs
 
 def init_tapis(token):
     try:
@@ -63,9 +64,9 @@ def token_get_cmd(username, password=None, system_id=None, token=None):
     #tapis_obj = init_tapis(token)
     return vdjserver.tokens.get_token(username, password)
 
-def apps_list_cmd(system_id=None, token=None):
-    tapis_obj = init_tapis(token)
-    return vdjserver.apps.apps_list(tapis_obj)
+# def apps_list_cmd(system_id=None, token=None):
+#     tapis_obj = init_tapis(token)
+#     return vdjserver.apps.apps_list(tapis_obj)
 
 def define_args():
     """
@@ -167,8 +168,7 @@ def define_args():
                                             help='Tapis Files API operations.',
                                             description='Tapis Files API operations.')
     files_subparser = parser_files.add_subparsers(title='subcommands', metavar='')
-
-
+    
     # Subparser to list files
     parser_files = files_subparser.add_parser('list', parents=[common_parser],
                                             add_help=False,
@@ -337,22 +337,185 @@ def define_args():
     group_cache.add_argument('update', type=str, help="Update ADC Download Cache status")
     parser_cache.set_defaults(func=vdjserver.adc_cache.cache_update_status_cmd)
 
-    
+    # Subparser for Postit operations
+    parser_postits = subparsers.add_parser('postits', parents=[common_parser],
+                                            add_help=False,
+                                            help='Tapis Files Postits API operations.',
+                                            description='Tapis Files Postits API operations.')
+    postits_subparser = parser_postits.add_subparsers(title='subcommands', metavar='')
+
+
+    # Subparser to list postits
+    parser_postits = postits_subparser.add_parser('list', parents=[common_parser],
+                                            add_help=False,
+                                            help='List postits.',
+                                            description='List postits.')
+    group_postits = parser_postits.add_argument_group('list postits arguments')
+    group_postits.add_argument('--uuid', type=str, help="List postit by uuid")
+    parser_postits.set_defaults(func=vdjserver.files.postits_list_cmd)
+
+    # Subparser for ADC Download Cache operations
+    parser_cache = subparsers.add_parser('adc_cache', parents=[common_parser],
+                                            add_help=False,
+                                            help='ADC Download Cache API operations.',
+                                            description='ADC Download Cache API operations.')
+    cache_subparser = parser_cache.add_subparsers(title='subcommands', metavar='')
+
+
+    # Subparser to get ADC Download Cache status
+    parser_cache = cache_subparser.add_parser('status', parents=[common_parser],
+                                            add_help=False,
+                                            help='Get ADC Download Cache status.',
+                                            description='Get ADC Download Cache status.')
+    parser_cache.set_defaults(func=vdjserver.adc_cache.cache_get_status_cmd)
+
+    # Subparser to update ADC Download Cache status
+    parser_cache = cache_subparser.add_parser('update', parents=[common_parser],
+                                            add_help=False,
+                                            help='Update ADC Download Cache status.',
+                                            description='Update ADC Download Cache status.')
+    group_cache = parser_cache.add_argument_group('update ADC Download Cache arguments')
+    group_cache.add_argument('update', type=str, help="Update ADC Download Cache status")
+    parser_cache.set_defaults(func=vdjserver.adc_cache.cache_update_status_cmd)
+
+
     # Subparser for App operations
     parser_apps = subparsers.add_parser('apps', parents=[common_parser],
-                                            add_help=False,
-                                            help='Tapis Apps API operations.',
-                                            description='Tapis Apps API operations.')
+                                        add_help=False,
+                                        help='Tapis Apps API operations.',
+                                        description='Tapis Apps API operations.')
     apps_subparser = parser_apps.add_subparsers(title='subcommands', metavar='')
 
     # Subparser to list apps
-    parser_apps = apps_subparser.add_parser('list', parents=[common_parser],
+    parser_apps_list = apps_subparser.add_parser('list', parents=[common_parser],
+                                                add_help=False,
+                                                help='List apps.',
+                                                description='List apps.')
+    parser_apps_list.set_defaults(func=vdjserver.apps.apps_list)
+
+    # Subparser for creating a new app version
+    parser_create_app_version = apps_subparser.add_parser('create', parents=[common_parser],
+                                                          add_help=False,
+                                                          help='Create a new app version.',
+                                                          description='Create a new app version.')
+    group_parser_create_app_version = parser_create_app_version.add_argument_group('Create app version arguments')
+    group_parser_create_app_version.add_argument('json_file', type=str, help="JSON file with app version details")
+    parser_create_app_version.set_defaults(func=vdjserver.apps.create_app_version)
+    
+    
+    # Subparser for updating apps
+    parser_apps_update = apps_subparser.add_parser('update', parents=[common_parser],
+                                                   add_help=False,
+                                                   help='Update apps.',
+                                                   description='Update apps.')
+    group_parser_apps_update = parser_apps_update.add_argument_group('App update arguments')
+    group_parser_apps_update.add_argument('app_name', type=str, help="App Name/ID")
+    group_parser_apps_update.add_argument('app_version', type=str, help="App Version")
+    group_parser_apps_update.add_argument('json_file', type=str, help="JSON file with app version details")
+    parser_apps_update.set_defaults(func=vdjserver.apps.apps_update)
+    
+    # Subparser for deleting an app
+    parser_apps_delete = apps_subparser.add_parser('delete', parents=[common_parser],
+                                                add_help=False,
+                                                help='Delete an app.',
+                                                description='Delete an app version.')
+    group_parser_apps_delete = parser_apps_delete.add_argument_group('Delete app arguments')
+    group_parser_apps_delete.add_argument('app_name', type=str, help="App Name/ID")
+    parser_apps_delete.set_defaults(func=vdjserver.apps.delete_app)
+
+    # Subparser for retrieving app history
+    parser_apps_get_history = apps_subparser.add_parser('history', parents=[common_parser],
+                                                        add_help=False,
+                                                        help='Get history of changes for an app.',
+                                                        description='Retrieve the history of changes for a given app.')
+    group_parser_apps_get_history = parser_apps_get_history.add_argument_group('Get app history arguments')
+    group_parser_apps_get_history.add_argument('app_id', type=str, help="App Name/ID")
+    parser_apps_get_history.set_defaults(func=vdjserver.apps.get_app_history)
+    
+    # Subparser for changing the owner of an app
+    parser_apps_change_owner = apps_subparser.add_parser('change_owner', parents=[common_parser],
+                                                        add_help=False,
+                                                        help='Change the owner of an app.',
+                                                        description='Change the owner of an app for all versions.')
+    group_parser_apps_change_owner = parser_apps_change_owner.add_argument_group('Change app owner arguments')
+    group_parser_apps_change_owner.add_argument('app_id', type=str, help="App ID/Name")
+    group_parser_apps_change_owner.add_argument('user_name', type=str, help="New app owner (User Name)")
+    parser_apps_change_owner.set_defaults(func=vdjserver.apps.change_app_owner)
+    
+    # Subparser for job operations
+    parser_jobs = subparsers.add_parser('jobs', parents=[common_parser],
                                             add_help=False,
-                                            help='List apps.',
-                                            description='List apps.')
-    #group_apps = parser_apps.add_argument_group('list apps arguments')
-    #group_apps.add_argument('path',type=str,help="appID")
-    parser_apps.set_defaults(func=apps_list_cmd)
+                                            help='Tapis Jobs API operations.',
+                                            description='Tapis Jobs API operations.')
+    jobs_subparser = parser_jobs.add_subparsers(title='subcommands', metavar='')
+    
+    # Subparser to list all jobs files
+    parser_jobs_list = jobs_subparser.add_parser('list', parents=[common_parser],
+                                            add_help=False,
+                                            help='List Jobs.',
+                                            description='Retrieve the list of Jobs.')
+    group_parser_jobs_list = parser_jobs_list.add_argument_group('Job list arguments')
+    group_parser_jobs_list.add_argument('--list-type', choices=["MY_JOBS", "SHARED_JOBS", "ALL_JOBS"], default="MY_JOBS", help="Type of job list to retrieve.")
+    group_parser_jobs_list.add_argument('--limit', type=int, help="Limit the number of jobs returned.")
+    group_parser_jobs_list.add_argument('--skip', type=int, help="Number of jobs to skip.")
+    group_parser_jobs_list.add_argument('--start-after', type=int, help="Retrieve jobs after a specific point.")
+    group_parser_jobs_list.add_argument('--order-by', type=str, help="Order the list by a field.")
+    group_parser_jobs_list.add_argument('--compute-total', action='store_true', help="Include the total number of jobs.")
+    parser_jobs_list.set_defaults(func=vdjserver.jobs.get_job_list)
+    
+    # Subparser for submitting a job
+    parser_job_submit = jobs_subparser.add_parser('submit', parents=[common_parser],
+                                                     add_help=False,
+                                                     help="Submit Job",
+                                                     description="Submit Jobs using Json file.")
+    
+    group_parser_job_submit = parser_job_submit.add_argument_group("Job submitting arguments")
+    group_parser_job_submit.add_argument('json_file', type=str, help="JSON file with Job Name, appID and, appVersion and other details")
+    parser_job_submit.set_defaults(func=vdjserver.jobs.submit_job)
+
+    # Subparser for getting job status by UUID
+    parser_job_status = jobs_subparser.add_parser('status', parents=[common_parser],
+                                                add_help=False,
+                                                help="Get Job Status",
+                                                description="Retrieve the status of a job by UUID.")
+    group_parser_job_status = parser_job_status.add_argument_group("Job Status Arguments")
+    group_parser_job_status.add_argument('job_uuid', type=str, help="The UUID of the job to get the status for.")
+    group_parser_job_status.add_argument('--pretty', action='store_true', help="Format the output nicely.")
+    parser_job_status.set_defaults(func=vdjserver.jobs.get_job_status)
+    
+    
+    # Subparser to get job history by job UUID
+    parser_jobs_history = jobs_subparser.add_parser('history', parents=[common_parser],
+                                                    add_help=False,
+                                                    help='Retrieve Job History by UUID.',
+                                                    description='Retrieve the history of a job by its UUID.')
+    group_parser_jobs_history = parser_jobs_history.add_argument_group('Job History arguments')
+    group_parser_jobs_history.add_argument('job_uuid', type=str, help="UUID of the job to retrieve the history for.")
+    group_parser_jobs_history.add_argument('--limit', type=int, help="Limit the number of history entries returned.")
+    group_parser_jobs_history.add_argument('--skip', type=int, help="Number of history entries to skip.")
+    group_parser_jobs_history.add_argument('--pretty', action='store_true', help="Pretty print the response.")
+    parser_jobs_history.set_defaults(func=vdjserver.jobs.get_job_history)
+        
+    # Subparser to get a job by job UUID
+    parser_jobs_get = jobs_subparser.add_parser('get', parents=[common_parser],
+                                                add_help=False,
+                                                help='Retrieve Job by UUID.',
+                                                description='Retrieve the details of a job by its UUID.')
+    group_parser_jobs_get = parser_jobs_get.add_argument_group('Job arguments')
+    group_parser_jobs_get.add_argument('job_uuid', type=str, help="UUID of the job to retrieve.")
+    group_parser_jobs_get.add_argument('--pretty', action='store_true', help="Pretty print the response.")
+    parser_jobs_get.set_defaults(func=vdjserver.jobs.get_job)    
+    
+    # Subparser to cancel a job by job UUID
+    parser_jobs_cancel = jobs_subparser.add_parser('cancel', parents=[common_parser],
+                                                add_help=False,
+                                                help='Cancel Job by UUID.',
+                                                description='Cancel a previously submitted job by its UUID.')
+    group_parser_jobs_cancel = parser_jobs_cancel.add_argument_group('Cancel Job arguments')
+    group_parser_jobs_cancel.add_argument('job_uuid', type=str, help="UUID of the job to cancel.")
+    group_parser_jobs_cancel.add_argument('--pretty', action='store_true', help="Pretty print the response.")
+    parser_jobs_cancel.set_defaults(func=vdjserver.jobs.cancel_job)
+    
 
     return parser
 
