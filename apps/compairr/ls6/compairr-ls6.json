@@ -23,6 +23,7 @@
             ],
             "envVariables": [
                 {"key": "analysis_type", "inputMode": "REQUIRED", "value": "product" },
+                {"key": "distance", "inputMode": "REQUIRED", "value": "1" },
                 {"key": "file_type", "inputMode": "REQUIRED", "value": "rearrangement" }
             ]
         }

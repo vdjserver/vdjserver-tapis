@@ -16,7 +16,9 @@
         "appArgs": [
         ],
         "envVariables": [
-            {"key": "analysis_type", "value": "Jaccard" }
+            {"key": "analysis_type2", "value": "Jaccard" },
+            {"key": "analysis_type", "value": "cluster" },
+            {"key": "distance", "value": "1" }
         ]
     }
 }

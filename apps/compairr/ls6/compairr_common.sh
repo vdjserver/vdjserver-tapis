@@ -38,6 +38,7 @@ function print_parameters() {
     echo ""
     echo "Application parameters:"
     echo "analysis_type=${analysis_type}"
+    echo "distance=${distance}"
     echo "file_type=${file_type}"
 }
 
@@ -52,10 +53,30 @@ function run_compairr_workflow() {
     fileBasename="${file%.*}" # file.airr.tsv -> file.airr
     fileBasename="${fileBasename%.*}" # file.airr -> file
 
-    # Run compairr in matrix mode, using the "analysis_type" to determine
-    # which method to use.
+    # Run compairr in matrix or cluster mode, using the "analysis_type" to determine
+    # which method to use. $distance is used only in cluster mode.
     if [[ "$file_type" == "rearrangement" ]] ; then
-	apptainer exec -e ${compairr_image} compairr -f -e -u -s $analysis_type --matrix ${file} --out $fileBasename.matrix.tsv
+        if [[ "$analysis_type" == "cluster" ]] ; then
+	    if [[ ! "x$distance"  == "x" ]]; then
+	        re='^[0-9]+$'
+                if [[ $distance =~ $re ]]; then
+	            echo "Runnig: apptainer exec -e ${compairr_image} compairr -f -e -u --cluster ${file} -d ${distance} --out $fileBasename.cluster.tsv"
+	            apptainer exec -e ${compairr_image} compairr -f -e -u --cluster ${file} -d ${distance} --out $fileBasename.cluster.tsv
+		else
+                    echo "ERROR: Distance metric ($distance) integer and greater than 0 required"
+		    return
+		fi
+	    else
+		echo "ERROR: Distance metric not provided"
+		return
+	    fi
+        elif [[ "$analysis_type" == "product" || "$analysis_type" == "MH" || "$analysis_type" == "Morisita-Horn" ]] ; then
+	    echo "Runnig: apptainer exec -e ${compairr_image} compairr -f -e -u -s $analysis_type --matrix ${file} --out $fileBasename.matrix.tsv"
+	    apptainer exec -e ${compairr_image} compairr -f -e -u -s $analysis_type --matrix ${file} --out $fileBasename.matrix.tsv
+        else
+	    echo "ERROR: Invalid analysis type $analysis_type provided"
+	    return
+	fi
     fi
 
 }
