@@ -1,0 +1,21 @@
+{
+    "name": "olga_test",
+    "appId": "olga-ls6",
+    "appVersion": "0.1",
+    "maxMinutes":60,
+    "execSystemId":"test-bcorrie-airrkb-dev-ls6.tacc.utexas.edu",
+    "fileInputs":[
+      { "name":"airr_tsv_file", "sourceUrl":"tapis://data-storage.vdjserver.org/irplus/data/IG/PRJNA248411_43213_CSF.airr.tsv", "targetPath":"PRJNA248411_43213_CSF.airr.tsv" }
+    ],
+    "parameterSet": {
+        "schedulerOptions": [
+            { "name":"allocation", "arg":"-A MCB23006" }
+        ],
+        "containerArgs": [
+        ],
+        "appArgs": [
+        ],
+        "envVariables": [
+        ]
+    }
+}
