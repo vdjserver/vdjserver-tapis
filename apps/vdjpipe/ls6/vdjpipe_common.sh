@@ -323,11 +323,11 @@ function run_vdjpipe() {
 
             # make sure spit files get archived
             fileList=$($BIO_PYTHON ./vdjpipe_barcodes.py --fileList "${TotalOutputFilename}-{MID}.fastq" $BarcodeFile)
-            ARCHIVE_FILE_LIST="${ARCHIVE_FILE_LIST} ${fileList}"
+            addArchiveFile ${fileList}
             fileList=$($BIO_PYTHON ./vdjpipe_barcodes.py --fileList "${FindUniqueOutput}-{MID}.fasta" $BarcodeFile)
-            ARCHIVE_FILE_LIST="${ARCHIVE_FILE_LIST} ${fileList}"
+            addArchiveFile ${fileList}
             fileList=$($BIO_PYTHON ./vdjpipe_barcodes.py --fileList "${FindUniqueDuplicates}-{MID}.tsv" $BarcodeFile)
-            ARCHIVE_FILE_LIST="${ARCHIVE_FILE_LIST} ${fileList}"
+            addArchiveFile ${fileList}
         else
             # concatenate, exclude the split files from archiving
             $BIO_PYTHON ./vdjpipe_barcodes.py --catFiles "${TotalOutputFilename}-{MID}.fastq" $BarcodeFile >vdjpipe_barcodes.sh
@@ -498,8 +498,10 @@ function run_vdjpipe_workflow() {
     for file in $ARCHIVE_FILE_LIST; do
         if [ -f $file ]; then
             cp -f $file ${_tapisJobUUID}
+            cp -f $file output
         fi
     done
     zip ${_tapisJobUUID}.zip ${_tapisJobUUID}/*
     addLogFile $APP_NAME log output_archive ${_tapisJobUUID}.zip "Archive of Output Files" "zip" null
+    cp ${_tapisJobUUID}.zip output
 }
