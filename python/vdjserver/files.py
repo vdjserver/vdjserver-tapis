@@ -227,10 +227,10 @@ def tapis_files_download(path, system_id=None, token=None, output_filename=None)
     try:
         # If no output filename is provided, use the path's last part
         if output_filename is None:
-            output_filename = path.split('/')[-1] + ".zip"
+            output_filename = path.split('/')[-1]
 
         # Send the request to download the content as ZIP
-        response = tapis_obj.files.getContents(systemId=system_id, path=path, zip=True)
+        response = tapis_obj.files.getContents(systemId=system_id, path=path, zip=False)
         
         # Check if the response is successful
         if response:

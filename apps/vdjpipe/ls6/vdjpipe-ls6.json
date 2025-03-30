@@ -1,10 +1,10 @@
 {
     "id":"vdjpipe-ls6",
-    "version":"0.1",
+    "version":"0.2",
     "description":"VDJPipe on Lonestar6",
     "runtime":"ZIP",
     "runtimeOptions": ["NONE"],
-    "containerImage":"tapis://data-storage.vdjserver.org/apps/vdjpipe-ls6-0.1.tgz",
+    "containerImage":"tapis://data-storage.vdjserver.org/apps/vdjpipe-ls6-0.2.tgz",
     "jobType":"BATCH",
     "jobAttributes": {
         "description": "default job description",

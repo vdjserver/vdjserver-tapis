@@ -34,6 +34,7 @@ function initProcessMetadata() {
 
 function addLogFile() {
     $PYTHON ./process_metadata.py --entry log "$1" "$2" "$3" "$4" "$5" "$6" "$7" process_metadata.json
+    ARCHIVE_FILE_LIST="${ARCHIVE_FILE_LIST} $4"
 }
 
 function addConfigFile() {
@@ -42,6 +43,7 @@ function addConfigFile() {
 
 function addStatisticsFile() {
     $PYTHON ./process_metadata.py --entry statistics "$1" "$2" "$3" "$4" "$5" "$6" "$7" process_metadata.json
+    ARCHIVE_FILE_LIST="${ARCHIVE_FILE_LIST} $4"
 }
 
 function addOutputFile() {
