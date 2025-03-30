@@ -16,9 +16,9 @@ def apps_list(system_id=None, token=None):
     tapis_obj = vdjserver.defaults.init_tapis(token)
     # Get apps list
     response = tapis_obj.apps.getApps(select="allAttributes")
-    print(len(response))
+    #print(len(response))
     # Define the fields and initial column widths
-    fields = ["App Name", "Owner", "Container Image", "Description", "Version"]
+    fields = ["App Name", "Version", "Owner", "Description", "Container Image"]
     field_widths = [len(field) for field in fields]
 
     print("\nVDJ server Tools Apps List: \n")
@@ -32,10 +32,10 @@ def apps_list(system_id=None, token=None):
             version = str(data.get("version", "N/A"))
 
             field_widths[0] = max(field_widths[0], len(appname))  # App Name
-            field_widths[1] = max(field_widths[1], len(owner))    # Owner
-            field_widths[2] = max(field_widths[2], len(container_image))  # Container Image
+            field_widths[1] = max(field_widths[1], len(version))  # Version
+            field_widths[2] = max(field_widths[2], len(owner))    # Owner
             field_widths[3] = max(field_widths[3], len(description))  # Description
-            field_widths[4] = max(field_widths[4], len(version))  # Version
+            field_widths[4] = max(field_widths[4], len(container_image))  # Container Image
 
         # Print the header row
         header = " | ".join([f"{field:<{field_widths[i]}}" for i, field in enumerate(fields)])
@@ -51,10 +51,10 @@ def apps_list(system_id=None, token=None):
             version = str(data.get("version", "N/A"))
 
             row = " | ".join([f"{appname:<{field_widths[0]}}", 
-                              f"{owner:<{field_widths[1]}}", 
-                              f"{container_image:<{field_widths[2]}}", 
+                              f"{version:<{field_widths[1]}}", 
+                              f"{owner:<{field_widths[2]}}", 
                               f"{description:<{field_widths[3]}}", 
-                              f"{version:<{field_widths[4]}}"])
+                              f"{container_image:<{field_widths[4]}}"])
             print(row)
     else:
         print("No apps found.")
