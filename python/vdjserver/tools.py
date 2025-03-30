@@ -459,7 +459,7 @@ def define_args():
     group_parser_jobs_list.add_argument('--limit', type=int, help="Limit the number of jobs returned.")
     group_parser_jobs_list.add_argument('--skip', type=int, help="Number of jobs to skip.")
     group_parser_jobs_list.add_argument('--start-after', type=int, help="Retrieve jobs after a specific point.")
-    group_parser_jobs_list.add_argument('--order-by', type=str, help="Order the list by a field.")
+    group_parser_jobs_list.add_argument('--order-by', type=str, default="created", help="Order the list by a field.")
     group_parser_jobs_list.add_argument('--compute-total', action='store_true', help="Include the total number of jobs.")
     parser_jobs_list.set_defaults(func=vdjserver.jobs.get_job_list)
     
