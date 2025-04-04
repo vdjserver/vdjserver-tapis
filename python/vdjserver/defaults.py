@@ -37,8 +37,13 @@ from tapipy.tapis import Tapis
 storage_system_id = "data-storage.vdjserver.org"
 
 tapis_host = "vdjserver.tapis.io"
+
+## Change vdj server default host here
+vdj_host = "vdj-staging.tacc.utexas.edu"
+
 if os.environ['tapis_default_host']:
     tapis_host = os.environ['tapis_default_host']
+
 
 def init_tapis(token):
     try:

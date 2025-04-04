@@ -15,42 +15,38 @@ import requests
 def files_list_cmd(path, system_id=None, token=None):
     if system_id is None:
         system_id = vdjserver.defaults.storage_system_id
-    print(system_id)
-
     fields = [ 'nativePermissions', 'owner', 'group', 'size', 'lastModified', 'path', 'type' ]
     field_widths = [ len(obj) for obj in fields ]
 
     tapis_obj = vdjserver.defaults.init_tapis(token)
-    res = tapis_obj.files.listFiles(systemId=system_id, path=path)
-    #res = tapis_obj.authenticator.list_clients()
+    try:
+        res = tapis_obj.files.listFiles(systemId=system_id, path=path)
+        if len(res) > 0:
+            # determine max widths
+            for obj in res:
+                for i in range(0, len(fields)):
+                    if len(str(obj.get(fields[i]))) > field_widths[i]:
+                        field_widths[i] = len(str(obj.get(fields[i])))
 
-    if len(res) > 0:
-        # determine max widths
-        for obj in res:
-            for i in range(0, len(fields)):
-                if len(str(obj.get(fields[i]))) > field_widths[i]:
-                    field_widths[i] = len(str(obj.get(fields[i])))
+            # headers
+            vdjserver.defaults.print_table_headers(fields, field_widths)
 
-        # headers
-        vdjserver.defaults.print_table_headers(fields, field_widths)
+            # print values
+            for obj in res:
+                vdjserver.defaults.print_table_row(fields, field_widths, obj)
 
-        # print values
-        for obj in res:
-            vdjserver.defaults.print_table_row(fields, field_widths, obj)
-
-    else:
-        print('no files')
+        else:
+            print('no files')
+    except Exception as e:
+        print(f"Error: \n\n{str(e)}\n")
         
 ## Make Directory
 def tapis_files_mkdir(path, system_id=None, token=None):
     # Default storage system if none is provided
     if system_id is None:
         system_id = vdjserver.defaults.storage_system_id
-    print(f"Storage system: {system_id}")
-
     # Initialize Tapis client with token
     tapis_obj = vdjserver.defaults.init_tapis(token)
-
     # Send the request to create the directory
     try:
         response = tapis_obj.files.mkdir(systemId=system_id, path=path)
@@ -60,7 +56,6 @@ def tapis_files_mkdir(path, system_id=None, token=None):
             print(f"Directory '{path}' created successfully.")
         else:
             print(f"Failed to create directory '{path}'.")
-    
     except Exception as e:
         print(f"Error: {str(e)}")
 
@@ -70,16 +65,12 @@ def tapis_files_upload(source_file_path, system_id=None, dest_file_path=None, to
     # Default storage system if none is provided
     if system_id is None:
         system_id = vdjserver.defaults.storage_system_id
-    print(f"Storage system: {system_id}")
-
     # Initialize Tapis client with token
     tapis_obj = vdjserver.defaults.init_tapis(token)
-
     # Check if the source file exists
     if not os.path.isfile(source_file_path):
         print(f"Error: The file '{source_file_path}' does not exist.")
         return
-
     try:
         # Perform the file upload using t.upload() method
         response = tapis_obj.upload(
@@ -102,11 +93,8 @@ def tapis_files_delete(path, system_id=None, token=None):
     # Default storage system if none is provided
     if system_id is None:
         system_id = vdjserver.defaults.storage_system_id
-    print(f"Storage system: {system_id}")
-
     # Initialize Tapis client with token
     tapis_obj = vdjserver.defaults.init_tapis(token)
-
     # Send the request to delete the file
     try:
         response = tapis_obj.files.delete(systemId=system_id, path=path)
@@ -128,8 +116,6 @@ def tapis_files_get_permission(path, system_id=None, username=None, token=None):
     # Default storage system if none is provided
     if system_id is None:
         system_id = vdjserver.defaults.storage_system_id
-    print(f"Storage system: {system_id}")
-    
     # Initialize Tapis client with token
     tapis_obj = vdjserver.defaults.init_tapis(token)
 
@@ -143,7 +129,6 @@ def tapis_files_get_permission(path, system_id=None, username=None, token=None):
             print(f"Permissions for '{path}': {permissions}")
         else:
             print(f"No permissions found for '{path}'.")
-    
     except Exception as e:
         print(f"Error: {str(e)}")
 
@@ -156,8 +141,6 @@ def tapis_files_grant_permission(path, system_id=None, token=None, username=None
     # Default storage system if none is provided
     if system_id is None:
         system_id = vdjserver.defaults.storage_system_id
-    print(f"Storage system: {system_id}")
-
     # Initialize Tapis client with token
     tapis_obj = vdjserver.defaults.init_tapis(token)
 
@@ -195,8 +178,6 @@ def tapis_files_revoke_permission(path, username, system_id=None, token=None):
     # Default storage system if none is provided
     if system_id is None:
         system_id = vdjserver.defaults.storage_system_id
-    print(f"Storage system: {system_id}")
-
     # Initialize Tapis client with token (assuming token handling is done elsewhere)
     tapis_obj = vdjserver.defaults.init_tapis(token)
 
@@ -219,8 +200,6 @@ def tapis_files_download(path, system_id=None, token=None, output_filename=None)
     # Default storage system if none is provided
     if system_id is None:
         system_id = vdjserver.defaults.storage_system_id
-    print(f"Storage system: {system_id}")
-
     # Initialize Tapis client with token (assuming token handling is done elsewhere)
     tapis_obj = vdjserver.defaults.init_tapis(token)
 
@@ -228,7 +207,6 @@ def tapis_files_download(path, system_id=None, token=None, output_filename=None)
         # If no output filename is provided, use the path's last part
         if output_filename is None:
             output_filename = path.split('/')[-1]
-
         # Send the request to download the content as ZIP
         response = tapis_obj.files.getContents(systemId=system_id, path=path, zip=False)
         
@@ -239,7 +217,6 @@ def tapis_files_download(path, system_id=None, token=None, output_filename=None)
             # Write the content to a file
             with open(output_filename, 'wb') as f:
                 f.write(response)
-            
             print(f"Download complete. Saved as {output_filename}.")
         else:
             print(f"Failed to download content from '{path}'.")

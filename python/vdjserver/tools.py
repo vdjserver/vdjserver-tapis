@@ -38,6 +38,7 @@ from tapipy.tapis import Tapis
 # modules
 from vdjserver import __version__
 import vdjserver.defaults
+import vdjserver.meta
 import vdjserver.tokens
 import vdjserver.clients
 import vdjserver.files
@@ -150,7 +151,81 @@ def define_args():
                                             description='Get token.')
     group_meta = parser_meta.add_argument_group('get meta arguments')
     group_meta.add_argument('uuid',type=str,help="Meta uuid")
-
+    
+    
+     # Subparser for listing metadata for all the projects
+    parser_list_metadata = meta_subparser.add_parser('meta_list', parents=[common_parser],
+                                            add_help=False,
+                                            help='get project metadata records.',
+                                            description='Show metadata for all projects.')
+    parser_list_metadata.set_defaults(func=vdjserver.meta.meta_list)
+    
+    # Subparser for getting metadata for a specific project
+    parser_get_metadata = meta_subparser.add_parser('query_meta', parents=[common_parser],
+                                            add_help=False,
+                                            help='query metadata for project.',
+                                            description='Query metadata for project with project uuid')
+    group_get_metadata = parser_get_metadata.add_argument_group('get query meta arguments')
+    group_get_metadata.add_argument('project_uuid', type=str, help="project identifier")
+    group_get_metadata.add_argument('name', type=str, help="metadata type name (e.g., 'subject, repertoire')")
+    parser_get_metadata.set_defaults(func=vdjserver.meta.get_metadata)
+    
+    # Subparser for getting metadata for a specific project
+    parser_meta_get_by_uuid = meta_subparser.add_parser('meta_get_by_uuid', parents=[common_parser],
+                                            add_help=False,
+                                            help='get metadata for uuid.',
+                                            description='Retrieve specific metadata for a project by UUID.\
+                                                Requires both project UUID and metadata UUID.')
+    group_meta_get_by_uuid = parser_meta_get_by_uuid.add_argument_group('meta_get_by_uuid arguments')
+    group_meta_get_by_uuid.add_argument('project_uuid', type=str,help="project identifer")
+    group_meta_get_by_uuid.add_argument('uuid',type=str, help="metadata identifer")
+    parser_meta_get_by_uuid.set_defaults(func=vdjserver.meta.meta_get_by_uuid)
+    
+    # Subparser for 'export_metadata'
+    parser_export_metadata = meta_subparser.add_parser('export_metadata',  parents=[common_parser],
+                                                       add_help=False,
+                                                       help='Export metadata for a project by its UUID.',
+                                                       description='')
+    group_parser_export_metadata = parser_export_metadata.add_argument_group("Export Metadata argument.")
+    group_parser_export_metadata.add_argument('project_uuid', type=str, help="The UUID of the project to export metadata for.")
+    parser_export_metadata.set_defaults(func= vdjserver.meta.export_metadata)
+    
+    # Subparser for 'import metadata'
+    parser_import_metadata = meta_subparser.add_parser('import_metadata',  parents=[common_parser],
+                                                       add_help=False,
+                                                       help='Import metadata for a project by its UUID.',
+                                                       description='Import metadata for a project by uuid and\
+                                                           metadata file')
+    group_parser_import_metadata = parser_import_metadata.add_argument_group("Import metadata arguments.")
+    group_parser_import_metadata.add_argument('project_uuid', type=str, help="The UUID of the project to export metadata for.")
+    group_parser_import_metadata.add_argument('metadata_file_path', type=str, help='Path to the metadata file to import.')
+    parser_import_metadata.set_defaults(func= vdjserver.meta.import_metadata)
+    
+    
+    # Subparser for export_table_metadata
+    parser_export_table_metadata = meta_subparser.add_parser('export_metadata_table',  parents=[common_parser],
+                                                       add_help=False,
+                                                       help='Export metadata table from project by its UUID and table name.',
+                                                       description='Export metadata table from project by its UUID and table name')
+    group_parser_export_table_metadata = parser_export_table_metadata.add_argument_group("Export metadata table arguments.")
+    group_parser_export_table_metadata.add_argument('project_uuid', type=str, help="project identifier.")
+    group_parser_export_table_metadata.add_argument('table_name', type=str, help="table name(e.g. values : subject, sample_processing).")
+    parser_export_table_metadata.set_defaults(func= vdjserver.meta.export_table_metadata)
+    
+    
+    # Subparser for import_table_metadata
+    parser_import_table_metadata = meta_subparser.add_parser('import_metadata_table', parents=[common_parser],
+                                                        add_help=False,
+                                                        help='Import metadata table to project by its UUID and table name.',
+                                                        description='Import metadata table to project by its UUID and table name')
+    group_parser_import_table_metadata = parser_import_table_metadata.add_argument_group("Import metadata table arguments.")
+    group_parser_import_table_metadata.add_argument('project_uuid', type=str, help="Project identifier.")
+    group_parser_import_table_metadata.add_argument('table_name', type=str, help="Table name (e.g. values: subject, sample_processing).")
+    group_parser_import_table_metadata.add_argument('metadata_file_path', type=str, help="Path to the metadata file to import (in tsv format).")
+    parser_import_table_metadata.set_defaults(func=vdjserver.meta.import_table_metadata)
+    
+    # Add argument for metadata file path
+    
     #group_merge = parser_merge.add_argument_group('merge arguments')
     #group_merge.add_argument('-o', action='store', dest='out_file', required=True,
     #                          help='''Output file name.''')
