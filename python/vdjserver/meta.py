@@ -34,12 +34,8 @@ def meta_delete(tapis_obj, query):
     
     
 def meta_list(system_id=None, token=None):
-    # If no token is provided, attempt to fetch it from environment variable 'JWT'
-    if token is None:
-        token = os.getenv('JWT')
-        if token is None:
-            print("Error: No token provided and 'JWT' environment variable is not set.")
-            exit(1)
+    token = vdjserver.defaults.vdjserver_token(token)
+
     headers = {"Authorization": f"Bearer {token}"}
     # Construct the URL
     url = f"https://{vdjserver.defaults.vdj_host}/api/v2/project/metadata"
@@ -61,11 +57,7 @@ def meta_list(system_id=None, token=None):
         
 
 def get_metadata(project_uuid, name, system_id = None, token = None):
-    if token is None:
-        token = os.getenv('JWT')
-        if token is None:
-            print("Error: No token provided and 'JWT' environment variable is not set.")
-            exit(1)
+    token = vdjserver.defaults.vdjserver_token(token)
     
     url = f"https://{vdjserver.defaults.vdj_host}/api/v2/project/{project_uuid}/metadata/name/{name}"
     headers = {"Authorization": f"Bearer {token}"}
@@ -91,11 +83,7 @@ def get_metadata(project_uuid, name, system_id = None, token = None):
         print(f"Error querying metadata: {e}", file=sys.stderr)
 
 def meta_get_by_uuid(project_uuid, uuid, system_id = None, token = None):
-    if token is None:
-        token = os.getenv('JWT')
-        if token is None:
-            print("Error: No token provided and 'JWT' environment variable is not set.")
-            exit(1)
+    token = vdjserver.defaults.vdjserver_token(token)
     
     url = f"https://{vdjserver.defaults.vdj_host}/api/v2/project/{project_uuid}/metadata/uuid/{uuid}"
     headers = {"Authorization": f"Bearer {token}"}
@@ -124,11 +112,7 @@ def meta_get_by_uuid(project_uuid, uuid, system_id = None, token = None):
         
 # Function to export metadata for a project by UUID
 def export_metadata(project_uuid, system_id = None, token=None):
-    if token is None:
-        token = os.getenv('JWT')
-        if token is None:
-            print("Error: No token provided and 'JWT' environment variable is not set.")
-            exit(1)
+    token = vdjserver.defaults.vdjserver_token(token)
 
     headers = {"Authorization": f"Bearer {token}"}
 
@@ -161,8 +145,7 @@ def export_metadata(project_uuid, system_id = None, token=None):
     
 ## Function to export table metadata for a project by UUID and table name
 def export_table_metadata(project_uuid, table_name, system_id = None, token=None):
-    if token is None:
-        token = os.environ.get('JWT')  # Get token from environment variable if not provided
+    token = vdjserver.defaults.vdjserver_token(token)
 
     headers = {
         "Authorization": f"Bearer {token}",
@@ -200,12 +183,7 @@ def export_table_metadata(project_uuid, table_name, system_id = None, token=None
 ##NOT WORKING RIGHT NOW.
 
 def import_metadata(project_uuid, metadata_file_path, system_id = None, token=None):
-    # Check if the JWT token is provided or in environment variables
-    if token is None:
-        token = os.getenv('JWT')
-        if token is None:
-            print("Error: No token provided and 'JWT' environment variable is not set.")
-            exit(1)
+    token = vdjserver.defaults.vdjserver_token(token)
 
     headers = {
         "Authorization": f"Bearer {token}",
@@ -217,45 +195,68 @@ def import_metadata(project_uuid, metadata_file_path, system_id = None, token=No
         print(f"Error: The file {metadata_file_path} does not exist.")
         exit(1)
 
-    # Construct the URL for the API
+    # upload the file
+    dest_file_path = f'/projects/{project_uuid}/files/{metadata_file_path}'
+    print(f"Uploading metadata file {metadata_file_path}...")
+    vdjserver.files.tapis_files_upload(metadata_file_path, dest_file_path=dest_file_path)
+
+    # attach uploaded file to a vdjserver project
+    metadata_file = metadata_file_path.split('/')[-1]
+    url = f"https://{vdjserver.defaults.vdj_host}/api/v2/project/{project_uuid}/file/import"
+    data = {
+        "path": metadata_file,
+        "name": metadata_file,
+        "fileType": 10
+    }
+    response = requests.post(url, headers=headers, data=data)
+    response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
+
+    # Assuming the response is a JSON object
+    json_data = response.json()
+
+    # Now import the metadata
     url = f"https://{vdjserver.defaults.vdj_host}/api/v2/project/{project_uuid}/metadata/import"
-    
-    # Open the file to be sent in the request
-    with open(metadata_file_path, 'rb') as metadata_file:
-        files = {'file': (os.path.basename(metadata_file_path), metadata_file)}
-        try:
-            print(f"Sending request to import metadata from file {metadata_file_path}...")
-            data = {
-                "filename": metadata_file,
-                "operation": "append"
-            }
-            # Send the POST request to upload the file
-            response = requests.post(url, headers=headers, data=data)
-            response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
-            
-            # Assuming the response is a JSON object
-            json_data = response.json()
-            
-            # Check if the import was successful
-            if json_data.get('status') == 'success':
-                print(f"Metadata successfully imported into project {project_uuid}.")
-            else:
-                print(f"Failed to import metadata: {json_data.get('message', 'Unknown error')}")
-        
-        except requests.exceptions.RequestException as e:
-            print(f"Error making request: {e}")
-            exit(1)
-        except json.JSONDecodeError:
-            print("Error: Unable to parse response as JSON.")
-            exit(1)
+    data = {
+        "filename": metadata_file,
+        "operation": "append"
+    }
+    response = requests.post(url, headers=headers, data=data)
+    response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
+
+    # Assuming the response is a JSON object
+    json_data = response.json()
+
+#     # Open the file to be sent in the request
+#     with open(metadata_file_path, 'rb') as metadata_file:
+#         files = {'file': (os.path.basename(metadata_file_path), metadata_file)}
+#         try:
+#             print(f"Sending request to import metadata from file {metadata_file_path}...")
+#             data = {
+#                 "filename": metadata_file,
+#                 "operation": "append"
+#             }
+#             # Send the POST request to upload the file
+#             response = requests.post(url, headers=headers, data=data)
+#             response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
+#             
+#             # Assuming the response is a JSON object
+#             json_data = response.json()
+#             
+#             # Check if the import was successful
+#             if json_data.get('status') == 'success':
+#                 print(f"Metadata successfully imported into project {project_uuid}.")
+#             else:
+#                 print(f"Failed to import metadata: {json_data.get('message', 'Unknown error')}")
+#         
+#         except requests.exceptions.RequestException as e:
+#             print(f"Error making request: {e}")
+#             exit(1)
+#         except json.JSONDecodeError:
+#             print("Error: Unable to parse response as JSON.")
+#             exit(1)
 
 def import_table_metadata(project_uuid, table_name, metadata_file_path, system_id=None, token=None):
-    # Check if the JWT token is provided or in environment variables
-    if token is None:
-        token = os.getenv('JWT')
-        if token is None:
-            print("Error: No token provided and 'JWT' environment variable is not set.")
-            exit(1)
+    token = vdjserver.defaults.vdjserver_token(token)
 
     headers = {
         "Authorization": f"Bearer {token}",

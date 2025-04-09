@@ -44,6 +44,15 @@ vdj_host = "vdj-staging.tacc.utexas.edu"
 if os.environ['tapis_default_host']:
     tapis_host = os.environ['tapis_default_host']
 
+def vdjserver_token(token):
+    # Check if the JWT token is provided or in environment variables
+    if token is None:
+        token = os.getenv('JWT')
+        if token is None:
+            print("Error: No token provided and 'JWT' environment variable is not set.")
+            exit(1)
+    return token
+
 
 def init_tapis(token):
     try:
