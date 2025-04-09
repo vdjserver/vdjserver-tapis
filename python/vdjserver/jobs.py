@@ -11,7 +11,7 @@ import vdjserver.defaults
 import json
 
 
-def get_job_list(list_type="MY_JOBS", limit=None, skip=None, start_after=None, order_by=None,
+def get_job_list(list_type="ALL_JOBS", limit=None, skip=None, start_after=None, order_by=None,
                  compute_total=False, system_id=None, token=None):
     # Initialize the Tapis object
     tapis_obj = vdjserver.defaults.init_tapis(token)
