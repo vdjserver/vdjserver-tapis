@@ -9,6 +9,7 @@ import os
 from tapipy.tapis import Tapis
 import vdjserver.defaults
 import requests
+import time
 
 #### Files ####
 
@@ -195,34 +196,44 @@ def tapis_files_revoke_permission(path, username, system_id=None, token=None):
     except Exception as e:
         print(f"Error: {str(e)}")
         
-        
-def tapis_files_download(path, system_id=None, token=None, output_filename=None):
-    # Default storage system if none is provided
+def tapis_files_download(path, system_id = None, token = None, output_filename=None, chunk_size=128*1024):
     if system_id is None:
         system_id = vdjserver.defaults.storage_system_id
-    # Initialize Tapis client with token (assuming token handling is done elsewhere)
-    tapis_obj = vdjserver.defaults.init_tapis(token)
+    if token == None:
+        token = os.environ['JWT']
+    # Construct the Tapis file download URL (for Agave-style APIs)
+    url = f"https://vdjserver.tapis.io/v3/files/content/{system_id}/{path}"
+    headers = {"X-Tapis-Token": token}
+    if output_filename is None:
+        output_filename = path.split('/')[-1]  # Extract filename from the path if not provided
 
+    downloaded_size = 0  # Variable to track downloaded size
+    start_time = time.time()  # Start time to calculate download speed
     try:
-        # If no output filename is provided, use the path's last part
-        if output_filename is None:
-            output_filename = path.split('/')[-1]
-        # Send the request to download the content as ZIP
-        response = tapis_obj.files.getContents(systemId=system_id, path=path, zip=False)
-        
-        # Check if the response is successful
-        if response:
-            print(f"Downloading content from '{path}' as ZIP...")
+        print(f"Downloading {output_filename} in chunks...")
+        # Make the GET request with stream=True to download in chunks # current chunksize 128KB
+        response = requests.get(url, headers=headers, stream=True)
+        if response.status_code != 200:
+            print(f"Error: {response.text}")
+            return
+        # Open file and write in chunks
+        with open(output_filename, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=chunk_size):
+                if chunk:
+                    f.write(chunk)
+                    downloaded_size += len(chunk)
+                    # Calculate elapsed time
+                    elapsed_time = time.time() - start_time
+                    if elapsed_time > 0:
+                        # Calculate download speed (MB per minute)
+                        speed = (downloaded_size / 1024 / 1024) / (elapsed_time / 60)  # MB/min
+                        # Print downloaded size and speed
+                        print(f"Downloaded: {downloaded_size / 1024 / 1024:.2f} MB at {speed:.2f} MB/min", end='\r')
 
-            # Write the content to a file
-            with open(output_filename, 'wb') as f:
-                f.write(response)
-            print(f"Download complete. Saved as {output_filename}.")
-        else:
-            print(f"Failed to download content from '{path}'.")
+        print(f"\nDownload complete: {output_filename}")
 
-    except Exception as e:
-        print(f"Error: {str(e)}")
+    except requests.exceptions.RequestException as e:
+        print(f"Error downloading file: {e}")
 
 def postits_list_cmd(uuid, system_id=None, token=None):
     if system_id is None:
