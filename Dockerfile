@@ -30,5 +30,6 @@ RUN pip3 install --upgrade requests
 RUN mkdir /vdjserver-tapis
 COPY . /vdjserver-tapis
 ENV PATH /vdjserver-tapis/bin:$PATH
+RUN cd /vdjserver-tapis/python && pip3 install .
 
 ENTRYPOINT ["/vdjserver-tapis/bin/entrypoint.sh"]
