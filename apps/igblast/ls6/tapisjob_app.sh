@@ -41,7 +41,7 @@ printf "START at $(date)\n\n"
 export JOB_ERROR=0
 
 initProvenance
-gather_secondary_inputs
+#gather_secondary_inputs
 print_parameters
 print_versions
 run_igblast_workflow

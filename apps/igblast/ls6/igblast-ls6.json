@@ -1,10 +1,10 @@
 {
     "id":"igblast-ls6",
-    "version":"0.2",
+    "version":"0.3",
     "description":"IgBLAST on Lonestar6",
     "runtime":"ZIP",
     "runtimeOptions": ["NONE"],
-    "containerImage":"tapis://data-storage.vdjserver.org/apps/igblast-ls6-0.2.tgz",
+    "containerImage":"tapis://data-storage.vdjserver.org/apps/igblast-ls6-0.3.tgz",
     "jobType":"BATCH",
     "jobAttributes": {
         "description": "default job description",
@@ -33,7 +33,7 @@
                 {"key": "SecondaryInputsFlag", "inputMode": "REQUIRED", "value": "0" },
                 {"key": "JobFiles", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "query", "inputMode": "INCLUDE_BY_DEFAULT" },
-                {"key": "QueryFilesMetadata", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "repertoires", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "species", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "strain", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "ig_seqtype", "inputMode": "INCLUDE_BY_DEFAULT" },

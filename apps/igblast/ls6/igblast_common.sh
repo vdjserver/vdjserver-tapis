@@ -66,12 +66,13 @@ function print_parameters() {
     echo "igblast_image=${igblast_image}"
     echo "repcalc_image=${repcalc_image}"
     echo "ProjectDirectory=${ProjectDirectory}"
+    echo "AIRRMetadata=${AIRRMetadata}"
     echo "JobFiles=${JobFiles}"
     echo "query=$query"
     echo ""
     echo "Application parameters:"
     echo "SecondaryInputsFlag=${SecondaryInputsFlag}"
-    echo "QueryFilesMetadata=$QueryFilesMetadata"
+    echo "repertoires=$repertoires"
     echo "species=$species"
     echo "strain=$strain"
     echo "ig_seqtype=$ig_seqtype"
@@ -227,7 +228,7 @@ function run_igblast_workflow() {
 
     # ----------------------------------------------------------------------------
     # and now to knit smallFiles back together
-    seqMetadata=($QueryFilesMetadata)
+    seqMetadata=($repertoires)
     count=0
     for file in ${filelist[@]}; do
         mfile=${seqMetadata[count]}
@@ -257,18 +258,18 @@ function run_igblast_workflow() {
 
         # assign repertoire IDs
         mv ${fileOutname}.igblast.airr.tsv ${fileOutname}.igblast.orig.airr.tsv
-        $PYTHON assign_repertoire_id.py ${fileOutname} ${_tapisJobUUID} ${fileOutname}.igblast.orig.airr.tsv ${fileOutname}.igblast.airr.tsv
+        $PYTHON assign_repertoire_id.py ${mfile} ${_tapisJobUUID} ${fileOutname}.igblast.orig.airr.tsv ${mfile}.igblast.airr.tsv
         mv ${fileOutname}.igblast.makedb.airr.tsv ${fileOutname}.igblast.makedb.orig.airr.tsv
-        $PYTHON assign_repertoire_id.py ${fileOutname} ${_tapisJobUUID} ${fileOutname}.igblast.makedb.orig.airr.tsv ${fileOutname}.igblast.makedb.airr.tsv
+        $PYTHON assign_repertoire_id.py ${mfile} ${_tapisJobUUID} ${fileOutname}.igblast.makedb.orig.airr.tsv ${mfile}.igblast.makedb.airr.tsv
 
         # add to process metadata
         # they will be compressed later
         group="group${count}"
-        addOutputFile $group $APP_NAME airr ${fileOutname}.igblast.airr.tsv.gz "${fileOutname} AIRR TSV" "tsv" $mfile
+        addOutputFile $group $APP_NAME airr ${mfile}.igblast.airr.tsv.gz "${fileOutname} AIRR TSV" "tsv" $mfile
         if [ "$species" != "macaque" ]; then
-            addOutputFile $group $APP_NAME airr-makedb ${fileOutname}.igblast.makedb.airr.tsv.gz "${fileOutname} Change-O MakeDb AIRR TSV" "tsv" $mfile
-            if [ -f ${fileOutname}.igblast.fail-makedb.airr.tsv ]; then
-                addOutputFile $group $APP_NAME airr-fail-makedb ${fileOutname}.igblast.fail-makedb.airr.tsv.gz "${fileOutname} Change-O MakeDb Failed" "tsv" $mfile
+            addOutputFile $group $APP_NAME airr-makedb ${mfile}.igblast.makedb.airr.tsv.gz "${fileOutname} Change-O MakeDb AIRR TSV" "tsv" $mfile
+            if [ -f ${mfile}.igblast.fail-makedb.airr.tsv ]; then
+                addOutputFile $group $APP_NAME airr-fail-makedb ${mfile}.igblast.fail-makedb.airr.tsv.gz "${fileOutname} Change-O MakeDb Failed" "tsv" $mfile
             fi
         fi
 
@@ -304,25 +305,25 @@ function run_assign_clones() {
     #noArchive "joblist-clones"
 
     # create AIRR metadata
-    metadata_file="study_metadata.airr.json"
-    repertoire_ids=""
-    for file in ${filelist[@]}; do
-        fileBasename="${file%.*}" # test/file.fasta -> test/file
-        fileOutname="${fileBasename##*/}" # test/file -> file
-        repertoire_ids="${repertoire_ids} ${fileOutname}"
-    done
-    $PYTHON create_airr_metadata.py $metadata_file ${_tapisJobUUID} $repertoire_ids
+    #metadata_file="study_metadata.airr.json"
+    #repertoire_ids=""
+    #for file in ${filelist[@]}; do
+    #    fileBasename="${file%.*}" # test/file.fasta -> test/file
+    #    fileOutname="${fileBasename##*/}" # test/file -> file
+    #    repertoire_ids="${repertoire_ids} ${fileOutname}"
+    #done
+    #$PYTHON create_airr_metadata.py $metadata_file ${_tapisJobUUID} $repertoire_ids
 
     # Assign Clones
     cloneFileList=()
     count=0
     if [[ "$ClonalTool" == "changeo" ]] ; then
-        fileMetadataList=($QueryFilesMetadata)
+        fileMetadataList=($repertoires)
         for file in ${filelist[@]}; do
             mfile=${fileMetadataList[count]}
             fileBasename="${file%.*}" # test/file.fasta -> test/file
             fileOutname="${fileBasename##*/}" # test/file -> file
-            file=${fileOutname}.igblast.makedb.airr.tsv
+            file=${mfile}.igblast.makedb.airr.tsv
 
             # Assuming airr.tsv extension
             fileOutname="${file%.*}" # file.airr.tsv -> file.airr
@@ -350,11 +351,12 @@ function run_assign_clones() {
     fi
 
     if [[ "$ClonalTool" == "repcalc" ]] ; then
-        fileMetadataList=($QueryFilesMetadata)
+        fileMetadataList=($repertoires)
         for file in ${filelist[@]}; do
             mfile=${fileMetadataList[count]}
             fileBasename="${file%.*}" # test/file.fasta -> test/file
-            rep_id="${fileBasename##*/}" # test/file -> file
+            #rep_id="${fileBasename##*/}" # test/file -> file
+            rep_id=$mfile
 
             # We have the raw IgBlast AIRR TSV and the MakeDB processed AIRR TSV
 
@@ -363,7 +365,7 @@ function run_assign_clones() {
             #addProcessingStaqe $processing_stage
             out_prefix=${rep_id}.${processing_stage}
             file=${out_prefix}.airr.tsv
-            echo "apptainer exec -e ${repcalc_image} bash repcalc_clones.sh ${metadata_file} ${germline_db} ${file} ${rep_id} ${processing_stage}" >> joblist-clones
+            echo "apptainer exec -e ${repcalc_image} bash repcalc_clones.sh ${AIRRMetadata} ${germline_db} ${file} ${rep_id} ${processing_stage}" >> joblist-clones
             result_file=${out_prefix}.allele.clone.airr.tsv
 
             # will get compressed at end
@@ -375,7 +377,7 @@ function run_assign_clones() {
             #addProcessingStaqe $processing_stage
             out_prefix=${rep_id}.${processing_stage}
             file=${out_prefix}.airr.tsv
-            echo "apptainer exec -e ${repcalc_image} bash repcalc_clones.sh ${metadata_file} ${germline_db} ${file} ${rep_id} ${processing_stage}" >> joblist-clones
+            echo "apptainer exec -e ${repcalc_image} bash repcalc_clones.sh ${AIRRMetadata} ${germline_db} ${file} ${rep_id} ${processing_stage}" >> joblist-clones
             result_file=${out_prefix}.allele.clone.airr.tsv
 
             # will get compressed at end
@@ -409,7 +411,7 @@ function compress_and_archive() {
     # ----------------------------------------------------------------------------
     # compress the tsv files
     echo Compressing output files
-    for file in ${filelist[@]}; do
+    for file in ${repertoires[@]}; do
         fileBasename="${file%.*}"
         fileOutname="${fileBasename##*/}"
         gzip ${fileOutname}.igblast.airr.tsv
