@@ -221,7 +221,6 @@ def tapis_files_download(path, system_id=None, token=None, output_filename=None,
         else:
             # Assuming the server supports the zip parameter
             response = requests.get(url, headers=headers, stream=True)
-        
         # Check if the response status code is OK
         if response.status_code != 200:
             print(f"Error: {response.text}")
