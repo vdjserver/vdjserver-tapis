@@ -1,0 +1,31 @@
+{
+    "name": "igblast_ig_test",
+    "appId": "igblast-bc-ls6",
+    "appVersion": "0.1",
+    "maxMinutes": 120,
+    "execSystemId":"test-bcorrie-airrkb-dev-ls6.tacc.utexas.edu",
+    "nodeCount": 1,
+    "fileInputs":[
+    ],
+    "fileInputArrays":[
+      { "name":"query", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/01.fasta",
+                                        "tapis://data-storage.vdjserver.org/apps/data/test/02.fasta",
+                                        "tapis://data-storage.vdjserver.org/apps/data/test/with_dupcount.fasta" ]}
+    ],
+    "parameterSet": {
+        "schedulerOptions": [
+            { "name":"allocation", "arg":"-A MCB23006" }
+        ],
+        "containerArgs": [
+        ],
+        "appArgs": [
+        ],
+        "envVariables": [
+            {"key": "query", "value": "01.fasta 02.fasta with_dupcount.fasta" },
+            {"key": "QueryFilesMetadata", "value": "1234 3456 5678" },
+            {"key": "species", "value": "human" },
+            {"key": "ig_seqtype", "value": "Ig" },
+            {"key": "ClonalTool", "value": "changeo" }
+        ]
+    }
+}
