@@ -22,14 +22,6 @@ APP_NAME=igBlast
 # automatic parallelization of large files
 READS_PER_FILE=10000
 
-# IgBlast germline database and extra files
-VDJ_DB_VERSION=db.2019.01.23
-IGDATA="$WORK/../common/igblast-db/$VDJ_DB_VERSION"
-VDJ_DB_URI=http://wiki.vdjserver.org/vdjserver/index.php/VDJServer_IgBlast_Database
-export IGDATA
-export VDJ_DB_ROOT="$IGDATA/germline/"
-germline_db="$VDJ_DB_ROOT/$species/vdjserver_germline.airr.json"
-
 # bring in common functions
 source ./common_functions.sh
 
@@ -65,6 +57,7 @@ function print_parameters() {
     echo "Input files:"
     echo "igblast_image=${igblast_image}"
     echo "repcalc_image=${repcalc_image}"
+    echo "germline_archive=${germline_archive}"
     echo "ProjectDirectory=${ProjectDirectory}"
     echo "AIRRMetadata=${AIRRMetadata}"
     echo "JobFiles=${JobFiles}"
@@ -75,7 +68,9 @@ function print_parameters() {
     echo "repertoires=$repertoires"
     echo "species=$species"
     echo "strain=$strain"
-    echo "ig_seqtype=$ig_seqtype"
+    echo "locus=$locus"
+    echo "germline_db=${germline_db}"
+    echo "germline_fasta=${germline_fasta}"
     echo "domain_system=$domain_system"
     echo "ClonalTool=$ClonalTool"
 }
@@ -152,7 +147,6 @@ function run_igblast_workflow() {
                 strain="indian"
                 germline_set="macaque_indian"
             fi
-            seqType=${ig_seqtype}
             QUERY_ARGS=""
             ARGS=""
             MDARGS=""
@@ -161,18 +155,18 @@ function run_igblast_workflow() {
                 MDARGS="$MDARGS $smallFile"
                 MDARGS="$MDARGS $PWD/${smallFile}.igblast.txt"
             fi
-            if [ -n $seqType ]; then 
+            if [ -n $locus ]; then 
+                if [ "$locus" == "TR" ]; then seqType="TCR"; fi  
+                if [ "$locus" == "IG" ]; then seqType="Ig"; fi  
                 ARGS="$ARGS -ig_seqtype $seqType"
-                if [ "$seqType" == "TCR" ]; then seqType="TR"; fi  
-                if [ "$seqType" == "Ig" ]; then seqType="IG"; fi  
-                MDARGS="$MDARGS $seqType"
+                MDARGS="$MDARGS $locus"
             fi
             if [ -n $organism ]; then 
                 ARGS="$ARGS -organism $organism"
                 ARGS="$ARGS -auxiliary_data $IGDATA/optional_file/${germline_set}_gl.aux"
-                ARGS="$ARGS -germline_db_V $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}_V.fna"
-                ARGS="$ARGS -germline_db_D $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}_D.fna"
-                ARGS="$ARGS -germline_db_J $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}_J.fna"
+                ARGS="$ARGS -germline_db_V $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_V.fna"
+                ARGS="$ARGS -germline_db_D $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_D.fna"
+                ARGS="$ARGS -germline_db_J $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_J.fna"
                 MDARGS="$MDARGS $organism"
             fi
             if [ -n $domain_system ]; then ARGS="$ARGS -domain_system $domain_system"; fi
@@ -305,14 +299,10 @@ function run_assign_clones() {
     #noArchive "joblist-clones"
 
     # create AIRR metadata
-    #metadata_file="study_metadata.airr.json"
-    #repertoire_ids=""
-    #for file in ${filelist[@]}; do
-    #    fileBasename="${file%.*}" # test/file.fasta -> test/file
-    #    fileOutname="${fileBasename##*/}" # test/file -> file
-    #    repertoire_ids="${repertoire_ids} ${fileOutname}"
-    #done
-    #$PYTHON create_airr_metadata.py $metadata_file ${_tapisJobUUID} $repertoire_ids
+    if [[ "x$AIRRMetadata" == "x" ]]; then
+        metadata_file="study_metadata.airr.json"
+        $PYTHON create_airr_metadata.py $metadata_file ${_tapisJobUUID} $repertoires
+    fi
 
     # Assign Clones
     cloneFileList=()

@@ -1,10 +1,10 @@
 {
     "id":"igblast-ls6",
-    "version":"0.3",
+    "version":"0.4",
     "description":"IgBLAST on Lonestar6",
     "runtime":"ZIP",
     "runtimeOptions": ["NONE"],
-    "containerImage":"tapis://data-storage.vdjserver.org/apps/igblast-ls6-0.3.tgz",
+    "containerImage":"tapis://data-storage.vdjserver.org/apps/igblast-ls6-0.4.tgz",
     "jobType":"BATCH",
     "jobAttributes": {
         "description": "default job description",
@@ -12,7 +12,7 @@
         "fileInputs":[
           { "name":"igblast_image", "inputMode": "FIXED", "envKey":"igblast_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/igblast-1.20.0.sif", "targetPath":"igblast-1.20.0.sif" },
           { "name":"repcalc_image", "inputMode": "FIXED", "envKey":"repcalc_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/repcalc-2.0-imm4.4.sif", "targetPath":"repcalc-2.0-imm4.4.sif" },
-          { "name":"germline_db", "inputMode": "FIXED", "envKey":"germline_db", "sourceUrl":"tapis://data-storage.vdjserver.org/irplus/data/germline/vdjserver_human_germline.airr.json", "targetPath":"vdjserver_human_germline.airr.json" },
+          { "name":"germline_archive", "inputMode": "FIXED", "envKey":"germline_archive", "sourceUrl":"tapis://data-storage.vdjserver.org/akc/germlines/db.2019.01.23.tgz", "targetPath":"db.2019.01.23.tgz" },
           { "name":"StudyMetadata", "inputMode": "OPTIONAL", "envKey":"StudyMetadata", "targetPath":"." },
           { "name":"AIRRMetadata", "inputMode": "OPTIONAL", "envKey":"AIRRMetadata", "targetPath":"." }
         ],
@@ -34,9 +34,9 @@
                 {"key": "JobFiles", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "query", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "repertoires", "inputMode": "INCLUDE_BY_DEFAULT" },
-                {"key": "species", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "species", "inputMode": "REQUIRED" },
                 {"key": "strain", "inputMode": "INCLUDE_BY_DEFAULT" },
-                {"key": "ig_seqtype", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "locus", "inputMode": "REQUIRED" },
                 {"key": "domain_system", "inputMode": "REQUIRED", "value": "imgt" },
                 {"key": "ClonalTool", "inputMode": "REQUIRED" }
             ]

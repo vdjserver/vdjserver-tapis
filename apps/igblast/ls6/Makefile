@@ -1,7 +1,7 @@
 # helper commands for tapis v3 apps
 
 APP_NAME=igblast
-APP_VERSION=0.3
+APP_VERSION=0.4
 APP_SYSTEM=ls6
 
 APP_ID=${APP_NAME}-${APP_SYSTEM}
@@ -20,6 +20,7 @@ help:
 	@echo "Assumes you are running in docker with tapis functions."
 	@echo ""
 	@echo "JSON app description:"
+	@echo "make list      -- List tapis apps"
 	@echo "make create    -- Create tapis app, only once"
 	@echo "make update    -- Update tapis app description"
 	@echo ""
