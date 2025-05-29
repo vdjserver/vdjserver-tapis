@@ -42,3 +42,20 @@ function expandfile () {
         export file=$1
     fi
 }
+
+# setup local germline db
+# ----------------------------------------------------------------------------
+function setup_germline () {
+    echo "Setting up germline database"
+    export VDJ_DB_VERSION=$1
+    tar zxf $germline_archive
+
+    # IgBlast germline database and extra files
+    export IGDATA="./$VDJ_DB_VERSION"
+    export VDJ_DB_ROOT="$IGDATA/germline/"
+
+    # TODO: handle mouse strains
+    export germline_db="$VDJ_DB_ROOT/$species/vdjserver_germline.airr.json"
+    export germline_fasta="$VDJ_DB_ROOT/$species/ReferenceDirectorySet/${locus}_VDJ.fna"
+}
+
