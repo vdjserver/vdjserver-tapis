@@ -41,6 +41,7 @@ printf "START at $(date)\n\n"
 export JOB_ERROR=0
 
 #gather_secondary_inputs
+setup_germline "db.2019.01.23"
 print_parameters
 print_versions
 run_repcalc_workflow

@@ -22,12 +22,6 @@
 # the app
 export APP_NAME=RepCalc
 
-# IgBlast germline database and extra files
-VDJ_DB_VERSION=db.2019.01.23
-IGDATA="$WORK/../common/igblast-db/$VDJ_DB_VERSION"
-export IGDATA
-export VDJ_DB_ROOT="$IGDATA/germline/"
-
 # bring in common functions
 source ./common_functions.sh
 
@@ -48,14 +42,18 @@ function print_versions() {
 function print_parameters() {
     echo "Input files:"
     echo "repcalc_image=${repcalc_image}"
-    echo "germline_db=${germline_db}"
-    echo "StudyMetadata=${StudyMetadata}"
+    echo "germline_archive=${germline_archive}"
     echo "AIRRMetadata=${AIRRMetadata}"
     echo "RepertoireGroupMetadata=${RepertoireGroupMetadata}"
     echo "JobFiles=$JobFiles"
     echo "AIRRFiles=${AIRRFiles}"
     echo ""
     echo "Application parameters:"
+    echo "species=${species}"
+    echo "strain=${strain}"
+    echo "locus=${locus}"
+    echo "germline_db=${germline_db}"
+    echo "germline_fasta=${germline_fasta}"
     echo "GeneSegmentFlag=${GeneSegmentFlag}"
     echo "CDR3Flag=${CDR3Flag}"
     echo "DiversityFlag=${DiversityFlag}"
@@ -65,20 +63,6 @@ function print_parameters() {
 }
 
 function run_repcalc_workflow() {
-    # TODO: we should get this from repertoire metadata
-    # germline database
-    species=$($PYTHON ./get_parameter.py --organism ${StudyMetadata})
-    echo "Species: $species"
-    seqtype=$($PYTHON ./get_parameter.py --seqtype ${StudyMetadata})
-    if [ "$seqtype" == "TCR" ]; then seqtype="TR"; fi
-    if [ "$seqtype" == "Ig" ]; then seqtype="IG"; fi
-    echo "Seq Type: $seqtype"
-
-    germline_db="$VDJ_DB_ROOT/$species/vdjserver_germline.airr.json"
-    germline_fasta="$VDJ_DB_ROOT/$species/ReferenceDirectorySet/${seqtype}_VDJ.fna"
-    cp $germline_db .
-    germline_db="vdjserver_germline.airr.json"
-
     initProvenance
 #    addLogFile $APP_NAME log stdout "${AGAVE_LOG_NAME}.out" "Job Output Log" "log" null
 #    addLogFile $APP_NAME log stderr "${AGAVE_LOG_NAME}.err" "Job Error Log" "log" null
@@ -1114,15 +1098,16 @@ function run_repcalc_workflow() {
     done
 
     # zip archive of all output files
-    addLogFile $APP_NAME log output_archive ${_tapisJobUUID}.zip "Archive of Output Files" "zip" null
     for file in $ARCHIVE_FILE_LIST; do
         if [ -f $file ]; then
             cp -f $file ${_tapisJobUUID}
+            cp -f $file output
         fi
-        cp -f process_metadata.json ${_tapisJobUUID}
-        cp -f ${StudyMetadata} ${_tapisJobUUID}
-        cp -f ${AIRRMetadata} ${_tapisJobUUID}
-        cp -f ${germline_db} ${_tapisJobUUID}
     done
+    cp -f process_metadata.json ${_tapisJobUUID}
+    cp -f ${AIRRMetadata} ${_tapisJobUUID}
+    cp -f ${germline_db} ${_tapisJobUUID}
     zip ${_tapisJobUUID}.zip ${_tapisJobUUID}/*
+    addLogFile $APP_NAME log output_archive ${_tapisJobUUID}.zip "Archive of Output Files" "zip" null
+    cp ${_tapisJobUUID}.zip output
 }

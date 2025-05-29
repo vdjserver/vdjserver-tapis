@@ -1,11 +1,10 @@
 {
     "name": "repcalc_test_tcr",
     "appId": "repcalc2-ls6",
-    "appVersion": "0.1",
+    "appVersion": "0.2",
     "maxMinutes": 120,
     "nodeCount": 1,
     "fileInputs":[
-      { "name":"StudyMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/8638731678148465131-242ac117-0001-012/analyses/2023-07-21-18-26-51-65-test-new-repcalc/study_metadata.json", "targetPath":"study_metadata.json" },
       { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/8638731678148465131-242ac117-0001-012/analyses/2023-07-10-21-50-29-56-test-new-igblast/study_metadata.airr.json", "targetPath":"study_metadata.airr.json" }
     ],
     "fileInputArrays":[
@@ -21,6 +20,8 @@
         ],
         "envVariables": [
             {"key": "JobFiles", "value": "9f5621d5-558e-4f04-abc6-498ecf885605-007.zip" },
+            {"key": "species", "value": "human" },
+            {"key": "locus", "value": "TR" },
             {"key": "GeneSegmentFlag", "value": "1" },
             {"key": "CDR3Flag", "value": "1" },
             {"key": "DiversityFlag", "value": "1" },
