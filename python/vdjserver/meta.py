@@ -230,7 +230,7 @@ def import_metadata(project_uuid, metadata_file_path, operation, system_id = Non
         "fileType": 10
     }
     response = requests.post(url, headers=headers, json=data)
-    time.sleep(10)
+    # time.sleep(10)
     
     # print("Response for file import. ", response.json())
     response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
@@ -249,7 +249,7 @@ def import_metadata(project_uuid, metadata_file_path, operation, system_id = Non
     }
     response = requests.post(url, headers=headers, json=data)
     json_data = response.json()
-    print(json_data)
+    # print(json_data)
     response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
     # Assuming the response is a JSON object
     
