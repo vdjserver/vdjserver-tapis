@@ -10,6 +10,7 @@ from tapipy.tapis import Tapis
 import vdjserver.defaults
 import requests
 import vdjserver.files
+import time
 
 
 #### Meta ####
@@ -33,27 +34,47 @@ def meta_delete(tapis_obj, query):
     
     
     
-def meta_list(system_id=None, token=None):
+def meta_list(system_id=None, token=None, format_json=False, **kwargs):
     token = vdjserver.defaults.vdjserver_token(token)
-
     headers = {"Authorization": f"Bearer {token}"}
-    # Construct the URL
     url = f"https://{vdjserver.defaults.vdj_host}/api/v2/project/metadata"
-
+    # print("Format Json: ", format_json)
     try:
-        print("Sending request to fetch metadata...")
         response = requests.get(url, headers=headers)
-        response.raise_for_status()  # Raise exception for non-2xx status codes
-        #parse json response
+        response.raise_for_status()
         json_data = response.json()
-        print(json.dumps(json_data, indent=4))  # Pretty-print the JSON response
+        if format_json:
+            result = json_data.get('result', [])
+            print(json.dumps(result, indent=4))
+        else:
+            if len(json_data) > 0:
+                # Define the fields we want to print
+                fields = ["uuid", "owner", "name", "created", "lastUpdated"]
+                # Determine the maximum width for each column based on the data
+                field_widths = [len(field) for field in fields]
+                # First pass to calculate the maximum width for each column
+                result = json_data.get('result', [])
+                for metadata in result:
+                    for i, field in enumerate(fields):
+                        
+                        field_widths[i] = max(field_widths[i], len(str(metadata.get(field, 'N/A'))))
 
-    except requests.exceptions.RequestException as e:
-        print(f"Error making request: {e}")
-        exit(1)
-    except json.JSONDecodeError:
-        print("Error: Unable to parse response as JSON.")
-        exit(1)
+                # Print the header row
+                header = " | ".join([f"{field:<{field_widths[i]}}" for i, field in enumerate(fields)])
+                print(header)
+                print("-" * len(header))  # Separator line
+
+                # Print each row of job data
+                for metadata in result:
+                    row = " | ".join([f"{str(metadata.get(field, 'N/A')):<{field_widths[i]}}" for i, field in enumerate(fields)])
+                    print(row)
+
+            else:
+                print(f"No Metadata found.")
+    except Exception as e:
+        print(f"Error retrieving job list: {e}")
+
+
         
 
 def get_metadata(project_uuid, name, system_id = None, token = None):
@@ -182,7 +203,7 @@ def export_table_metadata(project_uuid, table_name, system_id = None, token=None
 # Function to import metadata with project uuid and file path
 ##NOT WORKING RIGHT NOW.
 
-def import_metadata(project_uuid, metadata_file_path, system_id = None, token=None):
+def import_metadata(project_uuid, metadata_file_path, operation, system_id = None, token=None):
     token = vdjserver.defaults.vdjserver_token(token)
 
     headers = {
@@ -208,7 +229,10 @@ def import_metadata(project_uuid, metadata_file_path, system_id = None, token=No
         "name": metadata_file,
         "fileType": 10
     }
-    response = requests.post(url, headers=headers, data=data)
+    response = requests.post(url, headers=headers, json=data)
+    time.sleep(10)
+    
+    # print("Response for file import. ", response.json())
     response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
 
     # Assuming the response is a JSON object
@@ -216,45 +240,20 @@ def import_metadata(project_uuid, metadata_file_path, system_id = None, token=No
 
     # Now import the metadata
     url = f"https://{vdjserver.defaults.vdj_host}/api/v2/project/{project_uuid}/metadata/import"
+    if operation not in ['append', 'replace']:
+        print('Wrong operation type. Please select from the list.')
+        return
     data = {
         "filename": metadata_file,
-        "operation": "append"
+        "operation": operation
     }
-    response = requests.post(url, headers=headers, data=data)
-    response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
-
-    # Assuming the response is a JSON object
+    response = requests.post(url, headers=headers, json=data)
     json_data = response.json()
-
-#     # Open the file to be sent in the request
-#     with open(metadata_file_path, 'rb') as metadata_file:
-#         files = {'file': (os.path.basename(metadata_file_path), metadata_file)}
-#         try:
-#             print(f"Sending request to import metadata from file {metadata_file_path}...")
-#             data = {
-#                 "filename": metadata_file,
-#                 "operation": "append"
-#             }
-#             # Send the POST request to upload the file
-#             response = requests.post(url, headers=headers, data=data)
-#             response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
-#             
-#             # Assuming the response is a JSON object
-#             json_data = response.json()
-#             
-#             # Check if the import was successful
-#             if json_data.get('status') == 'success':
-#                 print(f"Metadata successfully imported into project {project_uuid}.")
-#             else:
-#                 print(f"Failed to import metadata: {json_data.get('message', 'Unknown error')}")
-#         
-#         except requests.exceptions.RequestException as e:
-#             print(f"Error making request: {e}")
-#             exit(1)
-#         except json.JSONDecodeError:
-#             print("Error: Unable to parse response as JSON.")
-#             exit(1)
-
+    print(json_data)
+    response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
+    # Assuming the response is a JSON object
+    
+    
 def import_table_metadata(project_uuid, table_name, metadata_file_path, system_id=None, token=None):
     token = vdjserver.defaults.vdjserver_token(token)
 

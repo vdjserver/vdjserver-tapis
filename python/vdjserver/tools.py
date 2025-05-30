@@ -86,7 +86,6 @@ def define_args():
                             help='''Manually provide token instead of using JWT environment variable.''')
     group_help.add_argument('--system', action='store', dest='system_id',
                             help='''System ID for operation.''')
-
     # Setup subparsers
     subparsers = parser.add_subparsers(title='subcommands', dest='command', metavar='')
     # TODO:  This is a temporary fix for Python issue 9253
@@ -98,6 +97,14 @@ def define_args():
     common_help.add_argument('--version', action='version',
                              version='%(prog)s:' + ' %s' % __version__)
     common_help.add_argument('-h', '--help', action='help', help='show this help message and exit')
+    #Moved these two arguments from group_help to common_help so user can send toke and system_id of their choice.
+    common_help.add_argument('--token', action='store', dest='token',
+                            help='''Manually provide token instead of using JWT environment variable.''')
+    common_help.add_argument('--system', action='store', dest='system_id',
+                            help='''System ID for operation.''')
+    ## Added --format-json to common parser so that every function has accesss to it.
+    # common_help.add_argument('--format-json', action='store_true', dest='format_json',
+    #                         help='''Print full metadata in raw JSON format.''')
 
     #
     # Subparser for Token operations
@@ -143,25 +150,19 @@ def define_args():
                                          help='Meta database operations.',
                                          description='Meta database operations.')
     meta_subparser = parser_meta.add_subparsers(title='subcommands', metavar='')
-
-    # Subparser for meta operations
-    parser_meta = meta_subparser.add_parser('get', parents=[common_parser],
-                                            add_help=False,
-                                            help='Get token.',
-                                            description='Get token.')
-    group_meta = parser_meta.add_argument_group('get meta arguments')
-    group_meta.add_argument('uuid',type=str,help="Meta uuid")
-    
+   
     
      # Subparser for listing metadata for all the projects
-    parser_list_metadata = meta_subparser.add_parser('meta_list', parents=[common_parser],
+    parser_list_metadata = meta_subparser.add_parser('list', parents=[common_parser],
                                             add_help=False,
                                             help='get project metadata records.',
                                             description='Show metadata for all projects.')
+    parser_list_metadata.add_argument('--format-json', dest='format_json', action='store_true', 
+                                      help='Print full metadata in raw JSON format.')
     parser_list_metadata.set_defaults(func=vdjserver.meta.meta_list)
     
     # Subparser for getting metadata for a specific project
-    parser_get_metadata = meta_subparser.add_parser('query_meta', parents=[common_parser],
+    parser_get_metadata = meta_subparser.add_parser('meta-name', parents=[common_parser],
                                             add_help=False,
                                             help='query metadata for project.',
                                             description='Query metadata for project with project uuid')
@@ -171,7 +172,7 @@ def define_args():
     parser_get_metadata.set_defaults(func=vdjserver.meta.get_metadata)
     
     # Subparser for getting metadata for a specific project
-    parser_meta_get_by_uuid = meta_subparser.add_parser('meta_get_by_uuid', parents=[common_parser],
+    parser_meta_get_by_uuid = meta_subparser.add_parser('meta-uuid', parents=[common_parser],
                                             add_help=False,
                                             help='get metadata for uuid.',
                                             description='Retrieve specific metadata for a project by UUID.\
@@ -182,7 +183,7 @@ def define_args():
     parser_meta_get_by_uuid.set_defaults(func=vdjserver.meta.meta_get_by_uuid)
     
     # Subparser for 'export_metadata'
-    parser_export_metadata = meta_subparser.add_parser('export_metadata',  parents=[common_parser],
+    parser_export_metadata = meta_subparser.add_parser('export-metadata',  parents=[common_parser],
                                                        add_help=False,
                                                        help='Export metadata for a project by its UUID.',
                                                        description='')
@@ -191,7 +192,7 @@ def define_args():
     parser_export_metadata.set_defaults(func= vdjserver.meta.export_metadata)
     
     # Subparser for 'import metadata'
-    parser_import_metadata = meta_subparser.add_parser('import_metadata',  parents=[common_parser],
+    parser_import_metadata = meta_subparser.add_parser('import-metadata',  parents=[common_parser],
                                                        add_help=False,
                                                        help='Import metadata for a project by its UUID.',
                                                        description='Import metadata for a project by uuid and\
@@ -199,11 +200,12 @@ def define_args():
     group_parser_import_metadata = parser_import_metadata.add_argument_group("Import metadata arguments.")
     group_parser_import_metadata.add_argument('project_uuid', type=str, help="The UUID of the project to export metadata for.")
     group_parser_import_metadata.add_argument('metadata_file_path', type=str, help='Path to the metadata file to import.')
+    group_parser_import_metadata.add_argument('operation', type=str, help='Operations to perform (e.g., append, replace).')
     parser_import_metadata.set_defaults(func= vdjserver.meta.import_metadata)
     
     
     # Subparser for export_table_metadata
-    parser_export_table_metadata = meta_subparser.add_parser('export_metadata_table',  parents=[common_parser],
+    parser_export_table_metadata = meta_subparser.add_parser('export-metadata-table',  parents=[common_parser],
                                                        add_help=False,
                                                        help='Export metadata table from project by its UUID and table name.',
                                                        description='Export metadata table from project by its UUID and table name')
@@ -214,7 +216,7 @@ def define_args():
     
     
     # Subparser for import_table_metadata
-    parser_import_table_metadata = meta_subparser.add_parser('import_metadata_table', parents=[common_parser],
+    parser_import_table_metadata = meta_subparser.add_parser('import-metadata-table', parents=[common_parser],
                                                         add_help=False,
                                                         help='Import metadata table to project by its UUID and table name.',
                                                         description='Import metadata table to project by its UUID and table name')
