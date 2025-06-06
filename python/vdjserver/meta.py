@@ -201,9 +201,7 @@ def export_table_metadata(project_uuid, table_name, system_id = None, token=None
         
         
 # Function to import metadata with project uuid and file path
-##NOT WORKING RIGHT NOW.
-
-def import_metadata(project_uuid, metadata_file_path, operation, system_id = None, token=None):
+def import_metadata(project_uuid, metadata_file_path, operation, system_id=None, token=None):
     token = vdjserver.defaults.vdjserver_token(token)
 
     headers = {
@@ -211,47 +209,55 @@ def import_metadata(project_uuid, metadata_file_path, operation, system_id = Non
         "Content-Type": "application/json"
     }
 
-    # Check if the file exists
-    if not os.path.exists(metadata_file_path):
-        print(f"Error: The file {metadata_file_path} does not exist.")
-        exit(1)
+    try:
+        # Check if the file exists
+        if not os.path.exists(metadata_file_path):
+            print(f"Error: The file {metadata_file_path} does not exist.", file=sys.stderr)
+            return
 
-    # upload the file
-    dest_file_path = f'/projects/{project_uuid}/files/{metadata_file_path}'
-    print(f"Uploading metadata file {metadata_file_path}...")
-    vdjserver.files.tapis_files_upload(metadata_file_path, dest_file_path=dest_file_path)
+        # Upload the file
+        dest_file_path = f'/projects/{project_uuid}/files/{metadata_file_path}'
+        print(f"Uploading metadata file {metadata_file_path}...")
+        vdjserver.files.tapis_files_upload(metadata_file_path, dest_file_path=dest_file_path)
 
-    # attach uploaded file to a vdjserver project
-    metadata_file = metadata_file_path.split('/')[-1]
-    url = f"https://{vdjserver.defaults.vdj_host}/api/v2/project/{project_uuid}/file/import"
-    data = {
-        "path": metadata_file,
-        "name": metadata_file,
-        "fileType": 10
-    }
-    response = requests.post(url, headers=headers, json=data)
-    # time.sleep(10)
-    
-    # print("Response for file import. ", response.json())
-    response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
+        # Import the uploaded file to the VDJServer project
+        metadata_file = os.path.basename(metadata_file_path)
+        file_import_url = f"https://{vdjserver.defaults.vdj_host}/api/v2/project/{project_uuid}/file/import"
+        file_import_data = {
+            "path": metadata_file,
+            "name": metadata_file,
+            "fileType": 10
+        }
 
-    # Assuming the response is a JSON object
-    json_data = response.json()
+        response = requests.post(file_import_url, headers=headers, json=file_import_data)
+        file_response_json = response.json()
+        if file_response_json.get("status") != "success":
+            print("File import failed:")
+            print(json.dumps(file_response_json, indent=4))
+            return
+        # Validate operation
+        if operation not in ['append', 'replace']:
+            print("Error: Invalid operation type. Choose 'append' or 'replace'.", file=sys.stderr)
+            return
 
-    # Now import the metadata
-    url = f"https://{vdjserver.defaults.vdj_host}/api/v2/project/{project_uuid}/metadata/import"
-    if operation not in ['append', 'replace']:
-        print('Wrong operation type. Please select from the list.')
-        return
-    data = {
-        "filename": metadata_file,
-        "operation": operation
-    }
-    response = requests.post(url, headers=headers, json=data)
-    json_data = response.json()
-    # print(json_data)
-    response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
-    # Assuming the response is a JSON object
+        # Import metadata
+        metadata_import_url = f"https://{vdjserver.defaults.vdj_host}/api/v2/project/{project_uuid}/metadata/import"
+        metadata_import_data = {
+            "filename": metadata_file,
+            "operation": operation
+        }
+
+        response = requests.post(metadata_import_url, headers=headers, json=metadata_import_data)
+        metadata_response_json = response.json()
+        if metadata_response_json.get("status") != "success":
+            print("Metadata import failed:")
+            print(json.dumps(metadata_response_json, indent=4))
+            return
+
+    except requests.exceptions.RequestException as req_err:
+        print(f"HTTP request error: {req_err}", file=sys.stderr)
+    except Exception as e:
+        print(f"Unexpected error during metadata import: {e}", file=sys.stderr)
     
     
 def import_table_metadata(project_uuid, table_name, metadata_file_path, system_id=None, token=None):

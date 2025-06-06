@@ -45,6 +45,7 @@ import vdjserver.files
 import vdjserver.apps
 import vdjserver.adc_cache
 import vdjserver.jobs
+import vdjserver.project
 
 def init_tapis(token):
     try:
@@ -592,6 +593,53 @@ def define_args():
     group_parser_jobs_cancel.add_argument('job_uuid', type=str, help="UUID of the job to cancel.")
     group_parser_jobs_cancel.add_argument('--pretty', action='store_true', help="Pretty print the response.")
     parser_jobs_cancel.set_defaults(func=vdjserver.jobs.cancel_job)
+    
+    
+    #
+    # Subparser for Project operations
+    #
+    parser_project = subparsers.add_parser('project',
+                                            parents=[common_parser],
+                                            add_help=False,
+                                            help='Project database operations.',
+                                            description='Project database operations.')
+    project_subparser = parser_project.add_subparsers(title='subcommands', metavar='')
+
+    # Subparser for creating a new project
+    parser_create_project = project_subparser.add_parser('create',
+                                                        parents=[common_parser],
+                                                        add_help=False,
+                                                        help='Create a new project.',
+                                                        description='Create a new project by specifying a title or JSON file.')
+    #Arguments added to this group are mutually exclusive, meaning the user can specify only one of them at a time, not multiple.
+    group_parser_create_project = parser_create_project.add_mutually_exclusive_group(required=True)
+    group_parser_create_project.add_argument('--title',type=str,help='Title of the new project.')
+    group_parser_create_project.add_argument('--json-file',type=str,help='Path to JSON file containing project fields.')
+    parser_create_project.set_defaults(func=vdjserver.project.create_project)
+
+    
+    # Subparser for adding a user to a project
+    parser_add_user = project_subparser.add_parser('add-user',
+                                                    parents=[common_parser],
+                                                    add_help=False,
+                                                    help='Add a user to a project.',
+                                                    description='Add a user to a VDJServer project.')
+    group_parser_add_user = parser_add_user.add_argument_group('Add user arguments')
+    group_parser_add_user.add_argument('project_uuid', type = str, help='UUID of the project.')
+    group_parser_add_user.add_argument('username', type = str, help='Username to add to the project.')
+    parser_add_user.set_defaults(func=vdjserver.project.add_user_to_project)
+    
+    # Subparser for removing a user from a project
+    parser_remove_user = project_subparser.add_parser('remove-user',
+                                                    parents=[common_parser],
+                                                    add_help=False,
+                                                    help='Remove a user from a project.',
+                                                    description='Remove a user from a VDJServer project.')
+
+    group_parser_remove_user = parser_remove_user.add_argument_group('Remove user arguments')
+    group_parser_remove_user.add_argument('project_uuid', type=str, help='UUID of the project.')
+    group_parser_remove_user.add_argument('username', type=str, help='Username to remove from the project.')
+    parser_remove_user.set_defaults(func=vdjserver.project.remove_user_from_project)
     
 
     return parser
