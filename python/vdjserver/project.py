@@ -43,10 +43,10 @@ def create_project(title = None,  json_file = None, system_id = None, token = No
     # print(project_fields)
     try:
         response = requests.post(url, headers=headers, json=project_fields)
-        print(f'Response: {response.json()}')
+        #print(f'Response: {response.json()}')
         response.raise_for_status()
         json_data = response.json()
-        print("Json Data: ", json_data)
+        #print("Json Data: ", json_data)
 
         if json_data.get('status') == 'success' and 'result' in json_data:
             result = json_data['result']
@@ -56,6 +56,7 @@ def create_project(title = None,  json_file = None, system_id = None, token = No
                 # return uuid
             else:
                 print("UUID not found in response.", file=sys.stderr)
+                print("Json Data: ", json_data)
         else:
             print(f"Project creation failed with status: {json_data.get('status')}", file=sys.stderr)
             if json_data.get('message'):

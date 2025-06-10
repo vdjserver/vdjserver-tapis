@@ -70,64 +70,13 @@ def token_get_cmd(username, password=None, system_id=None, token=None):
 #     tapis_obj = init_tapis(token)
 #     return vdjserver.apps.apps_list(tapis_obj)
 
-def define_args():
-    """
-    Define commandline arguments
+# not used yet
+#def define_token_args(subparser):
 
-    Returns:
-      argparse.ArgumentParser: argument parser.
-    """
-    parser = argparse.ArgumentParser(add_help=False,
-                                     description='VDJServer utility commands.')
-    group_help = parser.add_argument_group('help')
-    group_help.add_argument('-h', '--help', action='help', help='show this help message and exit')
-    group_help.add_argument('--version', action='version',
-                            version='%(prog)s:' + ' %s' % __version__)
-    group_help.add_argument('--token', action='store', dest='token',
-                            help='''Manually provide token instead of using JWT environment variable.''')
-    group_help.add_argument('--system', action='store', dest='system_id',
-                            help='''System ID for operation.''')
-    # Setup subparsers
-    subparsers = parser.add_subparsers(title='subcommands', dest='command', metavar='')
-    # TODO:  This is a temporary fix for Python issue 9253
-    subparsers.required = True
-
-    # Define arguments common to all subcommands
-    common_parser = argparse.ArgumentParser(add_help=False)
-    common_help = common_parser.add_argument_group('help')
-    common_help.add_argument('--version', action='version',
-                             version='%(prog)s:' + ' %s' % __version__)
-    common_help.add_argument('-h', '--help', action='help', help='show this help message and exit')
-    #Moved these two arguments from group_help to common_help so user can send toke and system_id of their choice.
-    common_help.add_argument('--token', action='store', dest='token',
-                            help='''Manually provide token instead of using JWT environment variable.''')
-    common_help.add_argument('--system', action='store', dest='system_id',
-                            help='''System ID for operation.''')
-    ## Added --format-json to common parser so that every function has accesss to it.
-    # common_help.add_argument('--format-json', action='store_true', dest='format_json',
-    #                         help='''Print full metadata in raw JSON format.''')
-
-    #
-    # Subparser for Token operations
-    #
-    parser_token = subparsers.add_parser('token', parents=[common_parser],
-                                         add_help=False,
-                                         help='Token operations.',
-                                         description='Token operations.')
-    token_subparser = parser_token.add_subparsers(title='subcommands', metavar='')
-
-    # Subparser for token operations
-    parser_token = token_subparser.add_parser('get', parents=[common_parser],
-                                            add_help=False,
-                                            help='Get token.',
-                                            description='Get token.')
-    group_tokens = parser_token.add_argument_group('get token arguments')
-    group_tokens.add_argument('username',type=str,help="Username")
-    group_tokens.add_argument('-p', action='store', dest='password',
-                              help='''Password.''')
-    parser_token.set_defaults(func=token_get_cmd)
-
-    # Subparser for Client operations
+#
+# Subparser for Client operations
+#
+def define_clients_args(subparsers, common_parser):
     parser_sub = subparsers.add_parser('clients', parents=[common_parser],
                                             add_help=False,
                                             help='Tapis Client API operations.',
@@ -139,43 +88,43 @@ def define_args():
                                             add_help=False,
                                             help='List clients.',
                                             description='List clients.')
-    #group_files = parser_sub.add_argument_group('list files arguments')
-    #group_files.add_argument('path',type=str,help="File path")
     parser_sub.set_defaults(func=vdjserver.clients.clients_list_cmd)
 
-    #
-    # Subparser for Meta operations
-    #
-    parser_meta = subparsers.add_parser('meta', parents=[common_parser],
-                                         add_help=False,
-                                         help='Meta database operations.',
-                                         description='Meta database operations.')
-    meta_subparser = parser_meta.add_subparsers(title='subcommands', metavar='')
-   
-    
-     # Subparser for listing metadata for all the projects
-    parser_list_metadata = meta_subparser.add_parser('list', parents=[common_parser],
+#
+# Subparser for Project operations
+#
+def define_project_args(subparsers, common_parser):
+    parser_project = subparsers.add_parser('project',
+                                            parents=[common_parser],
                                             add_help=False,
-                                            help='get project metadata records.',
+                                            help='Project database operations.',
+                                            description='Project database operations.')
+    project_subparser = parser_project.add_subparsers(title='subcommands', metavar='')
+
+     # Subparser for listing projects
+    parser_list_metadata = project_subparser.add_parser('list', parents=[common_parser],
+                                            add_help=False,
+                                            help='List project metadata records.',
                                             description='Show metadata for all projects.')
     parser_list_metadata.add_argument('--format-json', dest='format_json', action='store_true', 
                                       help='Print full metadata in raw JSON format.')
     parser_list_metadata.set_defaults(func=vdjserver.meta.meta_list)
-    
+
+
     # Subparser for getting metadata for a specific project
-    parser_get_metadata = meta_subparser.add_parser('meta-name', parents=[common_parser],
+    parser_get_metadata = project_subparser.add_parser('meta-name', parents=[common_parser],
                                             add_help=False,
-                                            help='query metadata for project.',
+                                            help='Query metadata by name for project.',
                                             description='Query metadata for project with project uuid')
     group_get_metadata = parser_get_metadata.add_argument_group('get query meta arguments')
     group_get_metadata.add_argument('project_uuid', type=str, help="project identifier")
     group_get_metadata.add_argument('name', type=str, help="metadata type name (e.g., 'subject, repertoire')")
     parser_get_metadata.set_defaults(func=vdjserver.meta.get_metadata)
-    
+
     # Subparser for getting metadata for a specific project
-    parser_meta_get_by_uuid = meta_subparser.add_parser('meta-uuid', parents=[common_parser],
+    parser_meta_get_by_uuid = project_subparser.add_parser('meta-uuid', parents=[common_parser],
                                             add_help=False,
-                                            help='get metadata for uuid.',
+                                            help='Get metadata by uuid for project.',
                                             description='Retrieve specific metadata for a project by UUID.\
                                                 Requires both project UUID and metadata UUID.')
     group_meta_get_by_uuid = parser_meta_get_by_uuid.add_argument_group('meta_get_by_uuid arguments')
@@ -183,30 +132,65 @@ def define_args():
     group_meta_get_by_uuid.add_argument('uuid',type=str, help="metadata identifer")
     parser_meta_get_by_uuid.set_defaults(func=vdjserver.meta.meta_get_by_uuid)
     
+    # Subparser for creating a new project
+    parser_create_project = project_subparser.add_parser('create',
+                                                        parents=[common_parser],
+                                                        add_help=False,
+                                                        help='Create a new project.',
+                                                        description='Create a new project by specifying a title or JSON file.')
+    #Arguments added to this group are mutually exclusive, meaning the user can specify only one of them at a time, not multiple.
+    group_parser_create_project = parser_create_project.add_mutually_exclusive_group(required=True)
+    group_parser_create_project.add_argument('--title',type=str,help='Title of the new project.')
+    group_parser_create_project.add_argument('--json-file',type=str,help='Path to JSON file containing project fields.')
+    parser_create_project.set_defaults(func=vdjserver.project.create_project)
+
+    
+    # Subparser for adding a user to a project
+    parser_add_user = project_subparser.add_parser('add-user',
+                                                    parents=[common_parser],
+                                                    add_help=False,
+                                                    help='Add a user to a project.',
+                                                    description='Add a user to a VDJServer project.')
+    group_parser_add_user = parser_add_user.add_argument_group('Add user arguments')
+    group_parser_add_user.add_argument('project_uuid', type = str, help='UUID of the project.')
+    group_parser_add_user.add_argument('username', type = str, help='Username to add to the project.')
+    parser_add_user.set_defaults(func=vdjserver.project.add_user_to_project)
+    
+    # Subparser for removing a user from a project
+    parser_remove_user = project_subparser.add_parser('remove-user',
+                                                    parents=[common_parser],
+                                                    add_help=False,
+                                                    help='Remove a user from a project.',
+                                                    description='Remove a user from a VDJServer project.')
+
+    group_parser_remove_user = parser_remove_user.add_argument_group('Remove user arguments')
+    group_parser_remove_user.add_argument('project_uuid', type=str, help='UUID of the project.')
+    group_parser_remove_user.add_argument('username', type=str, help='Username to remove from the project.')
+    parser_remove_user.set_defaults(func=vdjserver.project.remove_user_from_project)
+
     # Subparser for 'export_metadata'
-    parser_export_metadata = meta_subparser.add_parser('export-metadata',  parents=[common_parser],
+    parser_export_metadata = project_subparser.add_parser('export-metadata',  parents=[common_parser],
                                                        add_help=False,
-                                                       help='Export metadata for a project by its UUID.',
+                                                       help='Export AIRR metadata JSON.',
                                                        description='')
     group_parser_export_metadata = parser_export_metadata.add_argument_group("Export Metadata argument.")
-    group_parser_export_metadata.add_argument('project_uuid', type=str, help="The UUID of the project to export metadata for.")
+    group_parser_export_metadata.add_argument('project_uuid', type=str, help="The project UUID.")
     parser_export_metadata.set_defaults(func= vdjserver.meta.export_metadata)
     
     # Subparser for 'import metadata'
-    parser_import_metadata = meta_subparser.add_parser('import-metadata',  parents=[common_parser],
+    parser_import_metadata = project_subparser.add_parser('import-metadata',  parents=[common_parser],
                                                        add_help=False,
-                                                       help='Import metadata for a project by its UUID.',
-                                                       description='Import metadata for a project by uuid and\
-                                                           metadata file')
+                                                       help='Import AIRR metadata JSON.',
+                                                       description='Import AIRR metadata JSON.')
     group_parser_import_metadata = parser_import_metadata.add_argument_group("Import metadata arguments.")
-    group_parser_import_metadata.add_argument('project_uuid', type=str, help="The UUID of the project to export metadata for.")
+    group_parser_import_metadata.add_argument('project_uuid', type=str, help="The project UUID.")
     group_parser_import_metadata.add_argument('metadata_file_path', type=str, help='Path to the metadata file to import.')
     group_parser_import_metadata.add_argument('operation', type=str, help='Operations to perform (e.g., append, replace).')
     parser_import_metadata.set_defaults(func= vdjserver.meta.import_metadata)
     
     
     # Subparser for export_table_metadata
-    parser_export_table_metadata = meta_subparser.add_parser('export-metadata-table',  parents=[common_parser],
+    parser_export_table_metadata = project_subparser.add_parser('export-table',  parents=[common_parser],
                                                        add_help=False,
                                                        help='Export metadata table from project by its UUID and table name.',
                                                        description='Export metadata table from project by its UUID and table name')
@@ -217,7 +201,7 @@ def define_args():
     
     
     # Subparser for import_table_metadata
-    parser_import_table_metadata = meta_subparser.add_parser('import-metadata-table', parents=[common_parser],
+    parser_import_table_metadata = project_subparser.add_parser('import-table', parents=[common_parser],
                                                         add_help=False,
                                                         help='Import metadata table to project by its UUID and table name.',
                                                         description='Import metadata table to project by its UUID and table name')
@@ -226,21 +210,24 @@ def define_args():
     group_parser_import_table_metadata.add_argument('table_name', type=str, help="Table name (e.g. values: subject, sample_processing).")
     group_parser_import_table_metadata.add_argument('metadata_file_path', type=str, help="Path to the metadata file to import (in tsv format).")
     parser_import_table_metadata.set_defaults(func=vdjserver.meta.import_table_metadata)
-    
-    # Add argument for metadata file path
-    
-    #group_merge = parser_merge.add_argument_group('merge arguments')
-    #group_merge.add_argument('-o', action='store', dest='out_file', required=True,
-    #                          help='''Output file name.''')
-    #group_merge.add_argument('--drop', action='store_true', dest='drop',
-    #                          help='''If specified, drop fields that do not exist in all input files.
-    #                               Otherwise, include all columns in all files and fill missing data 
-    #                               with empty strings.''')
-    #group_merge.add_argument('-a', nargs='+', action='store', dest='airr_files', required=True,
-    #                         help='A list of AIRR rearrangement files.')
-    #parser_merge.set_defaults(func=merge_cmd)
 
-    # Subparser for File operations
+
+#
+# Subparser for Meta operations
+#
+# def define_meta_args(subparsers, common_parser):
+#     parser_meta = subparsers.add_parser('meta', parents=[common_parser],
+#                                          add_help=False,
+#                                          help='Meta database operations.',
+#                                          description='Meta database operations.')
+#     meta_subparser = parser_meta.add_subparsers(title='subcommands', metavar='')
+#    
+    
+
+#
+# Subparser for File operations
+#
+def define_files_args(subparsers, common_parser):
     parser_files = subparsers.add_parser('files', parents=[common_parser],
                                             add_help=False,
                                             help='Tapis Files API operations.',
@@ -270,8 +257,6 @@ def define_args():
     # Set the function to be called when the subcommand is invoked
     parser_files_mkdir.set_defaults(func=vdjserver.files.tapis_files_mkdir)
 
-    
-    
     # Add the 'upload' subcommand to the parser
     parser_files_upload = files_subparser.add_parser('upload', parents=[common_parser],
                                                     add_help=False,
@@ -374,7 +359,10 @@ def define_args():
     # Set the function to be called when the subcommand is invoked
     parser_files_download.set_defaults(func=vdjserver.files.tapis_files_download)
 
-    # Subparser for Postit operations
+#
+# Subparser for Postit operations
+#
+def define_postits_args(subparsers, common_parser):
     parser_postits = subparsers.add_parser('postits', parents=[common_parser],
                                             add_help=False,
                                             help='Tapis Files Postits API operations.',
@@ -391,48 +379,8 @@ def define_args():
     group_postits.add_argument('--uuid', type=str, help="List postit by uuid")
     parser_postits.set_defaults(func=vdjserver.files.postits_list_cmd)
 
-    # Subparser for ADC Download Cache operations
-    parser_cache = subparsers.add_parser('adc_cache', parents=[common_parser],
-                                            add_help=False,
-                                            help='ADC Download Cache API operations.',
-                                            description='ADC Download Cache API operations.')
-    cache_subparser = parser_cache.add_subparsers(title='subcommands', metavar='')
 
-
-    # Subparser to get ADC Download Cache status
-    parser_cache = cache_subparser.add_parser('status', parents=[common_parser],
-                                            add_help=False,
-                                            help='Get ADC Download Cache status.',
-                                            description='Get ADC Download Cache status.')
-    parser_cache.set_defaults(func=vdjserver.adc_cache.cache_get_status_cmd)
-
-    # Subparser to update ADC Download Cache status
-    parser_cache = cache_subparser.add_parser('update', parents=[common_parser],
-                                            add_help=False,
-                                            help='Update ADC Download Cache status.',
-                                            description='Update ADC Download Cache status.')
-    group_cache = parser_cache.add_argument_group('update ADC Download Cache arguments')
-    group_cache.add_argument('update', type=str, help="Update ADC Download Cache status")
-    parser_cache.set_defaults(func=vdjserver.adc_cache.cache_update_status_cmd)
-
-    # Subparser for Postit operations
-    parser_postits = subparsers.add_parser('postits', parents=[common_parser],
-                                            add_help=False,
-                                            help='Tapis Files Postits API operations.',
-                                            description='Tapis Files Postits API operations.')
-    postits_subparser = parser_postits.add_subparsers(title='subcommands', metavar='')
-
-
-    # Subparser to list postits
-    parser_postits = postits_subparser.add_parser('list', parents=[common_parser],
-                                            add_help=False,
-                                            help='List postits.',
-                                            description='List postits.')
-    group_postits = parser_postits.add_argument_group('list postits arguments')
-    group_postits.add_argument('--uuid', type=str, help="List postit by uuid")
-    parser_postits.set_defaults(func=vdjserver.files.postits_list_cmd)
-
-    # Subparser for ADC Download Cache operations
+def define_adc_cache_args(subparsers, common_parser):
     parser_cache = subparsers.add_parser('adc_cache', parents=[common_parser],
                                             add_help=False,
                                             help='ADC Download Cache API operations.',
@@ -457,7 +405,10 @@ def define_args():
     parser_cache.set_defaults(func=vdjserver.adc_cache.cache_update_status_cmd)
 
 
-    # Subparser for App operations
+#
+# Subparser for App operations
+#
+def define_apps_args(subparsers, common_parser):
     parser_apps = subparsers.add_parser('apps', parents=[common_parser],
                                         add_help=False,
                                         help='Tapis Apps API operations.',
@@ -519,8 +470,11 @@ def define_args():
     group_parser_apps_change_owner.add_argument('app_id', type=str, help="App ID/Name")
     group_parser_apps_change_owner.add_argument('user_name', type=str, help="New app owner (User Name)")
     parser_apps_change_owner.set_defaults(func=vdjserver.apps.change_app_owner)
-    
-    # Subparser for job operations
+
+#
+# Subparser for job operations
+#
+def define_jobs_args(subparsers, common_parser):
     parser_jobs = subparsers.add_parser('jobs', parents=[common_parser],
                                             add_help=False,
                                             help='Tapis Jobs API operations.',
@@ -593,54 +547,92 @@ def define_args():
     group_parser_jobs_cancel.add_argument('job_uuid', type=str, help="UUID of the job to cancel.")
     group_parser_jobs_cancel.add_argument('--pretty', action='store_true', help="Pretty print the response.")
     parser_jobs_cancel.set_defaults(func=vdjserver.jobs.cancel_job)
-    
-    
+
+
+
+def define_args():
+    """
+    Define commandline arguments
+
+    Returns:
+      argparse.ArgumentParser: argument parser.
+    """
+    parser = argparse.ArgumentParser(add_help=False,
+                                     description='VDJServer utility commands.')
+    group_help = parser.add_argument_group('help')
+    group_help.add_argument('-h', '--help', action='help', help='show this help message and exit')
+    group_help.add_argument('--version', action='version',
+                            version='%(prog)s:' + ' %s' % __version__)
+    group_help.add_argument('--token', action='store', dest='token',
+                            help='''Manually provide token instead of using JWT environment variable.''')
+    group_help.add_argument('--system', action='store', dest='system_id',
+                            help='''System ID for operation.''')
+    # Setup subparsers
+    subparsers = parser.add_subparsers(title='subcommands', dest='command', metavar='')
+    # TODO:  This is a temporary fix for Python issue 9253
+    subparsers.required = True
+
+    # Define arguments common to all subcommands
+    common_parser = argparse.ArgumentParser(add_help=False)
+    common_help = common_parser.add_argument_group('help')
+    common_help.add_argument('--version', action='version',
+                             version='%(prog)s:' + ' %s' % __version__)
+    common_help.add_argument('-h', '--help', action='help', help='show this help message and exit')
+    #Moved these two arguments from group_help to common_help so user can send toke and system_id of their choice.
+    common_help.add_argument('--token', action='store', dest='token',
+                            help='''Manually provide token instead of using JWT environment variable.''')
+    common_help.add_argument('--system', action='store', dest='system_id',
+                            help='''System ID for operation.''')
+    ## Added --format-json to common parser so that every function has accesss to it.
+    # common_help.add_argument('--format-json', action='store_true', dest='format_json',
+    #                         help='''Print full metadata in raw JSON format.''')
+
+    # Subparser for project operations
+    define_project_args(subparsers, common_parser)
+
+    # Subparser for File operations
+    define_files_args(subparsers, common_parser)
+
+    # Subparser for Job operations
+    define_jobs_args(subparsers, common_parser)
+
     #
-    # Subparser for Project operations
+    # Subparser for Token operations
     #
-    parser_project = subparsers.add_parser('project',
-                                            parents=[common_parser],
+    parser_token = subparsers.add_parser('token', parents=[common_parser],
+                                         add_help=False,
+                                         help='Token operations.',
+                                         description='Token operations.')
+    token_subparser = parser_token.add_subparsers(title='subcommands', metavar='')
+
+    # Subparser for token operations
+    parser_token = token_subparser.add_parser('get', parents=[common_parser],
                                             add_help=False,
-                                            help='Project database operations.',
-                                            description='Project database operations.')
-    project_subparser = parser_project.add_subparsers(title='subcommands', metavar='')
+                                            help='Get token.',
+                                            description='Get token.')
+    group_tokens = parser_token.add_argument_group('get token arguments')
+    group_tokens.add_argument('username',type=str,help="Username")
+    group_tokens.add_argument('-p', action='store', dest='password',
+                              help='''Password.''')
+    parser_token.set_defaults(func=token_get_cmd)
 
-    # Subparser for creating a new project
-    parser_create_project = project_subparser.add_parser('create',
-                                                        parents=[common_parser],
-                                                        add_help=False,
-                                                        help='Create a new project.',
-                                                        description='Create a new project by specifying a title or JSON file.')
-    #Arguments added to this group are mutually exclusive, meaning the user can specify only one of them at a time, not multiple.
-    group_parser_create_project = parser_create_project.add_mutually_exclusive_group(required=True)
-    group_parser_create_project.add_argument('--title',type=str,help='Title of the new project.')
-    group_parser_create_project.add_argument('--json-file',type=str,help='Path to JSON file containing project fields.')
-    parser_create_project.set_defaults(func=vdjserver.project.create_project)
+    # Subparser for Client operations
+    define_clients_args(subparsers, common_parser)
 
-    
-    # Subparser for adding a user to a project
-    parser_add_user = project_subparser.add_parser('add-user',
-                                                    parents=[common_parser],
-                                                    add_help=False,
-                                                    help='Add a user to a project.',
-                                                    description='Add a user to a VDJServer project.')
-    group_parser_add_user = parser_add_user.add_argument_group('Add user arguments')
-    group_parser_add_user.add_argument('project_uuid', type = str, help='UUID of the project.')
-    group_parser_add_user.add_argument('username', type = str, help='Username to add to the project.')
-    parser_add_user.set_defaults(func=vdjserver.project.add_user_to_project)
-    
-    # Subparser for removing a user from a project
-    parser_remove_user = project_subparser.add_parser('remove-user',
-                                                    parents=[common_parser],
-                                                    add_help=False,
-                                                    help='Remove a user from a project.',
-                                                    description='Remove a user from a VDJServer project.')
+    # Subparser for Meta operations
+    #define_meta_args(subparsers, common_parser)
 
-    group_parser_remove_user = parser_remove_user.add_argument_group('Remove user arguments')
-    group_parser_remove_user.add_argument('project_uuid', type=str, help='UUID of the project.')
-    group_parser_remove_user.add_argument('username', type=str, help='Username to remove from the project.')
-    parser_remove_user.set_defaults(func=vdjserver.project.remove_user_from_project)
-    
+    # Subparser for App operations
+    define_apps_args(subparsers, common_parser)
+
+    # Subparser for Postit operations
+    define_postits_args(subparsers, common_parser)
+
+    # Subparser for ADC Download Cache operations
+    define_adc_cache_args(subparsers, common_parser)
+
+
+
 
     return parser
 
