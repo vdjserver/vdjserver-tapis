@@ -1,7 +1,7 @@
 {
     "name": "igblast_tcr_test",
     "appId": "igblast-ls6",
-    "appVersion": "0.1",
+    "appVersion": "0.4",
     "maxMinutes": 120,
     "nodeCount": 1,
     "fileInputs":[
@@ -20,9 +20,9 @@
         ],
         "envVariables": [
             {"key": "query", "value": "special_seqs.fasta funky_ids.fasta" },
-            {"key": "QueryFilesMetadata", "value": "1234 3456" },
+            {"key": "repertoires", "value": "1234 3456" },
             {"key": "species", "value": "human" },
-            {"key": "ig_seqtype", "value": "TCR" },
+            {"key": "locus", "value": "TR" },
             {"key": "ClonalTool", "value": "repcalc" }
         ]
     }

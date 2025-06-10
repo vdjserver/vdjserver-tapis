@@ -1,7 +1,7 @@
 # helper commands for tapis v3 apps
 
 APP_NAME=repcalc2
-APP_VERSION=0.1
+APP_VERSION=0.2
 APP_SYSTEM=ls6
 
 APP_ID=${APP_NAME}-${APP_SYSTEM}
@@ -20,6 +20,7 @@ help:
 	@echo "Assumes you are running in docker with tapis functions."
 	@echo ""
 	@echo "JSON app description:"
+	@echo "make list      -- List tapis apps"
 	@echo "make create    -- Create tapis app, only once"
 	@echo "make update    -- Update tapis app description"
 	@echo ""
@@ -34,11 +35,14 @@ help:
 	@echo "make test-all  -- Submit all test jobs"
 	@echo ""
 
+list:
+	vdjserver-tools apps list
+
 create:
-	tapis_apps_create ${APP_JSON}
+	vdjserver-tools apps create ${APP_JSON}
 
 update:
-	tapis_apps_update ${APP_ID} ${APP_VERSION} ${APP_JSON}
+	vdjserver-tools apps update ${APP_ID} ${APP_VERSION} ${APP_JSON}
 
 clean:
 	rm -rf ${BUILD_DIR} ${APP_ARCHIVE}
@@ -74,18 +78,18 @@ build: clean common-scripts
 	tar zcf ${APP_ARCHIVE} -C ${BUILD_DIR} .
 
 deploy: build
-	tapis_files_upload /apps/${APP_ARCHIVE} ${APP_ARCHIVE}
+	vdjserver-tools files upload ${APP_ARCHIVE} /apps/${APP_ARCHIVE}
 
 test-bcr:
-	tapis_jobs_submit test/test-bcr.json
+	vdjserver-tools jobs submit test/test-bcr.json
 
 test-tcr:
-	tapis_jobs_submit test/test-tcr.json
+	vdjserver-tools jobs submit test/test-tcr.json
 
 test-all:
-	tapis_jobs_submit test/test-bcr.json
-	tapis_jobs_submit test/test-tcr.json
-	tapis_jobs_submit test/test-bcr4.json
-	tapis_jobs_submit test/test-cdr3-bcr4.json
-	tapis_jobs_submit test/test-gene-bcr4.json
-	tapis_jobs_submit test/test-mutations-bcr4.json
+	vdjserver-tools jobs submit test/test-bcr.json
+	vdjserver-tools jobs submit test/test-tcr.json
+	vdjserver-tools jobs submit test/test-bcr4.json
+	vdjserver-tools jobs submit test/test-cdr3-bcr4.json
+	vdjserver-tools jobs submit test/test-gene-bcr4.json
+	vdjserver-tools jobs submit test/test-mutations-bcr4.json

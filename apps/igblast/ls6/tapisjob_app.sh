@@ -40,8 +40,9 @@ printf "START at $(date)\n\n"
 # TODO: how to tell Tapis that the job failed?
 export JOB_ERROR=0
 
+setup_germline "db.2019.01.23"
 initProvenance
-gather_secondary_inputs
+#gather_secondary_inputs
 print_parameters
 print_versions
 run_igblast_workflow

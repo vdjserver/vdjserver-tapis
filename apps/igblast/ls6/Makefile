@@ -1,7 +1,7 @@
 # helper commands for tapis v3 apps
 
 APP_NAME=igblast
-APP_VERSION=0.2
+APP_VERSION=0.4
 APP_SYSTEM=ls6
 
 APP_ID=${APP_NAME}-${APP_SYSTEM}
@@ -20,6 +20,7 @@ help:
 	@echo "Assumes you are running in docker with tapis functions."
 	@echo ""
 	@echo "JSON app description:"
+	@echo "make list      -- List tapis apps"
 	@echo "make create    -- Create tapis app, only once"
 	@echo "make update    -- Update tapis app description"
 	@echo ""
@@ -35,10 +36,10 @@ help:
 	@echo ""
 
 create:
-	tapis_apps_create ${APP_JSON}
+	vdjserver-tools apps create ${APP_JSON}
 
 update:
-	tapis_apps_update ${APP_ID} ${APP_VERSION} ${APP_JSON}
+	vdjserver-tools apps update ${APP_ID} ${APP_VERSION} ${APP_JSON}
 
 clean:
 	rm -rf ${BUILD_DIR} ${APP_ARCHIVE}
@@ -74,13 +75,13 @@ build: clean common-scripts
 	tar zcf ${APP_ARCHIVE} -C ${BUILD_DIR} .
 
 deploy: build
-	tapis_files_upload /apps/${APP_ARCHIVE} ${APP_ARCHIVE}
+	vdjserver-tools files upload ${APP_ARCHIVE} /apps/${APP_ARCHIVE}
 
 test-bcr:
-	tapis_jobs_submit test/test-bcr.json
+	vdjserver-tools jobs submit test/test-bcr.json
 
 test-tcr:
-	tapis_jobs_submit test/test-tcr.json
+	vdjserver-tools jobs submit test/test-tcr.json
 
 test-all:
 	tapis_jobs_submit test/test-bcr.json

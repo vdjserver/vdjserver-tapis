@@ -22,14 +22,6 @@ APP_NAME=igBlast
 # automatic parallelization of large files
 READS_PER_FILE=10000
 
-# IgBlast germline database and extra files
-VDJ_DB_VERSION=db.2019.01.23
-IGDATA="$WORK/../common/igblast-db/$VDJ_DB_VERSION"
-VDJ_DB_URI=http://wiki.vdjserver.org/vdjserver/index.php/VDJServer_IgBlast_Database
-export IGDATA
-export VDJ_DB_ROOT="$IGDATA/germline/"
-germline_db="$VDJ_DB_ROOT/$species/vdjserver_germline.airr.json"
-
 # bring in common functions
 source ./common_functions.sh
 
@@ -65,16 +57,20 @@ function print_parameters() {
     echo "Input files:"
     echo "igblast_image=${igblast_image}"
     echo "repcalc_image=${repcalc_image}"
+    echo "germline_archive=${germline_archive}"
     echo "ProjectDirectory=${ProjectDirectory}"
+    echo "AIRRMetadata=${AIRRMetadata}"
     echo "JobFiles=${JobFiles}"
     echo "query=$query"
     echo ""
     echo "Application parameters:"
     echo "SecondaryInputsFlag=${SecondaryInputsFlag}"
-    echo "QueryFilesMetadata=$QueryFilesMetadata"
+    echo "repertoires=$repertoires"
     echo "species=$species"
     echo "strain=$strain"
-    echo "ig_seqtype=$ig_seqtype"
+    echo "locus=$locus"
+    echo "germline_db=${germline_db}"
+    echo "germline_fasta=${germline_fasta}"
     echo "domain_system=$domain_system"
     echo "ClonalTool=$ClonalTool"
 }
@@ -151,7 +147,6 @@ function run_igblast_workflow() {
                 strain="indian"
                 germline_set="macaque_indian"
             fi
-            seqType=${ig_seqtype}
             QUERY_ARGS=""
             ARGS=""
             MDARGS=""
@@ -160,18 +155,18 @@ function run_igblast_workflow() {
                 MDARGS="$MDARGS $smallFile"
                 MDARGS="$MDARGS $PWD/${smallFile}.igblast.txt"
             fi
-            if [ -n $seqType ]; then 
+            if [ -n $locus ]; then 
+                if [ "$locus" == "TR" ]; then seqType="TCR"; fi  
+                if [ "$locus" == "IG" ]; then seqType="Ig"; fi  
                 ARGS="$ARGS -ig_seqtype $seqType"
-                if [ "$seqType" == "TCR" ]; then seqType="TR"; fi  
-                if [ "$seqType" == "Ig" ]; then seqType="IG"; fi  
-                MDARGS="$MDARGS $seqType"
+                MDARGS="$MDARGS $locus"
             fi
             if [ -n $organism ]; then 
                 ARGS="$ARGS -organism $organism"
                 ARGS="$ARGS -auxiliary_data $IGDATA/optional_file/${germline_set}_gl.aux"
-                ARGS="$ARGS -germline_db_V $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}_V.fna"
-                ARGS="$ARGS -germline_db_D $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}_D.fna"
-                ARGS="$ARGS -germline_db_J $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}_J.fna"
+                ARGS="$ARGS -germline_db_V $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_V.fna"
+                ARGS="$ARGS -germline_db_D $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_D.fna"
+                ARGS="$ARGS -germline_db_J $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_J.fna"
                 MDARGS="$MDARGS $organism"
             fi
             if [ -n $domain_system ]; then ARGS="$ARGS -domain_system $domain_system"; fi
@@ -227,7 +222,7 @@ function run_igblast_workflow() {
 
     # ----------------------------------------------------------------------------
     # and now to knit smallFiles back together
-    seqMetadata=($QueryFilesMetadata)
+    seqMetadata=($repertoires)
     count=0
     for file in ${filelist[@]}; do
         mfile=${seqMetadata[count]}
@@ -257,18 +252,18 @@ function run_igblast_workflow() {
 
         # assign repertoire IDs
         mv ${fileOutname}.igblast.airr.tsv ${fileOutname}.igblast.orig.airr.tsv
-        $PYTHON assign_repertoire_id.py ${fileOutname} ${_tapisJobUUID} ${fileOutname}.igblast.orig.airr.tsv ${fileOutname}.igblast.airr.tsv
+        $PYTHON assign_repertoire_id.py ${mfile} ${_tapisJobUUID} ${fileOutname}.igblast.orig.airr.tsv ${mfile}.igblast.airr.tsv
         mv ${fileOutname}.igblast.makedb.airr.tsv ${fileOutname}.igblast.makedb.orig.airr.tsv
-        $PYTHON assign_repertoire_id.py ${fileOutname} ${_tapisJobUUID} ${fileOutname}.igblast.makedb.orig.airr.tsv ${fileOutname}.igblast.makedb.airr.tsv
+        $PYTHON assign_repertoire_id.py ${mfile} ${_tapisJobUUID} ${fileOutname}.igblast.makedb.orig.airr.tsv ${mfile}.igblast.makedb.airr.tsv
 
         # add to process metadata
         # they will be compressed later
         group="group${count}"
-        addOutputFile $group $APP_NAME airr ${fileOutname}.igblast.airr.tsv.gz "${fileOutname} AIRR TSV" "tsv" $mfile
+        addOutputFile $group $APP_NAME airr ${mfile}.igblast.airr.tsv.gz "${fileOutname} AIRR TSV" "tsv" $mfile
         if [ "$species" != "macaque" ]; then
-            addOutputFile $group $APP_NAME airr-makedb ${fileOutname}.igblast.makedb.airr.tsv.gz "${fileOutname} Change-O MakeDb AIRR TSV" "tsv" $mfile
-            if [ -f ${fileOutname}.igblast.fail-makedb.airr.tsv ]; then
-                addOutputFile $group $APP_NAME airr-fail-makedb ${fileOutname}.igblast.fail-makedb.airr.tsv.gz "${fileOutname} Change-O MakeDb Failed" "tsv" $mfile
+            addOutputFile $group $APP_NAME airr-makedb ${mfile}.igblast.makedb.airr.tsv.gz "${fileOutname} Change-O MakeDb AIRR TSV" "tsv" $mfile
+            if [ -f ${mfile}.igblast.fail-makedb.airr.tsv ]; then
+                addOutputFile $group $APP_NAME airr-fail-makedb ${mfile}.igblast.fail-makedb.airr.tsv.gz "${fileOutname} Change-O MakeDb Failed" "tsv" $mfile
             fi
         fi
 
@@ -304,25 +299,21 @@ function run_assign_clones() {
     #noArchive "joblist-clones"
 
     # create AIRR metadata
-    metadata_file="study_metadata.airr.json"
-    repertoire_ids=""
-    for file in ${filelist[@]}; do
-        fileBasename="${file%.*}" # test/file.fasta -> test/file
-        fileOutname="${fileBasename##*/}" # test/file -> file
-        repertoire_ids="${repertoire_ids} ${fileOutname}"
-    done
-    $PYTHON create_airr_metadata.py $metadata_file ${_tapisJobUUID} $repertoire_ids
+    if [[ "x$AIRRMetadata" == "x" ]]; then
+        metadata_file="study_metadata.airr.json"
+        $PYTHON create_airr_metadata.py $metadata_file ${_tapisJobUUID} $repertoires
+    fi
 
     # Assign Clones
     cloneFileList=()
     count=0
     if [[ "$ClonalTool" == "changeo" ]] ; then
-        fileMetadataList=($QueryFilesMetadata)
+        fileMetadataList=($repertoires)
         for file in ${filelist[@]}; do
             mfile=${fileMetadataList[count]}
             fileBasename="${file%.*}" # test/file.fasta -> test/file
             fileOutname="${fileBasename##*/}" # test/file -> file
-            file=${fileOutname}.igblast.makedb.airr.tsv
+            file=${mfile}.igblast.makedb.airr.tsv
 
             # Assuming airr.tsv extension
             fileOutname="${file%.*}" # file.airr.tsv -> file.airr
@@ -350,11 +341,12 @@ function run_assign_clones() {
     fi
 
     if [[ "$ClonalTool" == "repcalc" ]] ; then
-        fileMetadataList=($QueryFilesMetadata)
+        fileMetadataList=($repertoires)
         for file in ${filelist[@]}; do
             mfile=${fileMetadataList[count]}
             fileBasename="${file%.*}" # test/file.fasta -> test/file
-            rep_id="${fileBasename##*/}" # test/file -> file
+            #rep_id="${fileBasename##*/}" # test/file -> file
+            rep_id=$mfile
 
             # We have the raw IgBlast AIRR TSV and the MakeDB processed AIRR TSV
 
@@ -363,7 +355,7 @@ function run_assign_clones() {
             #addProcessingStaqe $processing_stage
             out_prefix=${rep_id}.${processing_stage}
             file=${out_prefix}.airr.tsv
-            echo "apptainer exec -e ${repcalc_image} bash repcalc_clones.sh ${metadata_file} ${germline_db} ${file} ${rep_id} ${processing_stage}" >> joblist-clones
+            echo "apptainer exec -e ${repcalc_image} bash repcalc_clones.sh ${AIRRMetadata} ${germline_db} ${file} ${rep_id} ${processing_stage}" >> joblist-clones
             result_file=${out_prefix}.allele.clone.airr.tsv
 
             # will get compressed at end
@@ -375,7 +367,7 @@ function run_assign_clones() {
             #addProcessingStaqe $processing_stage
             out_prefix=${rep_id}.${processing_stage}
             file=${out_prefix}.airr.tsv
-            echo "apptainer exec -e ${repcalc_image} bash repcalc_clones.sh ${metadata_file} ${germline_db} ${file} ${rep_id} ${processing_stage}" >> joblist-clones
+            echo "apptainer exec -e ${repcalc_image} bash repcalc_clones.sh ${AIRRMetadata} ${germline_db} ${file} ${rep_id} ${processing_stage}" >> joblist-clones
             result_file=${out_prefix}.allele.clone.airr.tsv
 
             # will get compressed at end
@@ -409,7 +401,7 @@ function compress_and_archive() {
     # ----------------------------------------------------------------------------
     # compress the tsv files
     echo Compressing output files
-    for file in ${filelist[@]}; do
+    for file in ${repertoires[@]}; do
         fileBasename="${file%.*}"
         fileOutname="${fileBasename##*/}"
         gzip ${fileOutname}.igblast.airr.tsv
