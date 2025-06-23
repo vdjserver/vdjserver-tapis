@@ -415,7 +415,7 @@ function run_repcalc_workflow() {
 
     # CDR3
     if [[ $CDR3Flag -eq 1 ]]; then
-        echo "Calculate CDR3 junction length and distribution"
+        echo "Calculate CDR3 junction length, distribution, and AA properties"
 
         # launcher job file
         if [ -f joblist-cdr3 ]; then
@@ -466,6 +466,14 @@ function run_repcalc_workflow() {
             python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --germline ${germline_db} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
             addConfigFile $APP_NAME config ${processing_stage//./_}-junction_shared "junction_shared_config.${processing_stage}.json" "RepCalc Input Configuration" "json" null
             echo "$REPCALC_EXE junction_shared_config.${processing_stage}.json" >> joblist-cdr3
+
+            count=0
+            while [ "x${repertoires[count]}" != "x" ]
+            do
+                rep_id=${repertoires[count]}
+                echo "$RSCRIPT ./aa_properties.R -d ${rep_id}.${processing_stage}.airr.tsv -o ${rep_id}.${processing_stage}.aa_properties.airr.tsv" >> joblist-cdr3
+                count=$(( $count + 1 ))
+            done
         fi
         if [[ $has_makedb_clone -eq 1 ]]; then
             processing_stage=igblast.makedb.allele.clone
@@ -492,6 +500,14 @@ function run_repcalc_workflow() {
             fi
             addConfigFile $APP_NAME config ${processing_stage//./_}-junction_shared "junction_shared_config.${processing_stage}.json" "RepCalc Input Configuration" "json" null
             echo "$REPCALC_EXE junction_shared_config.${processing_stage}.json" >> joblist-cdr3
+
+            count=0
+            while [ "x${repertoires[count]}" != "x" ]
+            do
+                rep_id=${repertoires[count]}
+                echo "$RSCRIPT ./aa_properties.R -d ${rep_id}.${processing_stage}.airr.tsv -o ${rep_id}.${processing_stage}.aa_properties.airr.tsv" >> joblist-cdr3
+                count=$(( $count + 1 ))
+            done
         fi
         if [[ $has_gene_clone -eq 1 ]]; then
             processing_stage=igblast.makedb.gene.clone
@@ -502,6 +518,30 @@ function run_repcalc_workflow() {
             fi
             addConfigFile $APP_NAME config ${processing_stage//./_}-junction_length "junction_length_config.${processing_stage}.json" "RepCalc Input Configuration" "json" null
             echo "$REPCALC_EXE junction_length_config.${processing_stage}.json" >> joblist-cdr3
+
+            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
+            else
+                python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --germline ${germline_db} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
+            fi
+            addConfigFile $APP_NAME config ${processing_stage//./_}-junction_distribution "junction_distribution_config.${processing_stage}.json" "RepCalc Input Configuration" "json" null
+            echo "$REPCALC_EXE junction_distribution_config.${processing_stage}.json" >> joblist-cdr3
+
+            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
+            else
+                python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --germline ${germline_db} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
+            fi
+            addConfigFile $APP_NAME config ${processing_stage//./_}-junction_shared "junction_shared_config.${processing_stage}.json" "RepCalc Input Configuration" "json" null
+            echo "$REPCALC_EXE junction_shared_config.${processing_stage}.json" >> joblist-cdr3
+
+            count=0
+            while [ "x${repertoires[count]}" != "x" ]
+            do
+                rep_id=${repertoires[count]}
+                echo "$RSCRIPT ./aa_properties.R -d ${rep_id}.${processing_stage}.airr.tsv -o ${rep_id}.${processing_stage}.aa_properties.airr.tsv" >> joblist-cdr3
+                count=$(( $count + 1 ))
+            done
         fi
 
          # check number of jobs to be run
@@ -558,6 +598,9 @@ function run_repcalc_workflow() {
                 addEntryToFile cdr3_entries.csv output $group cdr3_length ${processing_stage//./_}-productive_junction_aa_wo_duplicates_length ${rep_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv" null
                 addEntryToFile cdr3_entries.csv output $group cdr3_length ${processing_stage//./_}-productive_junction_nucleotide_length ${rep_id}.${processing_stage}.productive.junction_nucleotide_length.tsv "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv" null
                 addEntryToFile cdr3_entries.csv output $group cdr3_length ${processing_stage//./_}-productive_junction_nucleotide_wo_duplicates_length ${rep_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv" null
+
+                gzipFile ${rep_id}.${processing_stage}.aa_properties.airr.tsv
+                addOutputFile $group $APP_NAME ${processing_stage//./_}-aa_properties ${rep_id}.${processing_stage}.aa_properties.airr.tsv.gz "${rep_id} CDR3 AA Properties (${processing_stage})" "tsv" null
             fi
 
             if [[ $has_makedb_clone -eq 1 ]]; then
@@ -570,6 +613,9 @@ function run_repcalc_workflow() {
                 addEntryToFile cdr3_entries.csv output $group cdr3_length ${processing_stage//./_}-productive_junction_aa_wo_duplicates_length ${rep_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv" null
                 addEntryToFile cdr3_entries.csv output $group cdr3_length ${processing_stage//./_}-productive_junction_nucleotide_length ${rep_id}.${processing_stage}.productive.junction_nucleotide_length.tsv "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv" null
                 addEntryToFile cdr3_entries.csv output $group cdr3_length ${processing_stage//./_}-productive_junction_nucleotide_wo_duplicates_length ${rep_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv" null
+
+                gzipFile ${rep_id}.${processing_stage}.aa_properties.airr.tsv
+                addOutputFile $group $APP_NAME ${processing_stage//./_}-aa_properties ${rep_id}.${processing_stage}.aa_properties.airr.tsv.gz "${rep_id} CDR3 AA Properties (${processing_stage})" "tsv" null
             fi
 
             if [[ $has_gene_clone -eq 1 ]]; then
@@ -582,6 +628,9 @@ function run_repcalc_workflow() {
                 addEntryToFile cdr3_entries.csv output $group cdr3_length ${processing_stage//./_}-productive_junction_aa_wo_duplicates_length ${rep_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv" null
                 addEntryToFile cdr3_entries.csv output $group cdr3_length ${processing_stage//./_}-productive_junction_nucleotide_length ${rep_id}.${processing_stage}.productive.junction_nucleotide_length.tsv "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv" null
                 addEntryToFile cdr3_entries.csv output $group cdr3_length ${processing_stage//./_}-productive_junction_nucleotide_wo_duplicates_length ${rep_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv" null
+
+                gzipFile ${rep_id}.${processing_stage}.aa_properties.airr.tsv
+                addOutputFile $group $APP_NAME ${processing_stage//./_}-aa_properties ${rep_id}.${processing_stage}.aa_properties.airr.tsv.gz "${rep_id} CDR3 AA Properties (${processing_stage})" "tsv" null
             fi
 
             count=$(( $count + 1 ))
@@ -965,7 +1014,6 @@ function run_repcalc_workflow() {
 
         # add output files to process metadata
         initEntryFile mutation_entries.csv
-        #noArchive mutation_entries.csv
         count=0
         while [ "x${repertoires[count]}" != "x" ]
         do
@@ -976,34 +1024,30 @@ function run_repcalc_workflow() {
                 processing_stage=igblast.makedb.allele.clone
                 addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-mutations ${rep_id}.${processing_stage}.mutations.airr.tsv.gz "${rep_id} Mutations AIRR TSV (${processing_stage})" "tsv" null
                 gzipFile ${rep_id}.${processing_stage}.mutations.airr.tsv
+                addArchiveFile ${rep_id}.${processing_stage}.mutations.airr.tsv.gz
                 addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-selection ${rep_id}.${processing_stage}.selection.tsv "${rep_id} Selection Pressure TSV (${processing_stage})" "tsv" null
+                addArchiveFile ${rep_id}.${processing_stage}.selection.tsv
                 addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-create_germlines "${rep_id}.${processing_stage}.germ.json" "${rep_id} Create Germlines Log (${processing_stage})" "json" null
-                #noArchive ${rep_id}.${processing_stage}.germ.log
-                #noArchive ${rep_id}.${processing_stage}.germ.airr.tsv
-                #noArchive ${rep_id}.${processing_stage}.mutations.orig.airr.tsv
-                #noArchive ${rep_id}.${processing_stage}.summary.mutations.airr.tsv
-                #noArchive ${rep_id}.${processing_stage}.frequency.summary.mutations.airr.tsv
+                addArchiveFile ${rep_id}.${processing_stage}.germ.json
                 if [ -e "${rep_id}.${processing_stage}.germ-fail.airr.tsv" ]; then
                     addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-germ_fail ${rep_id}.${processing_stage}.germ-fail.airr.tsv "${rep_id} Create Germlines Failed AIRR TSV (${processing_stage})" "tsv" null
+                    addArchiveFile ${rep_id}.${processing_stage}.germ-fail.airr.tsv
                 fi
-                #noArchive mutational_config.${rep_id}.${processing_stage}.json
             fi
 
             if [[ $has_gene_clone -eq 1 ]]; then
                 processing_stage=igblast.makedb.gene.clone
                 addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-mutations ${rep_id}.${processing_stage}.mutations.airr.tsv.gz "${rep_id} Mutations AIRR TSV (${processing_stage})" "tsv" null
                 gzipFile ${rep_id}.${processing_stage}.mutations.airr.tsv
+                addArchiveFile ${rep_id}.${processing_stage}.mutations.airr.tsv.gz
                 addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-selection ${rep_id}.${processing_stage}.selection.tsv "${rep_id} Selection Pressure TSV (${processing_stage})" "tsv" null
+                addArchiveFile ${rep_id}.${processing_stage}.selection.tsv
                 addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-create_germlines "${rep_id}.${processing_stage}.germ.json" "${rep_id} Create Germlines Log (${processing_stage})" "json" null
-                #noArchive ${rep_id}.${processing_stage}.germ.log
-                #noArchive ${rep_id}.${processing_stage}.germ.airr.tsv
-                #noArchive ${rep_id}.${processing_stage}.mutations.orig.airr.tsv
-                #noArchive ${rep_id}.${processing_stage}.summary.mutations.airr.tsv
-                #noArchive ${rep_id}.${processing_stage}.frequency.summary.mutations.airr.tsv
+                addArchiveFile ${rep_id}.${processing_stage}.germ.json
                 if [ -e "${rep_id}.${processing_stage}.germ-fail.airr.tsv" ]; then
                     addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-germ_fail ${rep_id}.${processing_stage}.germ-fail.airr.tsv "${rep_id} Create Germlines Failed AIRR TSV (${processing_stage})" "tsv" null
+                    addArchiveFile ${rep_id}.${processing_stage}.germ-fail.airr.tsv
                 fi
-                #noArchive mutational_config.${rep_id}.${processing_stage}.json
             fi
 
             count=$(( $count + 1 ))
@@ -1020,7 +1064,6 @@ function run_repcalc_workflow() {
             else
                 python3 repcalc_create_config.py --init mutational_analysis_template.json ${AIRRMetadata} --stage ${processing_stage} mutational_analysis.${processing_stage}.json
             fi
-            #noArchive mutational_analysis.${processing_stage}.json
             $REPCALC_EXE mutational_analysis.${processing_stage}.json
 
             addLogFile $APP_NAME log ${processing_stage//./_}-mutation_count ${processing_stage}.repertoire.count.mutational_report.csv "Mutational Count Statistics (${processing_stage})" "csv" null
@@ -1035,7 +1078,6 @@ function run_repcalc_workflow() {
             else
                 python3 repcalc_create_config.py --init mutational_analysis_template.json ${AIRRMetadata} --stage ${processing_stage} mutational_analysis.${processing_stage}.json
             fi
-            #noArchive mutational_analysis.${processing_stage}.json
             $REPCALC_EXE mutational_analysis.${processing_stage}.json
 
             addLogFile $APP_NAME log ${processing_stage//./_}-mutation_count ${processing_stage}.repertoire.count.mutational_report.csv "Mutational Count Statistics (${processing_stage})" "csv" null

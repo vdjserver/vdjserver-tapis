@@ -1,7 +1,7 @@
 # helper commands for tapis v3 apps
 
 APP_NAME=repcalc2
-APP_VERSION=0.2
+APP_VERSION=0.3
 APP_SYSTEM=ls6
 
 APP_ID=${APP_NAME}-${APP_SYSTEM}
@@ -61,6 +61,7 @@ common-scripts:
 	cp ${SCRIPTS_DIR}/junction_distribution_template.json ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/junction_shared_template.json ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/junction_compare_template.json ${BUILD_DIR}
+	cp ${SCRIPTS_DIR}/aa_properties.R ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/clonal_abundance.R ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/diversity_curve.R ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/create_germlines.sh ${BUILD_DIR}
