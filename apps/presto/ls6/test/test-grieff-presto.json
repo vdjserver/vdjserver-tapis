@@ -1,0 +1,44 @@
+{
+    "name": "presto_grieff_test",
+    "appId": "presto-ls6",
+    "appVersion": "0.1",
+    "maxMinutes":60,
+    "nodeCount": 1,
+    "fileInputs":[
+      { "name":"ForwardPrimerFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/Greiff2014_VPrimers.fasta", "targetPath":"Greiff2014_VPrimers.fasta" },
+      { "name":"ReversePrimerFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/Greiff2014_CPrimers.fasta", "targetPath":"Greiff2014_CPrimers.fasta" }
+    ],
+    "fileInputArrays":[
+      { "name":"SequenceForwardPairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/ERR346600_1.fastq" ]},
+      { "name":"SequenceReversePairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/ERR346600_2.fastq" ]}
+    ],
+    "parameterSet": {
+        "schedulerOptions": [
+            { "name":"allocation", "arg":"-A MCB23006" }
+        ],
+        "containerArgs": [
+        ],
+        "appArgs": [
+        ],
+        "envVariables": [
+            {"key": "Workflow", "value": "paired" },
+            {"key": "SequenceFileTypes", "value": "illumina" },
+            {"key": "SequenceForwardPairedFiles", "value": "ERR346600_2.fastq" },
+            {"key": "SequenceReversePairedFiles", "value": "ERR346600_1.fastq" },
+            {"key": "PreFilterStatisticsFlag", "value": "1" },
+            {"key": "FilterFlag", "value": "1" },
+            {"key": "MinimumQuality", "value": "20" },
+            {"key": "MinimumLength", "value": "0" },
+            {"key": "PostFilterStatisticsFlag", "value": "1" },
+            {"key": "ForwardPrimer", "value": "align" },
+            {"key": "ForwardPrimerMaxError", "value": "0.2" },
+            {"key": "ForwardPrimerMaxLength", "value": "30" },
+            {"key": "ReversePrimer", "value": "align" },
+            {"key": "ReversePrimerMaxError", "value": "0.2" },
+            {"key": "ReversePrimerMaxLength", "value": "30" },
+            {"key": "FindUniqueFlag", "value": "1" },
+            {"key": "FindUniqueMaxNucleotides", "value": "20" },
+            {"key": "FindUniqueExclude", "value": "1" }
+        ]
+    }
+}

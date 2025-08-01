@@ -1,0 +1,47 @@
+{
+    "name": "presto_names2_test",
+    "appId": "presto-ls6",
+    "appVersion": "0.1",
+    "maxMinutes":60,
+    "nodeCount": 1,
+    "fileInputs":[
+      { "name":"ForwardPrimerFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/Stern2014_VPrimers.fasta", "targetPath":"Stern2014_VPrimers.fasta" },
+      { "name":"ReversePrimerFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/Stern2014_CPrimers.fasta", "targetPath":"Stern2014_CPrimers.fasta" }
+    ],
+    "fileInputArrays":[
+      { "name":"SequenceForwardPairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/SRR1383456_2.fq.gz" ]},
+      { "name":"SequenceReversePairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/SRR1383456_1.fq.gz" ]}
+    ],
+    "parameterSet": {
+        "schedulerOptions": [
+            { "name":"allocation", "arg":"-A MCB23006" }
+        ],
+        "containerArgs": [
+        ],
+        "appArgs": [
+        ],
+        "envVariables": [
+            {"key": "Workflow", "value": "paired" },
+            {"key": "SequenceFileTypes", "value": "illumina" },
+            {"key": "SequenceForwardPairedFiles", "value": "SRR1383456_2.fq.gz" },
+            {"key": "SequenceReversePairedFiles", "value": "SRR1383456_1.fq.gz" },
+            {"key": "PreFilterStatisticsFlag", "value": "1" },
+            {"key": "FilterFlag", "value": "1" },
+            {"key": "MinimumQuality", "value": "20" },
+            {"key": "MinimumLength", "value": "0" },
+            {"key": "PostFilterStatisticsFlag", "value": "1" },
+            {"key": "UMIConsensus", "value": "1" },
+            {"key": "UMIMaxError", "value": "0.1" },
+            {"key": "UMIMaxGap", "value": "0.5" },
+            {"key": "UMIMinFrequency", "value": "0.6" },
+            {"key": "ForwardPrimer", "value": "score" },
+            {"key": "ForwardPrimerStartPosition", "value": "0" },
+            {"key": "ReversePrimer", "value": "score" },
+            {"key": "ReversePrimerUMI", "value": "1" },
+            {"key": "ReversePrimerStartPosition", "value": "15" },
+            {"key": "FindUniqueFlag", "value": "1" },
+            {"key": "FindUniqueMaxNucleotides", "value": "20" },
+            {"key": "FindUniqueExclude", "value": "1" }
+        ]
+    }
+}

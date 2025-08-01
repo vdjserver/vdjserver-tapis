@@ -1,0 +1,47 @@
+{
+    "name": "presto_roche_test",
+    "appId": "presto-ls6",
+    "appVersion": "0.1",
+    "maxMinutes":60,
+    "nodeCount": 1,
+    "fileInputs":[
+      { "name":"BarcodeFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/SRR765688_MIDs.txt", "targetPath":"SRR765688_MIDs.txt" },
+      { "name":"ForwardPrimerFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/SRX190717_VPrimers.txt", "targetPath":"SRX190717_VPrimers.txt" },
+      { "name":"ReversePrimerFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/SRX190717_CPrimers.txt", "targetPath":"SRX190717_CPrimers.txt" }
+    ],
+    "fileInputArrays":[
+      { "name":"SequenceFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/SRR765688.fastq" ]}
+    ],
+    "parameterSet": {
+        "schedulerOptions": [
+            { "name":"allocation", "arg":"-A MCB23006" }
+        ],
+        "containerArgs": [
+        ],
+        "appArgs": [
+        ],
+        "envVariables": [
+            {"key": "Workflow", "value": "single" },
+            {"key": "SequenceFileTypes", "value": "illumina" },
+            {"key": "SequenceFiles", "value": "SRR765688.fastq" },
+            {"key": "PreFilterStatisticsFlag", "value": "1" },
+            {"key": "FilterFlag", "value": "1" },
+            {"key": "MinimumQuality", "value": "20" },
+            {"key": "MinimumLength", "value": "300" },
+            {"key": "PostFilterStatisticsFlag", "value": "1" },
+            {"key": "Barcode", "value": "1" },
+            {"key": "BarcodeMaxError", "value": "0.1" },
+            {"key": "BarcodeStartPosition", "value": "0" },
+            {"key": "BarcodeSplitFlag", "value": "1" },
+            {"key": "ForwardPrimer", "value": "align" },
+            {"key": "ForwardPrimerMaxError", "value": "0.3" },
+            {"key": "ForwardPrimerMaxLength", "value": "50" },
+            {"key": "ReversePrimer", "value": "align" },
+            {"key": "ReversePrimerMaxError", "value": "0.3" },
+            {"key": "ReversePrimerMaxLength", "value": "50" },
+            {"key": "FindUniqueFlag", "value": "1" },
+            {"key": "FindUniqueMaxNucleotides", "value": "20" },
+            {"key": "FindUniqueExclude", "value": "1" }
+        ]
+    }
+}

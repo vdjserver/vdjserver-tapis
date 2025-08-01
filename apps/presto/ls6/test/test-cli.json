@@ -1,0 +1,29 @@
+{
+    "name": "presto_test",
+    "appId": "presto-ls6",
+    "appVersion": "0.1",
+    "maxMinutes":60,
+    "nodeCount": 1,
+    "fileInputArrays":[
+      { "name":"SequenceFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/Merged_40000.fastq" ]}
+    ],
+    "parameterSet": {
+        "schedulerOptions": [
+            { "name":"allocation", "arg":"-A MCB23006" }
+        ],
+        "containerArgs": [
+        ],
+        "appArgs": [
+        ],
+        "envVariables": [
+            {"key": "Workflow", "value": "single" },
+            {"key": "SequenceFileTypes", "value": "illumina" },
+            {"key": "SequenceFiles", "value": "Merged_40000.fastq" },
+            {"key": "PreFilterStatisticsFlag", "value": "1" },
+            {"key": "FilterFlag", "value": "1" },
+            {"key": "MinimumQuality", "value": "25" },
+            {"key": "MinimumLength", "value": "200" },
+            {"key": "PostFilterStatisticsFlag", "value": "1" }
+        ]
+    }
+}

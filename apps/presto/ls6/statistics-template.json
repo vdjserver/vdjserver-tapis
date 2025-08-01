@@ -1,0 +1,9 @@
+{"base_path_input":"",
+ "base_path_output":"",
+ "summary_output_path":"summary.txt",
+ "input":[{"sequence":""}],
+ "steps":[
+     {"quality_stats":{"out_prefix":""}},
+     {"composition_stats":{"out_prefix":""}}
+ ]
+}
