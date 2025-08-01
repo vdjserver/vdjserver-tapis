@@ -16,6 +16,6 @@ while [ "x${fileList[count]}" != "x" ]
 do
     file=${fileList[count]}
     fileBasename="${file##*/}" # foo/bar/file -> file
-    tapis_files_upload /apps/data/test/$fileBasename $file
+    vdjserver-tools files upload $file /apps/data/test/$fileBasename
     count=$(( $count + 1 ))
 done
