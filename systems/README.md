@@ -44,6 +44,8 @@ to view in git. If you accidentally do so, you must create new keys on the syste
 the credentials for the system. Be sure to delete all instances of the comprised keys from
 Tapis and from any computers so they do not get mistakenly used in the future.
 
+We use the same set of keys for vdj-rep-01/02/03/04.
+
 If it is a new system then you can create a new public/private set of keys:
 
 ```
@@ -90,4 +92,7 @@ storage
 
 execution
 =========
+
+* test-ls6.tacc.utexas.edu: test Lonestar 6 system
+* test-transfer.tacc.utexas.edu: test File transfer system, primarily for SRA downloads
 
