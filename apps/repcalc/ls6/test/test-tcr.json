@@ -1,7 +1,7 @@
 {
     "name": "repcalc_test_tcr",
     "appId": "repcalc2-ls6",
-    "appVersion": "0.3",
+    "appVersion": "0.4",
     "maxMinutes": 120,
     "nodeCount": 1,
     "fileInputs":[

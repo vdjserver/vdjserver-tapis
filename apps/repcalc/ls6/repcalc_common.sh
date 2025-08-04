@@ -1068,6 +1068,23 @@ function run_repcalc_workflow() {
 
             addLogFile $APP_NAME log ${processing_stage//./_}-mutation_count ${processing_stage}.repertoire.count.mutational_report.csv "Mutational Count Statistics (${processing_stage})" "csv" null
             addLogFile $APP_NAME log ${processing_stage//./_}-mutation_frequency ${processing_stage}.repertoire.frequency.mutational_report.csv "Mutational Frequency Statistics (${processing_stage})" "csv" null
+
+            # add group summaries
+            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                grpcnt=0
+                while [ "x${repertoire_groups[grpcnt]}" != "x" ]
+                do
+                    rep_group_id=${repertoire_groups[grpcnt]}
+                    group=${rep_group_id//./_}
+    
+                    addLogFile $APP_NAME log ${processing_stage//./_}-group_mutation_count ${rep_group_id}.${processing_stage}.repertoire.count.mutational_report.csv "${rep_group_id} Mutational Count Statistics (${processing_stage})" "csv" null
+                    addLogFile $APP_NAME log ${processing_stage//./_}-group_mutation_frequency ${rep_group_id}.${processing_stage}.repertoire.frequency.mutational_report.csv "${rep_group_id} Mutational Frequency Statistics (${processing_stage})" "csv" null
+    
+                    grpcnt=$(( $grpcnt + 1 ))
+                done
+                addLogFile $APP_NAME log ${processing_stage//./_}-group_mutation_count ${processing_stage}.repertoire_group.count.mutational_report.csv "Group Mutational Count Statistics (${processing_stage})" "csv" null
+                addLogFile $APP_NAME log ${processing_stage//./_}-group_mutation_frequency ${processing_stage}.repertoire_group.frequency.mutational_report.csv "Group Mutational Frequency Statistics (${processing_stage})" "csv" null
+            fi
         fi
 
         if [[ $has_gene_clone -eq 1 ]]; then
@@ -1082,6 +1099,23 @@ function run_repcalc_workflow() {
 
             addLogFile $APP_NAME log ${processing_stage//./_}-mutation_count ${processing_stage}.repertoire.count.mutational_report.csv "Mutational Count Statistics (${processing_stage})" "csv" null
             addLogFile $APP_NAME log ${processing_stage//./_}-mutation_frequency ${processing_stage}.repertoire.frequency.mutational_report.csv "Mutational Frequency Statistics (${processing_stage})" "csv" null
+
+            # add group summaries
+            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                grpcnt=0
+                while [ "x${repertoire_groups[grpcnt]}" != "x" ]
+                do
+                    rep_group_id=${repertoire_groups[grpcnt]}
+                    group=${rep_group_id//./_}
+    
+                    addLogFile $APP_NAME log ${processing_stage//./_}-group_mutation_count ${rep_group_id}.${processing_stage}.repertoire.count.mutational_report.csv "${rep_group_id} Mutational Count Statistics (${processing_stage})" "csv" null
+                    addLogFile $APP_NAME log ${processing_stage//./_}-group_mutation_frequency ${rep_group_id}.${processing_stage}.repertoire.frequency.mutational_report.csv "${rep_group_id} Mutational Frequency Statistics (${processing_stage})" "csv" null
+    
+                    grpcnt=$(( $grpcnt + 1 ))
+                done
+                addLogFile $APP_NAME log ${processing_stage//./_}-group_mutation_count ${processing_stage}.repertoire_group.count.mutational_report.csv "Group Mutational Count Statistics (${processing_stage})" "csv" null
+                addLogFile $APP_NAME log ${processing_stage//./_}-group_mutation_frequency ${processing_stage}.repertoire_group.frequency.mutational_report.csv "Group Mutational Frequency Statistics (${processing_stage})" "csv" null
+            fi
         fi
     fi
 
@@ -1143,7 +1177,7 @@ function run_repcalc_workflow() {
     for file in $ARCHIVE_FILE_LIST; do
         if [ -f $file ]; then
             cp -f $file ${_tapisJobUUID}
-            cp -f $file output
+#            cp -f $file output
         fi
     done
     cp -f process_metadata.json ${_tapisJobUUID}
@@ -1152,4 +1186,6 @@ function run_repcalc_workflow() {
     zip ${_tapisJobUUID}.zip ${_tapisJobUUID}/*
     addLogFile $APP_NAME log output_archive ${_tapisJobUUID}.zip "Archive of Output Files" "zip" null
     cp ${_tapisJobUUID}.zip output
+
+    cp -f ${_tapisJobUUID}/* /corral-repl/projects/vdjZ${_tapisArchiveSystemDir}
 }

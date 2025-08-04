@@ -1,10 +1,10 @@
 {
     "id":"repcalc2-ls6",
-    "version":"0.3",
+    "version":"0.4",
     "description":"RepCalc on Lonestar6",
     "runtime":"ZIP",
     "runtimeOptions": ["NONE"],
-    "containerImage":"tapis://data-storage.vdjserver.org/apps/repcalc2-ls6-0.3.tgz",
+    "containerImage":"tapis://data-storage.vdjserver.org/apps/repcalc2-ls6-0.4.tgz",
     "jobType":"BATCH",
     "jobAttributes": {
         "description": "default job description",

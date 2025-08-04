@@ -1,7 +1,7 @@
 # helper commands for tapis v3 apps
 
 APP_NAME=repcalc2
-APP_VERSION=0.3
+APP_VERSION=0.4
 APP_SYSTEM=ls6
 
 APP_ID=${APP_NAME}-${APP_SYSTEM}

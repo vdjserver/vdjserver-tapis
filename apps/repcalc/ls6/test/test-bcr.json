@@ -1,7 +1,7 @@
 {
     "name": "repcalc_bcr_test",
     "appId": "repcalc2-ls6",
-    "appVersion": "0.3",
+    "appVersion": "0.4",
     "maxMinutes": 240,
     "fileInputs":[
       { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/8503620248975109650-242ac117-0001-012/analyses/2023-07-10-16-13-16-68-my-job-10-jul-2023-11:13:05-am/study_metadata.airr.json", "targetPath":"study_metadata.airr.json" }
