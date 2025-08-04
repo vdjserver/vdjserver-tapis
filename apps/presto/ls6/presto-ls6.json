@@ -1,10 +1,10 @@
 {
     "id":"presto-ls6",
-    "version":"0.1",
+    "version":"0.2",
     "description":"pRESTO on Lonestar6",
     "runtime":"ZIP",
     "runtimeOptions": ["NONE"],
-    "containerImage":"tapis://data-storage.vdjserver.org/apps/presto-ls6-0.1.tgz",
+    "containerImage":"tapis://data-storage.vdjserver.org/apps/presto-ls6-0.2.tgz",
     "jobType":"BATCH",
     "jobAttributes": {
         "description": "default job description",
@@ -34,7 +34,7 @@
             ],
             "envVariables": [
                 {"key": "Workflow", "inputMode": "REQUIRED" },
-                {"key": "SequenceFileTypes", "inputMode": "REQUIRED" },
+                {"key": "SequenceFileTypes", "inputMode": "REQUIRED", "value": "illumina" },
 
                 {"key": "JobFiles", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "SequenceFiles", "inputMode": "INCLUDE_BY_DEFAULT" },
@@ -51,6 +51,7 @@
                 {"key": "BarcodeMaxError", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "BarcodeStartPosition", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "BarcodeSplitFlag", "inputMode": "INCLUDE_BY_DEFAULT" },
+
                 {"key": "UMIConsensus", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "UMIMaxError", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "UMIMaxGap", "inputMode": "INCLUDE_BY_DEFAULT" },
@@ -63,9 +64,11 @@
                 {"key": "ForwardPrimerStartPosition", "inputMode": "INCLUDE_BY_DEFAULT" },
 
                 {"key": "ReversePrimer", "inputMode": "INCLUDE_BY_DEFAULT" },
-                {"key": "ReversePrimerMaximumMismatches", "inputMode": "INCLUDE_BY_DEFAULT" },
-                {"key": "ReversePrimerTrim", "inputMode": "INCLUDE_BY_DEFAULT" },
-                {"key": "ReversePrimerSearchWindow", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "ReversePrimerUMI", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "ReversePrimerMaxError", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "ReversePrimerMaxLength", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "ReversePrimerStartPosition", "inputMode": "INCLUDE_BY_DEFAULT" },
+
                 {"key": "FindUniqueFlag", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "FindUniqueMaxNucleotides", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "FindUniqueExclude", "inputMode": "INCLUDE_BY_DEFAULT" }
