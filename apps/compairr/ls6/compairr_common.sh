@@ -34,49 +34,57 @@ function print_versions() {
 function print_parameters() {
     echo "Input files:"
     echo "compairr_image=${compairr_image}"
-    echo "airr_tsv_file=${airr_tsv_file}"
+    echo "airr_tsv_files=${airr_tsv_files}"
     echo ""
     echo "Application parameters:"
     echo "analysis_type=${analysis_type}"
     echo "distance=${distance}"
-    echo "file_type=${file_type}"
 }
 
 function run_compairr_workflow() {
     initProvenance
+    #concatenate files
+    concatenated_file="concat.tsv"
+    ${PYTHON} concatenate_airr_tsv.py -i $airr_tsv_files -o $concatenated_file
+    #deduplicate files
+    deduplicated_file="dedup_${concatenated_file}"
+    echo "Command: apptainer exec -e ${compairr_image} compairr --deduplicate --out ${deduplicated_file}"
+    apptainer exec -e "${compairr_image}" compairr --deduplicate --out "${deduplicated_file}" "${concatenated_file}"
 
-    # expand rearrangement file if its compressed
-    expandfile $airr_tsv_file
-    #noArchive $file
+    # Assuming .tsv extension
+    file_basename="${deduplicated_file%.*}" # file.tsv -> file
 
-    # Assuming airr.tsv extension
-    fileBasename="${file%.*}" # file.airr.tsv -> file.airr
-    fileBasename="${fileBasename%.*}" # file.airr -> file
+    cluster_file="${file_basename}_d_${distance}_clust.tsv"
 
-    # Run compairr in matrix or cluster mode, using the "analysis_type" to determine
-    # which method to use. $distance is used only in cluster mode.
-    if [[ "$file_type" == "rearrangement" ]] ; then
-        if [[ "$analysis_type" == "cluster" ]] ; then
-	    if [[ ! "x$distance"  == "x" ]]; then
-	        re='^[0-9]+$'
-                if [[ $distance =~ $re ]]; then
-	            echo "Runnig: apptainer exec -e ${compairr_image} compairr -f -e -u --cluster ${file} -d ${distance} --out $fileBasename.cluster.tsv"
-	            apptainer exec -e ${compairr_image} compairr -f -e -u --cluster ${file} -d ${distance} --out $fileBasename.cluster.tsv
-		else
-                    echo "ERROR: Distance metric ($distance) integer and greater than 0 required"
-		    return
-		fi
-	    else
-		echo "ERROR: Distance metric not provided"
-		return
-	    fi
-        elif [[ "$analysis_type" == "product" || "$analysis_type" == "MH" || "$analysis_type" == "Morisita-Horn" ]] ; then
-	    echo "Runnig: apptainer exec -e ${compairr_image} compairr -f -e -u -s $analysis_type --matrix ${file} --out $fileBasename.matrix.tsv"
-	    apptainer exec -e ${compairr_image} compairr -f -e -u -s $analysis_type --matrix ${file} --out $fileBasename.matrix.tsv
-        else
-	    echo "ERROR: Invalid analysis type $analysis_type provided"
-	    return
-	fi
+    default_matrix_file="${file_basename}_d_${distance}_prodmat.txt"
+    pairs_file="${file_basename}_d_${distance}_pairs.tsv"
+
+    mh_matrix_file="${file_basename}_MHmat.txt"
+    jaccard_matrix_file="${file_basename}_Jacmat.txt"
+    
+    if [[ "$analysis_type" == "cluster" ]] ; then
+        echo "Running Cluster Analysis for distance $distance"
+
+        echo "Command: apptainer exec -e ${compairr_image} compairr --cluster ${deduplicated_file} -d ${distance} --out $cluster_file"
+        apptainer exec -e "${compairr_image}" compairr --cluster -d "${distance}" --out "$cluster_file" "${deduplicated_file}"
+    
+    elif [[ "$analysis_type" == "overlap" ]]; then
+        echo "Calculating overlap analysis for distance $distance."
+
+        echo "Command: apptainer exec -e ${compairr_image} compairr --matrix -d ${distance} --pairs ${pairs_file} ${deduplicated_file}"
+        apptainer exec -e "${compairr_image}" compairr --matrix -d "${distance}" --pairs "${pairs_file}" "${deduplicated_file}"
+    
+    elif [[ "$analysis_type" == "matrix" ]]; then
+        echo "Running matrix analysis for MH and Jaccard Score."
+
+        echo "Command: apptainer -e ${compairr_image} compairr --matrix --out ${mh_matrix_file} --score MH ${deduplicated_file}"
+        apptainer exec -e "${compairr_image}" compairr --matrix --out "${mh_matrix_file}" --score MH "${deduplicated_file}"
+
+        echo "Command: apptainer exec -e ${compairr_image} compairr --matrix --out ${jaccard_matrix_file} --score Jaccard ${deduplicated_file} "
+        apptainer exec -e "${compairr_image}" compairr --matrix --out "${jaccard_matrix_file}" --score Jaccard "${deduplicated_file}"
+
+    else
+        echo "ERROR: Invalid $analysis_type or $distance provided"
+        return 1
     fi
-
 }
