@@ -39,6 +39,7 @@ function print_parameters() {
     echo "Application parameters:"
     echo "analysis_type=${analysis_type}"
     echo "distance=${distance}"
+    echo "n_threads=${n_threads}"
 }
 
 function run_compairr_workflow() {
@@ -53,6 +54,7 @@ function run_compairr_workflow() {
 
     # Assuming .tsv extension
     file_basename="${deduplicated_file%.*}" # file.tsv -> file
+    n_threads=20
 
     cluster_file="${file_basename}_d_${distance}_clust.tsv"
 
@@ -66,22 +68,22 @@ function run_compairr_workflow() {
         echo "Running Cluster Analysis for distance $distance"
 
         echo "Command: apptainer exec -e ${compairr_image} compairr --cluster ${deduplicated_file} -d ${distance} --out $cluster_file"
-        apptainer exec -e "${compairr_image}" compairr --cluster -d "${distance}" --out "$cluster_file" "${deduplicated_file}"
+        apptainer exec -e "${compairr_image}" compairr --cluster -d "${distance}" --threads "${n_threads}" --out "$cluster_file" "${deduplicated_file}"
     
     elif [[ "$analysis_type" == "overlap" ]]; then
         echo "Calculating overlap analysis for distance $distance."
 
         echo "Command: apptainer exec -e ${compairr_image} compairr --matrix -d ${distance} --pairs ${pairs_file} ${deduplicated_file}"
-        apptainer exec -e "${compairr_image}" compairr --matrix -d "${distance}" --pairs "${pairs_file}" "${deduplicated_file}"
+        apptainer exec -e "${compairr_image}" compairr --matrix -d "${distance}" --threads "${n_threads}" --pairs "${pairs_file}" "${deduplicated_file}"
     
     elif [[ "$analysis_type" == "matrix" ]]; then
         echo "Running matrix analysis for MH and Jaccard Score."
 
         echo "Command: apptainer -e ${compairr_image} compairr --matrix --out ${mh_matrix_file} --score MH ${deduplicated_file}"
-        apptainer exec -e "${compairr_image}" compairr --matrix --out "${mh_matrix_file}" --score MH "${deduplicated_file}"
+        apptainer exec -e "${compairr_image}" compairr --matrix --threads "${n_threads}" --out "${mh_matrix_file}" --score MH "${deduplicated_file}"
 
         echo "Command: apptainer exec -e ${compairr_image} compairr --matrix --out ${jaccard_matrix_file} --score Jaccard ${deduplicated_file} "
-        apptainer exec -e "${compairr_image}" compairr --matrix --out "${jaccard_matrix_file}" --score Jaccard "${deduplicated_file}"
+        apptainer exec -e "${compairr_image}" compairr --matrix --threads "${n_threads}" --out "${jaccard_matrix_file}" --score Jaccard "${deduplicated_file}"
 
     else
         echo "ERROR: Invalid $analysis_type or $distance provided"

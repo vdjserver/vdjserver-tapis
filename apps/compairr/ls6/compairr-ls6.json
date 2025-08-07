@@ -27,7 +27,8 @@
             "envVariables": [
                 {"key": "airr_tsv_files", "inputMode": "REQUIRED"},
                 {"key": "analysis_type", "inputMode": "REQUIRED"},
-                {"key": "distance", "inputMode": "INCLUDE_BY_DEFAULT"}
+                {"key": "distance", "inputMode": "INCLUDE_BY_DEFAULT"},
+                {"key": "n_threads", "inputMode": "INCLUDE_BY_DEFAULT"}
             ]
         }
     }
