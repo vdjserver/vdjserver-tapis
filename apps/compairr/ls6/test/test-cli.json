@@ -1,24 +1,31 @@
 {
-    "name": "compairr_test",
+    "name": "compairr_test_matrix_v1",
     "appId": "compairr-ls6",
-    "appVersion": "0.1",
+    "appVersion": "0.2",
     "maxMinutes":60,
-    "execSystemId":"test-bcorrie-airrkb-dev-ls6.tacc.utexas.edu",
+    "nodeCount": 1,
     "fileInputs":[
-      { "name":"airr_tsv_file", "sourceUrl":"tapis://data-storage.vdjserver.org/irplus/data/TCR/vdjserver1.airr.tsv.gz", "targetPath":"vdjserver1.airr.tsv.gz" }
-    ],
-    "parameterSet": {
-        "schedulerOptions": [
+          
+        ],
+        "fileInputArrays":[
+          { "name":"airr_tsv_files", "sourceUrls": [
+            "tapis://data-storage.vdjserver.org/apps/data/test/test_repertoire_1.airr.tsv.gz", 
+            "tapis://data-storage.vdjserver.org/apps/data/test/test_repertoire_2.airr.tsv.gz",
+            "tapis://data-storage.vdjserver.org/apps/data/test/test_repertoire_3.airr.tsv.gz"
+            ]}
+        ],
+        "parameterSet": {
+            "schedulerOptions": [
             { "name":"allocation", "arg":"-A MCB23006" }
-        ],
-        "containerArgs": [
-        ],
-        "appArgs": [
-        ],
-        "envVariables": [
-            {"key": "analysis_type2", "value": "Jaccard" },
-            {"key": "analysis_type", "value": "cluster" },
-            {"key": "distance", "value": "1" }
-        ]
+            ],
+            "containerArgs": [
+            ],
+            "appArgs": [
+            ],
+            "envVariables": [
+                {"key":"airr_tsv_files", "value": "test_repertoire_1.airr.tsv.gz test_repertoire_2.airr.tsv.gz test_repertoire_3.airr.tsv.gz"},
+                {"key": "analysis_type", "value": "matrix" },
+                {"key": "distance", "value":"1"}
+            ]
     }
 }

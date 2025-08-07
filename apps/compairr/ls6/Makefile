@@ -1,7 +1,7 @@
 # helper commands for tapis v3 apps
 
 APP_NAME=compairr
-APP_VERSION=0.1
+APP_VERSION=0.2
 APP_SYSTEM=ls6
 
 APP_ID=${APP_NAME}-${APP_SYSTEM}
@@ -50,6 +50,7 @@ common-scripts:
 build: clean common-scripts
 	cp ${APP_JSON} ${BUILD_DIR}
 	cp tapisjob_app.sh ${BUILD_DIR}
+	cp concatenate_airr_tsv.py ${BUILD_DIR}
 	cp ${APP_NAME}_common.sh ${BUILD_DIR}
 	tar zcf ${APP_ARCHIVE} -C ${BUILD_DIR} .
 
