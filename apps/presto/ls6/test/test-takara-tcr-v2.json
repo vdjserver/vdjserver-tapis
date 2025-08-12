@@ -1,0 +1,35 @@
+{
+    "name": "takara_tcr_v2_test",
+    "appId": "presto-ls6",
+    "appVersion": "0.2",
+    "maxMinutes":60,
+    "nodeCount": 1,
+    "fileInputArrays":[
+      { "name":"SequenceForwardPairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/projects/d57ccb61-f8c0-45f9-a5d3-9712d3c99c28/files/healthy-171-19-117_S1_L004_R2_001.fastq.gz" ]},
+      { "name":"SequenceReversePairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/projects/d57ccb61-f8c0-45f9-a5d3-9712d3c99c28/files/healthy-171-19-117_S1_L004_R1_001.fastq.gz" ]}
+    ],
+    "parameterSet": {
+        "schedulerOptions": [
+            { "name":"allocation", "arg":"-A MCB23006" }
+        ],
+        "containerArgs": [
+        ],
+        "appArgs": [
+        ],
+        "envVariables": [
+            {"key": "Workflow", "value": "takara_bio_umi_human_tr" },
+            {"key": "SequenceFileTypes", "value": "illumina" },
+            {"key": "SequenceForwardPairedFiles", "value": "healthy-171-19-117_S1_L004_R2_001.fastq.gz" },
+            {"key": "SequenceReversePairedFiles", "value": "healthy-171-19-117_S1_L004_R1_001.fastq.gz" },
+            {"key": "PreFilterStatisticsFlag", "value": "1" },
+            {"key": "MinimumQuality", "value": "20" },
+            {"key": "MinimumLength", "value": "0" },
+            {"key": "PostFilterStatisticsFlag", "value": "1" },
+            {"key": "UMIMaxError", "value": "0.1" },
+            {"key": "UMIMaxGap", "value": "0.5" },
+            {"key": "UMIMinFrequency", "value": "0.6" },
+            {"key": "ReversePrimerMaxError", "value": "0.2" },
+            {"key": "ReversePrimerMaxLength", "value": "70" }
+        ]
+    }
+}

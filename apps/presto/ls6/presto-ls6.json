@@ -58,16 +58,20 @@
                 {"key": "UMIMinFrequency", "inputMode": "INCLUDE_BY_DEFAULT" },
 
                 {"key": "ForwardPrimer", "inputMode": "INCLUDE_BY_DEFAULT" },
-                {"key": "ForwardPrimerUMI", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "ForwardPrimerMaxError", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "ForwardPrimerMaxLength", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "ForwardPrimerStartPosition", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "ForwardPrimerUMI", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "ForwardPrimerUMIStart", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "ForwardPrimerUMILength", "inputMode": "INCLUDE_BY_DEFAULT" },
 
                 {"key": "ReversePrimer", "inputMode": "INCLUDE_BY_DEFAULT" },
-                {"key": "ReversePrimerUMI", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "ReversePrimerMaxError", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "ReversePrimerMaxLength", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "ReversePrimerStartPosition", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "ReversePrimerUMI", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "ReversePrimerUMIStart", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "ReversePrimerUMILength", "inputMode": "INCLUDE_BY_DEFAULT" },
 
                 {"key": "FindUniqueFlag", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "FindUniqueMaxNucleotides", "inputMode": "INCLUDE_BY_DEFAULT" },
