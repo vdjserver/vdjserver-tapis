@@ -39,7 +39,6 @@ function print_parameters() {
     echo "Application parameters:"
     echo "analysis_type=${analysis_type}"
     echo "distance=${distance}"
-    echo "n_threads=${n_threads}"
 }
 
 function run_compairr_workflow() {
