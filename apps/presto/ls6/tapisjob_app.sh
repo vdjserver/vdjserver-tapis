@@ -17,21 +17,21 @@ module load launcher/3.10
 module load tacc-apptainer
 
 # use our production binaries
-ALIGN_SETS_PY="apptainer exec -e ${singularity_image} AlignSets.py"
-ASSEMBLE_PAIRS_PY="apptainer exec -e ${singularity_image} AssemblePairs.py"
-BUILD_CONSENSUS_PY="apptainer exec -e ${singularity_image} BuildConsensus.py"
-CLUSTER_SETS_PY="apptainer exec -e ${singularity_image} ClusterSets.py"
-COLLAPSE_SEQ_PY="apptainer exec -e ${singularity_image} CollapseSeq.py"
-CONVERT_HEADERS_PY="apptainer exec -e ${singularity_image} ConvertHeaders.py"
-FILTER_SEQ_PY="apptainer exec -e ${singularity_image} FilterSeq.py"
-MASK_PRIMERS_PY="apptainer exec -e ${singularity_image} MaskPrimers.py"
-PAIR_SEQ_PY="apptainer exec -e ${singularity_image} PairSeq.py"
-PARSE_HEADERS_PY="apptainer exec -e ${singularity_image} ParseHeaders.py"
-PARSE_LOG_PY="apptainer exec -e ${singularity_image} ParseLog.py"
-SPLIT_SEQ_PY="apptainer exec -e ${singularity_image} SplitSeq.py"
-VDJ_PIPE="apptainer exec -e ${vdj_pipe_image} vdj_pipe"
-PYTHON="apptainer exec -e ${singularity_image} python3"
-PYTHON3="apptainer exec -e ${singularity_image} python3"
+ALIGN_SETS_PY="apptainer exec ${singularity_image} AlignSets.py"
+ASSEMBLE_PAIRS_PY="apptainer exec ${singularity_image} AssemblePairs.py"
+BUILD_CONSENSUS_PY="apptainer exec ${singularity_image} BuildConsensus.py"
+CLUSTER_SETS_PY="apptainer exec ${singularity_image} ClusterSets.py"
+COLLAPSE_SEQ_PY="apptainer exec ${singularity_image} CollapseSeq.py"
+CONVERT_HEADERS_PY="apptainer exec ${singularity_image} ConvertHeaders.py"
+FILTER_SEQ_PY="apptainer exec ${singularity_image} FilterSeq.py"
+MASK_PRIMERS_PY="apptainer exec ${singularity_image} MaskPrimers.py"
+PAIR_SEQ_PY="apptainer exec ${singularity_image} PairSeq.py"
+PARSE_HEADERS_PY="apptainer exec ${singularity_image} ParseHeaders.py"
+PARSE_LOG_PY="apptainer exec ${singularity_image} ParseLog.py"
+SPLIT_SEQ_PY="apptainer exec ${singularity_image} SplitSeq.py"
+VDJ_PIPE="apptainer exec ${vdj_pipe_image} vdj_pipe"
+PYTHON="apptainer exec ${singularity_image} python3"
+PYTHON3="apptainer exec ${singularity_image} python3"
 
 # bring in common functions
 source ./presto_common.sh
