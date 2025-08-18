@@ -1,5 +1,5 @@
 {
-    "name": "sra_test",
+    "name": "sra_test-3",
     "appId": "sra-download-vm",
     "appVersion": "0.1",
     "maxMinutes": 240,
@@ -13,7 +13,7 @@
         "appArgs": [
         ],
         "envVariables": [
-            {"key": "SRA_run_id", "value": "SRR13125723" },
+            {"key": "SRA_run_id", "value": "SRR32457848" },
             {"key": "project_id", "value": "" },
             {"key": "split_flag", "value": "1" }
         ]
