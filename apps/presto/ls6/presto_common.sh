@@ -125,10 +125,11 @@ function takara_bio_umi_workflow() {
     R2_READS=$1
     R1_READS=$2
     OUTNAME=$(basename ${R1_READS} | sed 's/\.[^.]*$//; s/_L[0-9]*_R[0-9]_[0-9]*//')
+    count=$3
 
     # Argument defaults
     ALIGN_BARCODE=false
-    NPROC=1
+    NPROC=24
     COORD=$SequenceFileTypes
 
     if [ "$Workflow" = "takara_bio_umi_human_ig" ]; then
@@ -147,6 +148,9 @@ function takara_bio_umi_workflow() {
         echo "Unknown workflow: " $Workflow
         exit 1
     fi
+
+    group="group${count}"
+    addGroup $group file
 
     # TODO: need to add parameters to app
 
@@ -220,7 +224,7 @@ function takara_bio_umi_workflow() {
     
     # Identify primers and UMI in -2 reads
     printf "  %2d: %-*s $(date +'%H:%M %D')\n" $((++STEP)) 24 "MaskPrimers extract"
-    $MASK_PRIMERS_PY extract -s ${MPR2_FILE} \
+    $MASK_PRIMERS_PY extract -s ${MPR2_FILE} --nproc ${NPROC} \
          --start 12 --len 7 --barcode --bf BARCODE --mode cut \
          --log "${LOGDIR}/primers-2.log" \
         --outname "${OUTNAME}-R2" --outdir .  >> $PIPELINE_LOG 2> $ERROR_LOG
@@ -318,6 +322,7 @@ function takara_bio_umi_workflow() {
     if [ $? -ne 0 ]; then
         return 1
     fi
+    addOutputFile $group $APP_NAME processed_sequence "${OUTNAME}-final_total.fastq" "Total Post-Filter Sequences (${OUTNAME})" "fastq" null
     
     # Remove duplicate sequences
     printf "  %2d: %-*s $(date +'%H:%M %D')\n" $((++STEP)) 24 "CollapseSeq"
@@ -328,6 +333,7 @@ function takara_bio_umi_workflow() {
     if [ $? -ne 0 ]; then
         return 1
     fi
+    addOutputFile $group $APP_NAME sequence "${OUTNAME}-final_collapse-unique.fastq" "Unique Post-Filter Sequences (${OUTNAME})" "fastq" null
     
     # Subset to sequences seen at least twice
     printf "  %2d: %-*s $(date +'%H:%M %D')\n" $((++STEP)) 24 "SplitSeq"
@@ -337,6 +343,7 @@ function takara_bio_umi_workflow() {
     if [ $? -ne 0 ]; then
         return 1
     fi
+    addOutputFile $group $APP_NAME sequence_ge2 "${OUTNAME}-final_collapse-unique_atleast-2.fastq" "Unique At Least 2 Post-Filter Sequences (${OUTNAME})" "fastq" null
     
     # Create table of final repertoire
     printf "  %2d: %-*s $(date +'%H:%M %D')\n" $((++STEP)) 24 "ParseHeaders table"
@@ -358,6 +365,7 @@ function takara_bio_umi_workflow() {
 #
 function single_presto_workflow() {
     file=$1
+    count=$2
 
     group="group${count}"
     addGroup $group file
@@ -848,7 +856,7 @@ function run_presto_workflow() {
                     addOutputFile $group $APP_NAME merged_sequence "${OutputPrefix}_assemble.${fileExtension}" "Merged Pre-Filter Sequences (${OutputPrefix})" "read" null
 
                 else
-                    takara_bio_umi_workflow $file $rfile
+                    takara_bio_umi_workflow $file $rfile $count
                 fi
 
                 count=$(( $count + 1 ))
@@ -864,7 +872,7 @@ function run_presto_workflow() {
         while [ "x${readFiles[count]}" != "x" ]
         do
             file=${readFiles[count]}
-            single_presto_workflow $file
+            single_presto_workflow $file $count
             count=$(( $count + 1 ))
         done
     fi
