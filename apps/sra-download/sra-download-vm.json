@@ -1,0 +1,32 @@
+{
+    "id":"sra-download-vm",
+    "version":"0.1",
+    "description":"File transfer from SRA",
+    "runtime":"ZIP",
+    "runtimeOptions": ["NONE"],
+    "containerImage":"tapis://data-storage.vdjserver.org/apps/sra-download-vm-0.1.tgz",
+    "jobType":"FORK",
+    "jobAttributes": {
+        "description": "default job description",
+        "execSystemId": "test-transfer.tacc.utexas.edu",
+        "fileInputs":[
+        ],
+        "fileInputArrays":[
+        ],
+        "parameterSet": {
+            "logConfig": {
+                "stdoutFilename": "tapisjob.out",
+                "stderrFilename": "tapisjob.err"
+            },
+            "containerArgs": [
+            ],
+            "appArgs": [
+            ],
+            "envVariables": [
+                {"key": "SRA_run_id", "inputMode": "REQUIRED" },
+                {"key": "project_id", "inputMode": "REQUIRED" },
+                {"key": "split_flag", "inputMode": "REQUIRED", "value": "1" }
+            ]
+        }
+    }
+}

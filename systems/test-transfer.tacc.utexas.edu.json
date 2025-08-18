@@ -1,0 +1,25 @@
+{
+    "id": "test-transfer.tacc.utexas.edu",
+    "description": "System for running file transfer jobs on VDJServer VM.",
+    "systemType": "LINUX",
+    "host": "vdj-rep-02.tacc.utexas.edu",
+    "effectiveUserId": "vdj",
+    "defaultAuthnMethod": "PKI_KEYS",
+    "rootDir": "/",
+    "port": 22,
+    "canExec": true,
+    "canRunBatch": false,
+    "jobRuntimes": [
+        {
+            "runtimeType": "ZIP",
+            "version": null
+        }
+    ],
+    "jobWorkingDir": "/home/vdj/tapis/${JobUUID}",
+    "jobEnvVariables": [],
+    "jobMaxJobs": -1,
+    "jobMaxJobsPerUser": -1,
+    "jobCapabilities": [],
+    "tags": [],
+    "notes": {}
+}

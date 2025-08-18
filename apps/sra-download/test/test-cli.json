@@ -1,0 +1,21 @@
+{
+    "name": "sra_test",
+    "appId": "sra-download-vm",
+    "appVersion": "0.1",
+    "maxMinutes": 240,
+    "fileInputs":[
+    ],
+    "fileInputArrays":[
+    ],
+    "parameterSet": {
+        "containerArgs": [
+        ],
+        "appArgs": [
+        ],
+        "envVariables": [
+            {"key": "SRA_run_id", "value": "SRR13125723" },
+            {"key": "project_id", "value": "" },
+            {"key": "split_flag", "value": "1" }
+        ]
+    }
+}
