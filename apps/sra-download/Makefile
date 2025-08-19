@@ -49,7 +49,7 @@ clean:
 
 common-scripts:
 	mkdir ${BUILD_DIR}
-	cp ${SCRIPTS_DIR}/get_sra_info.py ${BUILD_DIR}
+	# cp ${SCRIPTS_DIR}/get_sra_info.py ${BUILD_DIR}
 
 build: clean common-scripts
 	cp ${APP_JSON} ${BUILD_DIR}
