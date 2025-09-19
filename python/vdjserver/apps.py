@@ -10,54 +10,48 @@ from tapipy.tapis import Tapis
 import vdjserver.defaults
 import requests
 
-
 def apps_list(system_id=None, token=None):
-    # Initialize the Tapis object
-    tapis_obj = vdjserver.defaults.init_tapis(token)
-    # Get apps list
-    response = tapis_obj.apps.getApps(select="allAttributes")
-    #print(len(response))
-    # Define the fields and initial column widths
-    fields = ["App Name", "Version", "Owner", "Description", "Container Image"]
+    if token is None:
+        token = os.environ['JWT']
+    # Construct the Tapis file download URL (for Agave-style APIs)
+    url = f"https://vdjserver.tapis.io/v3/apps?search=(version.like.*)&select=allAttributes"
+    headers = {"X-Tapis-Token": token,
+                "Accept": "application/json"}
+    # Define the fields we want to print
+    fields = ["id",  "version", "owner", "description", "containerImage"]
+    # Determine the maximum width for each column based on the data
     field_widths = [len(field) for field in fields]
+    print('\n')
+    try:
+        response = requests.get(url, headers=headers)
+        response = response.json()
+        message = response['message']
+        results = response['result']
+        print('\n')
+        print(message)
+        print('\n')
+        if isinstance(results, list):
+            if len(results) > 0:
+                # First pass to calculate the maximum width for each column
+                for job in results:
+                    for i, field in enumerate(fields):
+                        field_widths[i] = max(field_widths[i], len(job.get(field, 'N/A')))
+                # Print the header row
+                header = " | ".join([f"{field:<{field_widths[i]}}" for i, field in enumerate(fields)])
+                print(header)
+                print("-" * len(header))  # Separator line
 
-    print("\nVDJ server Tools Apps List: \n")
-    if len(response) > 0:
-        # Determine max widths for each column based on the data
-        for data in response:
-            appname = str(data.get("id", "N/A"))
-            owner = str(data.get("owner", "N/A"))
-            container_image = str(data.get("containerImage", "N/A"))
-            description = str(data.get("description", "N/A"))
-            version = str(data.get("version", "N/A"))
+                # Print each row of job data
+                for job in results:
+                    row = " | ".join([f"{job.get(field, 'N/A'):<{field_widths[i]}}" for i, field in enumerate(fields)])
+                    print(row)
+            else:
+                print("No apps found.")
+        else:
+            print(f"Unexpected response format. Expected list, got {type(response)}.")
 
-            field_widths[0] = max(field_widths[0], len(appname))  # App Name
-            field_widths[1] = max(field_widths[1], len(version))  # Version
-            field_widths[2] = max(field_widths[2], len(owner))    # Owner
-            field_widths[3] = max(field_widths[3], len(description))  # Description
-            field_widths[4] = max(field_widths[4], len(container_image))  # Container Image
-
-        # Print the header row
-        header = " | ".join([f"{field:<{field_widths[i]}}" for i, field in enumerate(fields)])
-        print(header)
-        print("-" * len(header))  # Print separator line
-
-        # Print the data rows
-        for data in response:
-            appname = str(data.get("id", "N/A"))
-            owner = str(data.get("owner", "N/A"))
-            container_image = str(data.get("containerImage", "N/A"))
-            description = str(data.get("description", "N/A"))
-            version = str(data.get("version", "N/A"))
-
-            row = " | ".join([f"{appname:<{field_widths[0]}}", 
-                              f"{version:<{field_widths[1]}}", 
-                              f"{owner:<{field_widths[2]}}", 
-                              f"{description:<{field_widths[3]}}", 
-                              f"{container_image:<{field_widths[4]}}"])
-            print(row)
-    else:
-        print("No apps found.")
+    except Exception as e:
+        print(f"Error retrieving apps list: {e}")
 
 def create_app_version(json_file, system_id = None, token=None):
     # Initialize the Tapis object
@@ -188,11 +182,19 @@ def get_app_history(app_id, system_id=None, token=None):
         print(f"Error retrieving history for app {app_id}: {e}")
 
 
-
-# def list_tapis_functions(system_id = None, token = None):
-#     if system_id is None:
-#         system_id = vdjserver.defaults.storage_system_id
-#     print(system_id)
-#     tapis_obj = vdjserver.defaults.init_tapis(token)
-#     print(dir(tapis_obj.apps)) 
+def get_app_details(app_id, app_version, system_id=None, token=None):
+    if token is None:
+        token = os.environ['JWT']
+    url = f'https://vdjserver.tapis.io/v3/apps/{app_id}/{app_version}'
     
+    headers = {"X-Tapis-Token": token,
+               "Accept": "application/json"}
+    try:
+        response = requests.get(url, headers=headers)
+        print("-" * 100)
+        print(f"\n\t\tappID: {app_id} \n\t\tversion: {app_version}\n")
+        print("-" * 100)
+        response = response.json()
+        print(json.dumps(response['result'], indent = 4))
+    except Exception as e:
+        print(f"Error retrieving detailed information for {app_id}: {e}")

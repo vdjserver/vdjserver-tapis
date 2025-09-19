@@ -470,6 +470,17 @@ def define_apps_args(subparsers, common_parser):
     group_parser_apps_change_owner.add_argument('app_id', type=str, help="App ID/Name")
     group_parser_apps_change_owner.add_argument('user_name', type=str, help="New app owner (User Name)")
     parser_apps_change_owner.set_defaults(func=vdjserver.apps.change_app_owner)
+    
+    # Subparser for retrieving app details for given app id and version
+    parser_apps_get_details = apps_subparser.add_parser('get', parents=[common_parser],
+                                                        add_help=False,
+                                                        help='Get details for an app.',
+                                                        description='Retrieve the details for a given app and their version.')
+    group_parser_apps_get_details = parser_apps_get_details.add_argument_group('Get app details arguments')
+    group_parser_apps_get_details.add_argument('app_id', type=str, help="App Name/ID")
+    group_parser_apps_get_details.add_argument('app_version', type=str, help="App Version")
+    parser_apps_get_details.set_defaults(func=vdjserver.apps.get_app_details)
+    
 
 #
 # Subparser for job operations

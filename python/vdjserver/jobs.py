@@ -9,13 +9,13 @@ import os
 from tapipy.tapis import Tapis
 import vdjserver.defaults
 import json
+import requests
 
 
 def get_job_list(list_type="ALL_JOBS", limit=None, skip=None, start_after=None, order_by=None,
                  compute_total=False, system_id=None, token=None):
     # Initialize the Tapis object
     tapis_obj = vdjserver.defaults.init_tapis(token)
-
     try:
         # Call the Tapis API to get the job list
         response = tapis_obj.jobs.getJobList(
@@ -26,16 +26,14 @@ def get_job_list(list_type="ALL_JOBS", limit=None, skip=None, start_after=None, 
             orderBy=order_by,
             computeTotal=compute_total,
         )
-        # print(response)
+        # Define the fields we want to print
+        fields = ["appId", "appVersion", "status", "uuid", "created", "remoteStarted", "ended", "name"]
+        # Determine the maximum width for each column based on the data
+        field_widths = [len(field) for field in fields]
+        print('\n')
         # Check if response is a list (job data)
         if isinstance(response, list):
             if len(response) > 0:
-                # Define the fields we want to print
-                fields = ["appId", "appVersion", "status", "uuid", "created", "ended", "name"]
-                
-                # Determine the maximum width for each column based on the data
-                field_widths = [len(field) for field in fields]
-
                 # First pass to calculate the maximum width for each column
                 for job in response:
                     for i, field in enumerate(fields):
@@ -50,7 +48,6 @@ def get_job_list(list_type="ALL_JOBS", limit=None, skip=None, start_after=None, 
                 for job in response:
                     row = " | ".join([f"{str(job.get(field, 'N/A')):<{field_widths[i]}}" for i, field in enumerate(fields)])
                     print(row)
-
             else:
                 print(f"No jobs found for {list_type}.")
         else:
@@ -132,25 +129,49 @@ def get_job_history(job_uuid, limit=None, skip=None, pretty=False, system_id = N
     except Exception as e:
         print(f"Error retrieving job history: {e}")
 
-def get_job(job_uuid, pretty=True, system_id = None, token=None):
-    # Initialize the Tapis object
-    tapis_obj = vdjserver.defaults.init_tapis(token)
+
+def get_job(job_uuid, pretty=True, system_id=None, token=None):
+    if token is None:
+        token = os.environ['JWT']
+
+    url = f"https://vdjserver.tapis.io/v3/jobs/{job_uuid}"
+    headers = {
+        "X-Tapis-Token": token,
+        "Accept": "application/json"
+    }
 
     try:
-        # Call the Tapis API to get the job by UUID
-        response = tapis_obj.jobs.getJob(
-            jobUuid=job_uuid,
-            pretty=pretty
-        )
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        response = response.json()
 
-        # Print the job details
+        # Decode fileInputs if it is a string
+        file_inputs_raw = response.get('result', {}).get('fileInputs', {})
+        parameterSet = response.get('result', {}).get('parameterSet', {})
+        if isinstance(file_inputs_raw, str):
+            try:
+                response['result']['fileInputs'] = json.loads(file_inputs_raw)
+            except json.JSONDecodeError:
+                print("Warning: Could not decode 'fileInputs'")
+                
+        if isinstance(parameterSet, str):
+            try:
+                response['result']['parameterSet'] = json.loads(parameterSet)
+            except json.JSONDecodeError:
+                print("Warning: Could not decode 'fileInputs'")
+
+        # Pretty print
         print("-" * 100)
-        print(f"Job Details (UUID: {job_uuid}):\n")
-        print(response)
+        print(f"\tJob Details for UUID: {job_uuid}")
+        print("-" * 100)
+        print(json.dumps(response, indent=4))
         print("-" * 100)
 
     except Exception as e:
         print(f"Error retrieving job: {e}")
+
+
+
 
 def cancel_job(job_uuid, pretty=False, system_id = None, token=None):
     # Initialize the Tapis object
