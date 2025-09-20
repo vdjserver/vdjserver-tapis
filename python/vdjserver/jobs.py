@@ -27,7 +27,7 @@ def get_job_list(list_type="ALL_JOBS", limit=None, skip=None, start_after=None, 
             computeTotal=compute_total,
         )
         # Define the fields we want to print
-        fields = ["appId", "appVersion", "status", "uuid", "created", "remoteStarted", "ended", "name"]
+        fields = ["appId", "appVersion", "status", "name", "created", "remoteStarted", "ended", "uuid"]
         # Determine the maximum width for each column based on the data
         field_widths = [len(field) for field in fields]
         print('\n')
