@@ -1,7 +1,7 @@
 {
     "name": "presto_test",
     "appId": "presto-ls6",
-    "appVersion": "0.1",
+    "appVersion": "0.2",
     "maxMinutes":60,
     "nodeCount": 1,
     "fileInputArrays":[
