@@ -128,7 +128,7 @@ def get_job_history(job_uuid, limit=None, skip=None, pretty=False, system_id = N
         print(f"Error retrieving job history: {e}")
 
 
-def get_job(job_uuid, pretty=True, system_id=None, token=None):
+def get_job(job_uuid, system_id=None, token=None):
     token = vdjserver.defaults.vdjserver_token(token)
 
     url = f"https://{vdjserver.defaults.tapis_host}/v3/jobs/{job_uuid}"

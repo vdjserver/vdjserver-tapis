@@ -29,7 +29,6 @@ def apps_list(system_id=None, token=None, all=False):
     try:
         response = requests.get(url, headers=headers)
         response = response.json()
-        message = response['message']
         results = response['result']
         if isinstance(results, list):
             if len(results) > 0:
@@ -90,12 +89,6 @@ def apps_update(app_name, app_version, json_file, system_id = None, token=None):
     except Exception as e:
         print(f"Error reading JSON file: {e}")
         sys.exit(1)
-    # app_name = str(data.get("id", "N/A"))
-    # owner = str(data.get("owner", "N/A"))
-    container_image = str(data.get("containerImage", "N/A"))
-    description = str(data.get("description", "N/A"))
-    # version = str(data.get("version", "N/A"))
-    # print(app_name, app_version)
     try:
         # Convert the app_data dictionary to a JSON string using json.dumps()
 

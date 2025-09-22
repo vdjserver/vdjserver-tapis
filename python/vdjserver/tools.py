@@ -241,6 +241,9 @@ def define_files_args(subparsers, common_parser):
                                             description='List files.')
     group_files = parser_files.add_argument_group('list files arguments')
     group_files.add_argument('path',type=str,help="File path")
+    group_files.add_argument('--limit', type=int, default=1000, help="Limit the number of files returned.")
+    group_files.add_argument('--skip', type=int, default=0, help="Number of files to skip.")
+    group_files.add_argument('--max_files', type=str, default='50', help="Maximum number of files to display (integer) or 'all' to show all files.")
     parser_files.set_defaults(func=vdjserver.files.files_list_cmd)
     
     
@@ -546,7 +549,6 @@ def define_jobs_args(subparsers, common_parser):
                                                 description='Retrieve the details of a job by its UUID.')
     group_parser_jobs_get = parser_jobs_get.add_argument_group('Job arguments')
     group_parser_jobs_get.add_argument('job_uuid', type=str, help="UUID of the job to retrieve.")
-    group_parser_jobs_get.add_argument('--pretty', action='store_true', help="Pretty print the response.")
     parser_jobs_get.set_defaults(func=vdjserver.jobs.get_job)    
     
     # Subparser to cancel a job by job UUID
