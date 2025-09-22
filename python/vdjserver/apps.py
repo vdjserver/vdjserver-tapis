@@ -11,10 +11,10 @@ import vdjserver.defaults
 import requests
 
 def apps_list(system_id=None, token=None):
-    if token is None:
-        token = os.environ['JWT']
+    token = vdjserver.defaults.vdjserver_token(token)
+
     # Construct the Tapis file download URL (for Agave-style APIs)
-    url = f"https://vdjserver.tapis.io/v3/apps?search=(version.like.*)&select=allAttributes"
+    url = f"https://{vdjserver.defaults.tapis_host}/v3/apps?search=(version.like.*)&select=allAttributes"
     headers = {"X-Tapis-Token": token,
                 "Accept": "application/json"}
     # Define the fields we want to print
@@ -27,9 +27,6 @@ def apps_list(system_id=None, token=None):
         response = response.json()
         message = response['message']
         results = response['result']
-        print('\n')
-        print(message)
-        print('\n')
         if isinstance(results, list):
             if len(results) > 0:
                 # First pass to calculate the maximum width for each column
@@ -183,9 +180,9 @@ def get_app_history(app_id, system_id=None, token=None):
 
 
 def get_app_details(app_id, app_version, system_id=None, token=None):
-    if token is None:
-        token = os.environ['JWT']
-    url = f'https://vdjserver.tapis.io/v3/apps/{app_id}/{app_version}'
+    token = vdjserver.defaults.vdjserver_token(token)
+
+    url = f'https://{vdjserver.defaults.tapis_host}/v3/apps/{app_id}/{app_version}'
     
     headers = {"X-Tapis-Token": token,
                "Accept": "application/json"}
