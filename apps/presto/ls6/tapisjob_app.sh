@@ -29,9 +29,9 @@ PAIR_SEQ_PY="apptainer exec ${singularity_image} PairSeq.py"
 PARSE_HEADERS_PY="apptainer exec ${singularity_image} ParseHeaders.py"
 PARSE_LOG_PY="apptainer exec ${singularity_image} ParseLog.py"
 SPLIT_SEQ_PY="apptainer exec ${singularity_image} SplitSeq.py"
-VDJ_PIPE="apptainer exec ${vdj_pipe_image} vdj_pipe"
-PYTHON="apptainer exec ${singularity_image} python3"
-PYTHON3="apptainer exec ${singularity_image} python3"
+VDJ_PIPE="apptainer exec -e ${vdj_pipe_image} vdj_pipe"
+PYTHON="apptainer exec -e ${singularity_image} python3"
+PYTHON3="apptainer exec -e ${singularity_image} python3"
 
 # bring in common functions
 source ./presto_common.sh
