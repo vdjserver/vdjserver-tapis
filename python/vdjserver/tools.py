@@ -498,12 +498,10 @@ def define_jobs_args(subparsers, common_parser):
                                             help='List Jobs.',
                                             description='Retrieve the list of Jobs.')
     group_parser_jobs_list = parser_jobs_list.add_argument_group('Job list arguments')
-    group_parser_jobs_list.add_argument('--list-type', choices=["MY_JOBS", "SHARED_JOBS", "ALL_JOBS"], default="MY_JOBS", help="Type of job list to retrieve.")
+    group_parser_jobs_list.add_argument('--list-type', choices=["MY_JOBS", "SHARED_JOBS", "ALL_JOBS"], default="ALL_JOBS", help="Type of job list to retrieve.")
     group_parser_jobs_list.add_argument('--limit', type=int, default=25, help="Limit the number of jobs returned.")
     group_parser_jobs_list.add_argument('--skip', type=int, help="Number of jobs to skip.")
-    group_parser_jobs_list.add_argument('--start-after', type=int, help="Retrieve jobs after a specific point.")
     group_parser_jobs_list.add_argument('--order-by', type=str, default="created(desc)", help="Order the list by a field.")
-    group_parser_jobs_list.add_argument('--compute-total', action='store_true', help="Include the total number of jobs.")
     parser_jobs_list.set_defaults(func=vdjserver.jobs.get_job_list)
     
     # Subparser for submitting a job

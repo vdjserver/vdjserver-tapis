@@ -12,8 +12,8 @@ import json
 import requests
 
 
-def get_job_list(list_type="ALL_JOBS", limit=None, skip=None, start_after=None, order_by=None,
-                 compute_total=False, system_id=None, token=None):
+def get_job_list(list_type="ALL_JOBS", limit=None, skip=None, order_by=None,
+                 system_id=None, token=None):
     # Initialize the Tapis object
     tapis_obj = vdjserver.defaults.init_tapis(token)
     try:
@@ -22,9 +22,7 @@ def get_job_list(list_type="ALL_JOBS", limit=None, skip=None, start_after=None, 
             listType=list_type,
             limit=limit,
             skip=skip,
-            startAfter=start_after,
-            orderBy=order_by,
-            computeTotal=compute_total,
+            orderBy=order_by
         )
         # Define the fields we want to print
         fields = ["appId", "appVersion", "status", "name", "created", "remoteStarted", "ended", "uuid"]
