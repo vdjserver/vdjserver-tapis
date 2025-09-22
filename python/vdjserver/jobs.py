@@ -131,10 +131,9 @@ def get_job_history(job_uuid, limit=None, skip=None, pretty=False, system_id = N
 
 
 def get_job(job_uuid, pretty=True, system_id=None, token=None):
-    if token is None:
-        token = os.environ['JWT']
+    token = vdjserver.defaults.vdjserver_token(token)
 
-    url = f"https://vdjserver.tapis.io/v3/jobs/{job_uuid}"
+    url = f"https://{vdjserver.defaults.tapis_host}/v3/jobs/{job_uuid}"
     headers = {
         "X-Tapis-Token": token,
         "Accept": "application/json"
