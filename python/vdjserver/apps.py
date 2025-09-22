@@ -10,13 +10,17 @@ from tapipy.tapis import Tapis
 import vdjserver.defaults
 import requests
 
-def apps_list(system_id=None, token=None):
+def apps_list(system_id=None, token=None, all=False):
     token = vdjserver.defaults.vdjserver_token(token)
 
     # Construct the Tapis file download URL (for Agave-style APIs)
-    url = f"https://{vdjserver.defaults.tapis_host}/v3/apps?search=(version.like.*)&select=allAttributes"
+    if all:
+        url = f"https://{vdjserver.defaults.tapis_host}/v3/apps?search=(version.like.*)&select=allAttributes"
+    else:
+        url = f"https://{vdjserver.defaults.tapis_host}/v3/apps?select=allAttributes"
     headers = {"X-Tapis-Token": token,
                 "Accept": "application/json"}
+
     # Define the fields we want to print
     fields = ["id",  "version", "owner", "description", "containerImage"]
     # Determine the maximum width for each column based on the data

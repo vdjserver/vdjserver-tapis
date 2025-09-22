@@ -420,6 +420,8 @@ def define_apps_args(subparsers, common_parser):
                                                 add_help=False,
                                                 help='List apps.',
                                                 description='List apps.')
+    group_parser_apps_list = parser_apps_list.add_argument_group('List apps')
+    group_parser_apps_list.add_argument('--all', action='store_true', help="Show all app versions.")
     parser_apps_list.set_defaults(func=vdjserver.apps.apps_list)
 
     # Subparser for retrieving app details for given app id and version
