@@ -28,7 +28,7 @@ def files_list_cmd(path, limit, skip, max_files = '50', system_id=None, token=No
         system_id = vdjserver.defaults.storage_system_id
     tapis_obj = vdjserver.defaults.init_tapis(token)
     
-    fields = ['size', 'lastModified', 'name', 'type']
+    fields = ['nativePermissions', 'size', 'lastModified', 'name', 'type']
     field_widths = [len(field) for field in fields]
     all_files = []
     offset = skip
