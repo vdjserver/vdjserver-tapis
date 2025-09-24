@@ -12,34 +12,62 @@ import requests
 import time
 
 #### Files ####
-
-def files_list_cmd(path, system_id=None, token=None):
+def files_list_cmd(path, limit, skip, max_files = '50', system_id=None, token=None):
+    # Convert max_files from string to int or 'all'
+    if isinstance(max_files, str):
+        if max_files.lower() == 'all':
+            max_files = 'all'
+        else:
+            try:
+                max_files = int(max_files)
+            except ValueError:
+                print(f"Invalid max_files value: {max_files}. Must be a positive integer or 'all'. Using default 50.")
+                max_files = 50  # default
+    
     if system_id is None:
         system_id = vdjserver.defaults.storage_system_id
-    fields = [ 'nativePermissions', 'owner', 'group', 'size', 'lastModified', 'path', 'type' ]
-    field_widths = [ len(obj) for obj in fields ]
-
     tapis_obj = vdjserver.defaults.init_tapis(token)
+    
+    fields = ['nativePermissions', 'size', 'lastModified', 'name', 'type']
+    field_widths = [len(field) for field in fields]
+    all_files = []
+    offset = skip
     try:
-        res = tapis_obj.files.listFiles(systemId=system_id, path=path)
-        if len(res) > 0:
-            # determine max widths
-            for obj in res:
-                for i in range(0, len(fields)):
-                    if len(str(obj.get(fields[i]))) > field_widths[i]:
-                        field_widths[i] = len(str(obj.get(fields[i])))
+        while True:
+            response = tapis_obj.files.listFiles(systemId=system_id, path=path, limit=limit, offset=offset)
+            if not response:
+                break  # No more files
+            all_files.extend(response)
+            # Update field widths
+            for job in response:
+                for i, field in enumerate(fields):
+                    field_widths[i] = max(field_widths[i], len(str(job.get(field, 'N/A'))))
+            offset += limit
+            if isinstance(max_files, int) and len(all_files) >= max_files:
+                all_files = all_files[:max_files]
+                break
 
-            # headers
-            vdjserver.defaults.print_table_headers(fields, field_widths)
+        if all_files:
+            header = " | ".join([f"{field:<{field_widths[i]}}" for i, field in enumerate(fields)])
+            print("-" * len(header))
+            print(header)
+            print("-" * len(header))  # Separator line
 
-            # print values
-            for obj in res:
-                vdjserver.defaults.print_table_row(fields, field_widths, obj)
-
+            for job in all_files:
+                row = " | ".join([f"{str(job.get(field, 'N/A')):<{field_widths[i]}}" for i, field in enumerate(fields)])
+                print(row)
+            
+            print("-" * len(header))
+            print("-" * len(header))
+            print(f"Files in Path: {path} (Showing {len(all_files)} files/directories)")
+            print("-" * len(header))
         else:
-            print('no files')
+            print('No files found.')
+
     except Exception as e:
-        print(f"Error: \n\n{str(e)}\n")
+        print(f"Error:\n\n{str(e)}\n")
+
+
         
 ## Make Directory
 def tapis_files_mkdir(path, system_id=None, token=None):

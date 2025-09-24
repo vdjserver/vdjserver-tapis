@@ -241,6 +241,9 @@ def define_files_args(subparsers, common_parser):
                                             description='List files.')
     group_files = parser_files.add_argument_group('list files arguments')
     group_files.add_argument('path',type=str,help="File path")
+    group_files.add_argument('--limit', type=int, default=1000, help="Limit the number of files returned.")
+    group_files.add_argument('--skip', type=int, default=0, help="Number of files to skip.")
+    group_files.add_argument('--max_files', type=str, default='50', help="Maximum number of files to display (integer) or 'all' to show all files.")
     parser_files.set_defaults(func=vdjserver.files.files_list_cmd)
     
     
@@ -420,7 +423,19 @@ def define_apps_args(subparsers, common_parser):
                                                 add_help=False,
                                                 help='List apps.',
                                                 description='List apps.')
+    group_parser_apps_list = parser_apps_list.add_argument_group('List apps')
+    group_parser_apps_list.add_argument('--all', action='store_true', help="Show all app versions.")
     parser_apps_list.set_defaults(func=vdjserver.apps.apps_list)
+
+    # Subparser for retrieving app details for given app id and version
+    parser_apps_get_details = apps_subparser.add_parser('get', parents=[common_parser],
+                                                        add_help=False,
+                                                        help='Get details for an app.',
+                                                        description='Retrieve the details for a given app and their version.')
+    group_parser_apps_get_details = parser_apps_get_details.add_argument_group('Get app details arguments')
+    group_parser_apps_get_details.add_argument('app_id', type=str, help="App Name/ID")
+    group_parser_apps_get_details.add_argument('app_version', type=str, help="App Version")
+    parser_apps_get_details.set_defaults(func=vdjserver.apps.get_app_details)
 
     # Subparser for creating a new app version
     parser_create_app_version = apps_subparser.add_parser('create', parents=[common_parser],
@@ -460,7 +475,7 @@ def define_apps_args(subparsers, common_parser):
     group_parser_apps_get_history = parser_apps_get_history.add_argument_group('Get app history arguments')
     group_parser_apps_get_history.add_argument('app_id', type=str, help="App Name/ID")
     parser_apps_get_history.set_defaults(func=vdjserver.apps.get_app_history)
-    
+
     # Subparser for changing the owner of an app
     parser_apps_change_owner = apps_subparser.add_parser('change_owner', parents=[common_parser],
                                                         add_help=False,
@@ -470,6 +485,7 @@ def define_apps_args(subparsers, common_parser):
     group_parser_apps_change_owner.add_argument('app_id', type=str, help="App ID/Name")
     group_parser_apps_change_owner.add_argument('user_name', type=str, help="New app owner (User Name)")
     parser_apps_change_owner.set_defaults(func=vdjserver.apps.change_app_owner)
+    
 
 #
 # Subparser for job operations
@@ -487,12 +503,10 @@ def define_jobs_args(subparsers, common_parser):
                                             help='List Jobs.',
                                             description='Retrieve the list of Jobs.')
     group_parser_jobs_list = parser_jobs_list.add_argument_group('Job list arguments')
-    group_parser_jobs_list.add_argument('--list-type', choices=["MY_JOBS", "SHARED_JOBS", "ALL_JOBS"], default="MY_JOBS", help="Type of job list to retrieve.")
+    group_parser_jobs_list.add_argument('--list-type', choices=["MY_JOBS", "SHARED_JOBS", "ALL_JOBS"], default="ALL_JOBS", help="Type of job list to retrieve.")
     group_parser_jobs_list.add_argument('--limit', type=int, default=25, help="Limit the number of jobs returned.")
     group_parser_jobs_list.add_argument('--skip', type=int, help="Number of jobs to skip.")
-    group_parser_jobs_list.add_argument('--start-after', type=int, help="Retrieve jobs after a specific point.")
     group_parser_jobs_list.add_argument('--order-by', type=str, default="created(desc)", help="Order the list by a field.")
-    group_parser_jobs_list.add_argument('--compute-total', action='store_true', help="Include the total number of jobs.")
     parser_jobs_list.set_defaults(func=vdjserver.jobs.get_job_list)
     
     # Subparser for submitting a job
@@ -535,7 +549,6 @@ def define_jobs_args(subparsers, common_parser):
                                                 description='Retrieve the details of a job by its UUID.')
     group_parser_jobs_get = parser_jobs_get.add_argument_group('Job arguments')
     group_parser_jobs_get.add_argument('job_uuid', type=str, help="UUID of the job to retrieve.")
-    group_parser_jobs_get.add_argument('--pretty', action='store_true', help="Pretty print the response.")
     parser_jobs_get.set_defaults(func=vdjserver.jobs.get_job)    
     
     # Subparser to cancel a job by job UUID
