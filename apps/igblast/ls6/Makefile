@@ -1,7 +1,7 @@
 # helper commands for tapis v3 apps
 
 APP_NAME=igblast
-APP_VERSION=0.4
+APP_VERSION=0.5
 APP_SYSTEM=ls6
 
 APP_ID=${APP_NAME}-${APP_SYSTEM}
@@ -34,6 +34,9 @@ help:
 	@echo "make test-bcr  -- Submit test BCR job"
 	@echo "make test-all  -- Submit all test jobs"
 	@echo ""
+
+list:
+	vdjserver-tools apps list
 
 create:
 	vdjserver-tools apps create ${APP_JSON}
