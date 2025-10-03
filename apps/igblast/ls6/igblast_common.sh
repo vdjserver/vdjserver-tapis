@@ -252,9 +252,81 @@ function run_igblast_workflow() {
 
         # assign repertoire IDs
         mv ${fileOutname}.igblast.airr.tsv ${fileOutname}.igblast.orig.airr.tsv
-        $PYTHON assign_repertoire_id.py ${mfile} ${_tapisJobUUID} ${fileOutname}.igblast.orig.airr.tsv ${mfile}.igblast.airr.tsv
+        target_file="${mfile}.igblast.airr.tsv"
+        if [ -f "$target_file" ]; then
+            # Find next available numbered suffix to avoid overwriting
+            i=1
+            while [ -f "${mfile}.igblast.airr.${i}.tsv" ]; do
+                ((i++))
+            done
+            # Assign repertoire ID to orig file, output to numbered file
+            $PYTHON assign_repertoire_id.py ${mfile} ${_tapisJobUUID} ${fileOutname}.igblast.orig.airr.tsv ${mfile}.igblast.airr.${i}.tsv
+        else
+            # First file for this repertoire id, output normally
+            $PYTHON assign_repertoire_id.py ${mfile} ${_tapisJobUUID} ${fileOutname}.igblast.orig.airr.tsv ${target_file}
+        fi
+
         mv ${fileOutname}.igblast.makedb.airr.tsv ${fileOutname}.igblast.makedb.orig.airr.tsv
-        $PYTHON assign_repertoire_id.py ${mfile} ${_tapisJobUUID} ${fileOutname}.igblast.makedb.orig.airr.tsv ${mfile}.igblast.makedb.airr.tsv
+        target_file_makedb="${mfile}.igblast.makedb.airr.tsv"
+        if [ -f "$target_file_makedb" ]; then
+            # Find next available numbered suffix to avoid overwriting
+            i=1
+            while [ -f "${mfile}.igblast.makedb.airr.${i}.tsv" ]; do
+                ((i++))
+            done
+            # Assign repertoire ID to orig file, output to numbered file
+            $PYTHON assign_repertoire_id.py --add-missing ${mfile} ${_tapisJobUUID} ${fileOutname}.igblast.makedb.orig.airr.tsv ${mfile}.igblast.makedb.airr.${i}.tsv
+        else
+            # First file for this repertoire id, output normally
+            $PYTHON assign_repertoire_id.py --add-missing ${mfile} ${_tapisJobUUID} ${fileOutname}.igblast.makedb.orig.airr.tsv ${target_file_makedb}
+        fi
+        count=$(( $count + 1 ))
+    done
+
+    # --- Merge per repertoire ID as there could be duplicate repertoire ids and they will be merged multiple times.---
+    unique_repertoire_ids=($(printf "%s\n" "${seqMetadata[@]}" | sort -u))
+    count=0
+
+    for mfile in "${unique_repertoire_ids[@]}"; do
+        fileOutname="${mfile##*/}" # For labeling
+
+        # Merge AIRR files
+        airr_files=( "${mfile}.igblast.airr.tsv" "${mfile}.igblast.airr."*.tsv )
+        existing_airr_files=()
+        for f in "${airr_files[@]}"; do
+            [ -f "$f" ] && existing_airr_files+=("$f")
+        done
+
+        if [ ${#existing_airr_files[@]} -gt 1 ]; then
+            echo "Merging AIRR files for repertoire ID: $mfile"
+            airr-tools merge -a "${existing_airr_files[@]}" -o "${mfile}.igblast.airr.tsv"
+            # After merging AIRR files remove input files
+            echo "Cleaning up AIRR input files for $mfile"
+            rm -f "${existing_airr_files[@]}"
+        fi
+
+        elif [ ${#existing_airr_files[@]} -eq 1 ]; then
+            cp "${existing_airr_files[0]}" "${mfile}.igblast.airr.tsv"
+        fi
+
+        # Merge makedb files if needed
+        if [ "$species" != "macaque" ]; then
+            makedb_files=( "${mfile}.igblast.makedb.airr.tsv" "${mfile}.igblast.makedb.airr."*.tsv )
+            existing_makedb_files=()
+            for f in "${makedb_files[@]}"; do
+                [ -f "$f" ] && existing_makedb_files+=("$f")
+            done
+
+            if [ ${#existing_makedb_files[@]} -gt 1 ]; then
+                echo "Merging makedb files for repertoire ID: $mfile"
+                airr-tools merge -a "${existing_makedb_files[@]}" -o "${mfile}.igblast.makedb.airr.tsv"
+                # After merging AIRR files remove input files
+                echo "Cleaning up AIRR input files for $mfile"
+                rm -f "${existing_makedb_files[@]}"
+            elif [ ${#existing_makedb_files[@]} -eq 1 ]; then
+                cp "${existing_makedb_files[0]}" "${mfile}.igblast.makedb.airr.tsv"
+            fi
+        fi
 
         # add to process metadata
         # they will be compressed later
@@ -266,9 +338,9 @@ function run_igblast_workflow() {
                 addOutputFile $group $APP_NAME airr-fail-makedb ${mfile}.igblast.fail-makedb.airr.tsv.gz "${fileOutname} Change-O MakeDb Failed" "tsv" $mfile
             fi
         fi
-
         count=$(( $count + 1 ))
     done
+
 
     # ----------------------------------------------------------------------------
     # generate count statistics

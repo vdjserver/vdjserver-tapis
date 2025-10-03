@@ -1,0 +1,35 @@
+{
+    "name": "sol_efroni_multiple_sample",
+    "appId": "igblast-ls6",
+    "appVersion": "0.5",
+    "maxMinutes": 60,
+    "nodeCount": 8,
+    "archiveSystemId": "data-storage.vdjserver.org",
+    "archiveSystemDir": "/projects/d57ccb61-f8c0-45f9-a5d3-9712d3c99c28/analyses/${JobUUID}",
+    "fileInputs":[
+    ],
+    "fileInputArrays":[
+      { "name":"query", "sourceUrls": [
+            "tapis://data-storage.vdjserver.org/projects/d57ccb61-f8c0-45f9-a5d3-9712d3c99c28/analyses/74a94481-064f-4eac-a19e-c5cfed507d0c-007/healthy-171-19-117_S1_L001-final_collapse-unique.fastq",
+            "tapis://data-storage.vdjserver.org/projects/d57ccb61-f8c0-45f9-a5d3-9712d3c99c28/analyses/74a94481-064f-4eac-a19e-c5cfed507d0c-007/healthy-171-19-117_S1_L002-final_collapse-unique.fastq",
+            "tapis://data-storage.vdjserver.org/projects/d57ccb61-f8c0-45f9-a5d3-9712d3c99c28/analyses/74a94481-064f-4eac-a19e-c5cfed507d0c-007/healthy-171-19-117_S1_L003-final_collapse-unique.fastq",
+            "tapis://data-storage.vdjserver.org/projects/d57ccb61-f8c0-45f9-a5d3-9712d3c99c28/analyses/74a94481-064f-4eac-a19e-c5cfed507d0c-007/healthy-171-19-117_S1_L004-final_collapse-unique.fastq"
+            ]}
+    ],
+    "parameterSet": {
+        "schedulerOptions": [
+            { "name":"allocation", "arg":"-A MCB23006" }
+        ],
+        "containerArgs": [
+        ],
+        "appArgs": [
+        ],
+        "envVariables": [
+            {"key": "query", "value": "healthy-171-19-117_S1_L001-final_collapse-unique.fastq healthy-171-19-117_S1_L002-final_collapse-unique.fastq healthy-171-19-117_S1_L003-final_collapse-unique.fastq healthy-171-19-117_S1_L004-final_collapse-unique.fastq" },
+            {"key": "repertoires", "value": "1fea9299-a371-4c03-9dcc-26c88a884e2c 1fea9299-a371-4c03-9dcc-26c88a884e2c 1fea9299-a371-4c03-9dcc-26c88a884e2c 1fea9299-a371-4c03-9dcc-26c88a884e2c" },
+            {"key": "species", "value": "human" },
+            {"key": "locus", "value": "TR" },
+            {"key": "ClonalTool", "value": "repcalc" }
+        ]
+    }
+}
