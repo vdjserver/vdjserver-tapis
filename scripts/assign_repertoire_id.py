@@ -23,8 +23,11 @@ if (__name__=="__main__"):
 
     if args:
         reader = airr.read_rearrangement(args.airr_tsv)
-        writer = airr.derive_rearrangement(args.output_tsv, args.airr_tsv, fields=['repertoire_id', 'data_processing_id'])
         add_missing = args.add_missing
+        if add_missing:
+            writer = airr.derive_rearrangement(args.output_tsv, args.airr_tsv, fields=['repertoire_id', 'data_processing_id', 'junction_aa_length'])
+        else:
+            writer = airr.derive_rearrangement(args.output_tsv, args.airr_tsv, fields=['repertoire_id', 'data_processing_id'])
         print("Value of add_missing: ", add_missing)
         for row in reader:
             row['repertoire_id'] = args.repertoire_id
