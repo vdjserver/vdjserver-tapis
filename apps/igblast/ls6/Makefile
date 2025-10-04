@@ -46,6 +46,8 @@ update:
 
 clean:
 	rm -rf ${BUILD_DIR} ${APP_ARCHIVE}
+	rm -rf build-${APP_NAME}-*
+	rm -f ${APP_NAME}-*.tgz
 
 common-scripts:
 	mkdir ${BUILD_DIR}
