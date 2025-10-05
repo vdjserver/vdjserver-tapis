@@ -80,12 +80,9 @@ function run_igblast_workflow() {
     addCalculation parse_igblast
 
     # Exclude input files from archive
-    #noArchive "${ProjectDirectory}"
     for file in $JobFiles; do
         if [ -f $file ]; then
             expandfile $file
-            #noArchive $file
-            #noArchive "${file%.*}"
         fi
     done
 
@@ -95,14 +92,12 @@ function run_igblast_workflow() {
         rm joblist
     fi
     touch joblist
-    #echo "joblist" >> .agave.archive
 
     if [ -f joblist-post-process ]; then
         echo "Warning: removing file 'joblist-post-process'.  That filename is reserved." 1>&2
         rm joblist-post-process
     fi
     touch joblist-post-process
-    #echo "joblist-post-process" >> .agave.archive
 
     filelist=()
     count=0
@@ -115,14 +110,12 @@ function run_igblast_workflow() {
         addOutputFile $group $APP_NAME assignment_sequence "$file" "Input Sequences ($fileOutname)" "read" null
 
         expandfile $file
-        #echo $file >> .agave.archive
         fileExtension="${file##*.}" # file.fastq -> fastq
         fileBasename="${file%.*}" # file.fastq -> file
 
         if [[ "$fileExtension" == "fastq" ]] || [[ "$fileExtension" == "fq" ]]; then
             ${PYTHON} fastq2fasta.py -i $file -o $fileBasename.fasta
             file="$fileBasename.fasta"
-            #echo $file >> .agave.archive
         fi
 
         # save expanded filenames for later merging
@@ -136,9 +129,6 @@ function run_igblast_workflow() {
         fi
 
         for smallFile in $smallFiles; do
-            #echo $smallFile >> .agave.archive
-            #echo ${smallFile}.igblast.txt >> .agave.archive
-
             # These come from Agave, but I need to assign them inside the loop.
             organism=${species}
             germline_set=${species}
@@ -245,9 +235,12 @@ function run_igblast_workflow() {
             fi
         fi
 
+        if [ -f "${fileOutname}.igblast.fail-makedb.airr.tsv" ]; then
+            addOutputFile $group $APP_NAME airr-fail-makedb ${fileOutname}.igblast.fail-makedb.airr.tsv "${fileOutname} Change-O MakeDb Failed" "tsv" $mfile
+        fi
+
         # process pRESTO annotations
         apptainer exec -e ${repcalc_image} bash do_annotations.sh ${fileOutname}
-        #$PYTHON presto_annotations.py ${fileOutname}.igblast.airr.new.tsv ${fileOutname}.igblast.airr.tsv
         rm -f ${fileOutname}.igblast.airr.new.tsv
 
         # assign repertoire IDs
@@ -299,14 +292,11 @@ function run_igblast_workflow() {
 
         if [ ${#existing_airr_files[@]} -gt 1 ]; then
             echo "Merging AIRR files for repertoire ID: $mfile"
-            airr-tools merge -a "${existing_airr_files[@]}" -o "${mfile}.igblast.airr.tsv"
+            ${AIRR_TOOLS} merge -a "${existing_airr_files[@]}" -o "${mfile}.igblast.airr.new.tsv"
+            mv "${mfile}.igblast.airr.new.tsv" "${mfile}.igblast.airr.tsv"
             # After merging AIRR files remove input files
             echo "Cleaning up AIRR input files for $mfile"
-            rm -f "${existing_airr_files[@]}"
-        fi
-
-        elif [ ${#existing_airr_files[@]} -eq 1 ]; then
-            cp "${existing_airr_files[0]}" "${mfile}.igblast.airr.tsv"
+            rm -f ${mfile}.igblast.airr.*.tsv
         fi
 
         # Merge makedb files if needed
@@ -319,12 +309,11 @@ function run_igblast_workflow() {
 
             if [ ${#existing_makedb_files[@]} -gt 1 ]; then
                 echo "Merging makedb files for repertoire ID: $mfile"
-                airr-tools merge -a "${existing_makedb_files[@]}" -o "${mfile}.igblast.makedb.airr.tsv"
+                ${AIRR_TOOLS} merge -a "${existing_makedb_files[@]}" -o "${mfile}.igblast.makedb.airr.new.tsv"
+                mv "${mfile}.igblast.makedb.airr.new.tsv" "${mfile}.igblast.makedb.airr.tsv"
                 # After merging AIRR files remove input files
                 echo "Cleaning up AIRR input files for $mfile"
-                rm -f "${existing_makedb_files[@]}"
-            elif [ ${#existing_makedb_files[@]} -eq 1 ]; then
-                cp "${existing_makedb_files[0]}" "${mfile}.igblast.makedb.airr.tsv"
+                rm -f ${mfile}.igblast.makedb.airr.*.tsv
             fi
         fi
 
@@ -332,11 +321,10 @@ function run_igblast_workflow() {
         # they will be compressed later
         group="group${count}"
         addOutputFile $group $APP_NAME airr ${mfile}.igblast.airr.tsv.gz "${fileOutname} AIRR TSV" "tsv" $mfile
+        gzipFile ${mfile}.igblast.airr.tsv
         if [ "$species" != "macaque" ]; then
             addOutputFile $group $APP_NAME airr-makedb ${mfile}.igblast.makedb.airr.tsv.gz "${fileOutname} Change-O MakeDb AIRR TSV" "tsv" $mfile
-            if [ -f ${mfile}.igblast.fail-makedb.airr.tsv ]; then
-                addOutputFile $group $APP_NAME airr-fail-makedb ${mfile}.igblast.fail-makedb.airr.tsv.gz "${fileOutname} Change-O MakeDb Failed" "tsv" $mfile
-            fi
+            gzipFile ${mfile}.igblast.makedb.airr.tsv
         fi
         count=$(( $count + 1 ))
     done
@@ -407,6 +395,8 @@ function run_assign_clones() {
             group="group${count}"
             addOutputFile $group $APP_NAME igblast-makedb-allele-clone ${alleleFile}.gz "${fileOutname} Change-O IG Allele Clones" "tsv" $mfile
             addOutputFile $group $APP_NAME igblast-makedb-gene-clone ${geneFile}.gz "${fileOutname} Change-O IG Gene Clones" "tsv" $mfile
+            gzipFile ${alleleFile}
+            gzipFile ${geneFile}
 
             count=$(( $count + 1 ))
         done
@@ -428,11 +418,15 @@ function run_assign_clones() {
             out_prefix=${rep_id}.${processing_stage}
             file=${out_prefix}.airr.tsv
             echo "apptainer exec -e ${repcalc_image} bash repcalc_clones.sh ${AIRRMetadata} ${germline_db} ${file} ${rep_id} ${processing_stage}" >> joblist-clones
-            result_file=${out_prefix}.allele.clone.airr.tsv
+            alleleFile=${out_prefix}.allele.clone.airr.tsv
+            geneFile=${out_prefix}.gene.clone.airr.tsv
 
             # will get compressed at end
             group="group${count}"
-            addOutputFile $group $APP_NAME igblast-allele-clone ${result_file}.gz "${rep_id} RepCalc TCR Clones (${processing_stage})" "tsv" $mfile
+            addOutputFile $group $APP_NAME igblast-allele-clone ${alleleFile}.gz "${rep_id} RepCalc TCR Allele Clones (${processing_stage})" "tsv" $mfile
+            addOutputFile $group $APP_NAME igblast-gene-clone ${geneFile}.gz "${rep_id} RepCalc TCR Gene Clones (${processing_stage})" "tsv" $mfile
+            gzipFile ${alleleFile}
+            gzipFile ${geneFile}
 
             # RepCalc clones
             processing_stage=igblast.makedb
@@ -440,11 +434,15 @@ function run_assign_clones() {
             out_prefix=${rep_id}.${processing_stage}
             file=${out_prefix}.airr.tsv
             echo "apptainer exec -e ${repcalc_image} bash repcalc_clones.sh ${AIRRMetadata} ${germline_db} ${file} ${rep_id} ${processing_stage}" >> joblist-clones
-            result_file=${out_prefix}.allele.clone.airr.tsv
+            alleleFile=${out_prefix}.allele.clone.airr.tsv
+            geneFile=${out_prefix}.gene.clone.airr.tsv
 
             # will get compressed at end
             group="group${count}"
-            addOutputFile $group $APP_NAME igblast-makedb-allele-clone ${result_file}.gz "${rep_id} RepCalc TCR Clones (${processing_stage})" "tsv" $mfile
+            addOutputFile $group $APP_NAME igblast-makedb-allele-clone ${alleleFile}.gz "${rep_id} RepCalc TCR Allele Clones (${processing_stage})" "tsv" $mfile
+            addOutputFile $group $APP_NAME igblast-makedb-gene-clone ${geneFile}.gz "${rep_id} RepCalc TCR Gene Clones (${processing_stage})" "tsv" $mfile
+            gzipFile ${alleleFile}
+            gzipFile ${geneFile}
 
             count=$(( $count + 1 ))
         done
@@ -471,26 +469,10 @@ function run_assign_clones() {
 
 function compress_and_archive() {
     # ----------------------------------------------------------------------------
-    # compress the tsv files
-    echo Compressing output files
-    for file in ${repertoires[@]}; do
-        fileBasename="${file%.*}"
-        fileOutname="${fileBasename##*/}"
-        gzip ${fileOutname}.igblast.airr.tsv
-        if [ "$species" != "macaque" ]; then
-            gzip ${fileOutname}.igblast.makedb.airr.tsv
-            if [ -f ${fileOutname}.igblast.fail-makedb.airr.tsv ]; then
-                gzip ${fileOutname}.igblast.fail-makedb.airr.tsv
-            fi
-        fi
-        if [ -f ${fileOutname}.igblast.makedb.gene.clone.airr.tsv ]; then
-            gzip ${fileOutname}.igblast.makedb.gene.clone.airr.tsv
-        fi
-        if [ -f ${fileOutname}.igblast.makedb.allele.clone.airr.tsv ]; then
-            gzip ${fileOutname}.igblast.makedb.allele.clone.airr.tsv
-        fi
-        if [ -f ${fileOutname}.igblast.allele.clone.airr.tsv ]; then
-            gzip ${fileOutname}.igblast.allele.clone.airr.tsv
+    # gzip any files
+    for file in $GZIP_FILE_LIST; do
+        if [ -f $file ]; then
+            gzip $file
         fi
     done
 
