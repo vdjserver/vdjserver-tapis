@@ -360,8 +360,8 @@ function run_assign_clones() {
 
     # create AIRR metadata
     if [[ "x$AIRRMetadata" == "x" ]]; then
-        metadata_file="study_metadata.airr.json"
-        $PYTHON create_airr_metadata.py $metadata_file ${_tapisJobUUID} $repertoires
+        AIRRMetadata="study_metadata.airr.json"
+        $PYTHON create_airr_metadata.py $AIRRMetadata ${_tapisJobUUID} $repertoires
     fi
 
     # Assign Clones
