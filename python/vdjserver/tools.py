@@ -156,6 +156,19 @@ def define_project_args(subparsers, common_parser):
     group_parser_add_user.add_argument('username', type = str, help='Username to add to the project.')
     parser_add_user.set_defaults(func=vdjserver.project.add_user_to_project)
     
+    
+    # Subparser for attaching file to a project
+    parser_file_upload = project_subparser.add_parser('file-attach',
+                                                    parents=[common_parser],
+                                                    add_help=False,
+                                                    help='Upload files to a project.',
+                                                    description='Upload files to a VDJServer project.')
+    group_parser_file_upload = parser_file_upload.add_argument_group('File upload arguments')
+    group_parser_file_upload.add_argument('project_uuid', type = str, help='UUID of the project.')
+    group_parser_file_upload.add_argument('file_name', type = str, help="Filename in the projects folder. (e.g., 'someFile.txt')")
+    group_parser_file_upload.add_argument('--file-type', type = int, help="Provide the file type (e.g.,TYPE_FASTQ_READ(2),TYPE_TSV(6) ...)")
+    parser_file_upload.set_defaults(func=vdjserver.project.attach_files_to_a_project)
+    
     # Subparser for removing a user from a project
     parser_remove_user = project_subparser.add_parser('remove-user',
                                                     parents=[common_parser],

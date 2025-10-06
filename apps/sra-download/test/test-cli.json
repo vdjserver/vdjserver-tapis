@@ -14,7 +14,7 @@
         ],
         "envVariables": [
             {"key": "SRA_run_id", "value": "SRR32457848" },
-            {"key": "project_id", "value": "" },
+            {"key": "project_id", "value": "f7fbe146-12c0-4fed-898c-dd9283e4385d" },
             {"key": "split_flag", "value": "1" }
         ]
     }
