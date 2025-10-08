@@ -115,3 +115,50 @@ def remove_user_from_project(project_uuid, username, system_id = None, token = N
         print(f"Error removing user from project: {e}", file=sys.stderr)
     except Exception as e:
         print(f"Unexpected error: {e}", file=sys.stderr)
+
+# fileTypeCodes: {
+#         FILE_TYPE_UNSPECIFIED: 0,
+#         FILE_TYPE_PRIMER: 1,
+#         FILE_TYPE_FASTQ_READ: 2,
+#         FILE_TYPE_FASTA_READ: 3,
+#         FILE_TYPE_BARCODE: 4,
+#         FILE_TYPE_QUALITY: 5,
+#         FILE_TYPE_TSV: 6,
+#         FILE_TYPE_CSV: 7,
+#         FILE_TYPE_VDJML: 8,
+#         FILE_TYPE_AIRR_TSV: 9,
+#         FILE_TYPE_AIRR_JSON: 10,
+#     },
+
+## test project uuid : f7fbe146-12c0-4fed-898c-dd9283e4385d
+## test file path: /apps/data/test/ERR346600_1_2500.fastq
+
+def attach_files_to_a_project(project_uuid, file_name, file_type = 6, system_id=None, token=None):
+    token = vdjserver.defaults.vdjserver_token(token)
+
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+
+    try:
+        # Import the uploaded file to the VDJServer project
+        file = os.path.basename(file_name)
+        file_import_url = f"https://{vdjserver.defaults.vdj_host}/api/v2/project/{project_uuid}/file/import"
+        file_import_data = {
+            "path": file,
+            "name": file,
+            "fileType": file_type
+        }
+
+        response = requests.post(file_import_url, headers=headers, json=file_import_data)
+        file_response_json = response.json()
+        if file_response_json.get("status") != "success":
+            print("File import failed:")
+            print(json.dumps(file_response_json, indent=4))
+            return
+        print("-" * 100)
+        print(f"\tFile attached successfully to the project {project_uuid} ")
+        print("-" * 100)
+    except Exception as e:
+        print(f"Unexpected error during project file upload: {e}", file=sys.stderr)

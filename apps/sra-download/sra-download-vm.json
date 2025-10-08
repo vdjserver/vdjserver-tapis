@@ -23,7 +23,7 @@
             "appArgs": [
             ],
             "envVariables": [
-                {"key": "SRA_run_id", "inputMode": "REQUIRED" },
+                {"key": "SRA_run_ids", "inputMode": "REQUIRED" },
                 {"key": "project_id", "inputMode": "REQUIRED" },
                 {"key": "split_flag", "inputMode": "REQUIRED", "value": "1" }
             ]
