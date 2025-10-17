@@ -28,7 +28,7 @@ def files_list_cmd(path, limit, skip, max_files = '50', system_id=None, token=No
         system_id = vdjserver.defaults.storage_system_id
     tapis_obj = vdjserver.defaults.init_tapis(token)
     
-    fields = ['size', 'lastModified', 'name', 'type']
+    fields = ['nativePermissions', 'size', 'lastModified', 'name', 'type']
     field_widths = [len(field) for field in fields]
     all_files = []
     offset = skip
@@ -110,9 +110,13 @@ def tapis_files_upload(source_file_path, system_id=None, dest_file_path=None, to
 
         # Check if the response indicates success
         if response:
-            print(f"File '{source_file_path}' uploaded successfully to '{dest_file_path}'.")
+            print("-" * 100)
+            print(f"\tFile '{source_file_path}' uploaded successfully to '{dest_file_path}'.")
+            print("-" * 100)
         else:
-            print(f"Failed to upload file '{source_file_path}' to '{dest_file_path}'.")
+            print("-" * 100)
+            print(f"\tFailed to upload file '{source_file_path}' to '{dest_file_path}'.")
+            print("-" * 100)
 
     except Exception as e:
         print(f"Error during file upload: {str(e)}")

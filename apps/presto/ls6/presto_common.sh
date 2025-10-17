@@ -124,7 +124,7 @@ function takara_bio_umi_workflow() {
     # this workflow calls the reverse reads as R1
     R2_READS=$1
     R1_READS=$2
-    OUTNAME=$(basename ${R1_READS} | sed 's/\.[^.]*$//; s/_L[0-9]*_R[0-9]_[0-9]*//')
+    OUTNAME=$(basename ${R1_READS} | sed 's/\.[^.]*$//; s/_R[0-9]_[0-9]*//')
     count=$3
 
     # Argument defaults
