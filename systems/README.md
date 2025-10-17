@@ -96,3 +96,13 @@ execution
 * test-ls6.tacc.utexas.edu: test Lonestar 6 system
 * test-transfer.tacc.utexas.edu: test File transfer system, primarily for SRA downloads
 
+share with other airrkb-dev
+===========================
+* First share the execution system with the user.
+```
+curl -d '{"users":["airrkb-dev"]}' -H "X-Tapis-Token: $JWT" https://$tapis_default_host/v3/systems/share/test-ls6.tacc.utexas.edu -H 'content-type:application/json'
+```
+* Then share the vdj scratch directory on the execution system.
+```
+curl -H "X-Tapis-Token: $JWT" -H "Content-Type:application/json" -X POST -d '{"users":["airrkb-dev"]}' https://vdjserver.tapis.io/v3/files/share/test-ls6tacc.utexas.edu//scratch/01114/vdj
+```
