@@ -55,7 +55,6 @@ function print_versions() {
 
 function print_parameters() {
     echo "Input files:"
-    echo "igblast_image=${igblast_image}"
     echo "repcalc_image=${repcalc_image}"
     echo "germline_archive=${germline_archive}"
     echo "ProjectDirectory=${ProjectDirectory}"
