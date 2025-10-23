@@ -1,18 +1,18 @@
 {
     "id":"igblast-ls6",
-    "version":"0.5",
+    "version":"0.6",
     "description":"IgBLAST on Lonestar6",
     "runtime":"ZIP",
     "runtimeOptions": ["NONE"],
-    "containerImage":"tapis://data-storage.vdjserver.org/apps/igblast-ls6-0.5.tgz",
+    "containerImage":"tapis://data-storage.vdjserver.org/apps/igblast-ls6-0.6.tgz",
     "jobType":"BATCH",
     "jobAttributes": {
         "description": "default job description",
         "execSystemId": "test-ls6.tacc.utexas.edu",
         "fileInputs":[
-          { "name":"igblast_image", "inputMode": "FIXED", "envKey":"igblast_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/igblast-1.20.0.sif", "targetPath":"igblast-1.20.0.sif" },
           { "name":"repcalc_image", "inputMode": "FIXED", "envKey":"repcalc_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/repcalc-v2.2-imm4.4.sif", "targetPath":"repcalc-v2.2-imm4.4.sif" },
           { "name":"germline_archive", "inputMode": "FIXED", "envKey":"germline_archive", "sourceUrl":"tapis://data-storage.vdjserver.org/akc/germlines/db.2019.01.23.tgz", "targetPath":"db.2019.01.23.tgz" },
+          { "name":"airr_germline", "inputMode": "FIXED", "envKey":"airr_germline", "sourceUrl":"tapis://data-storage.vdjserver.org/akc/germlines/db.2025.10.22.tgz", "targetPath":"db.2025.10.22.tgz" },
           { "name":"StudyMetadata", "inputMode": "OPTIONAL", "envKey":"StudyMetadata", "targetPath":"." },
           { "name":"AIRRMetadata", "inputMode": "OPTIONAL", "envKey":"AIRRMetadata", "targetPath":"." }
         ],

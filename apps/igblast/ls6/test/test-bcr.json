@@ -1,6 +1,6 @@
 {
-    "name": "igblast_ig_test2",
-    "appId": "igblast-ls6-tanzira",
+    "name": "igblast_ig_test",
+    "appId": "igblast-ls6",
     "appVersion": "0.6",
     "maxMinutes": 30,
     "nodeCount": 1,
