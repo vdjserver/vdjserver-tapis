@@ -19,7 +19,7 @@ if [[ -z "$species_short" ]]; then
 fi
 
 # Set variables for database name, loci and segments
-database_root="/data/db.2025.10.23"
+database_root="/data/db.2025.10.22"
 loci=("IGH" "IGK" "IGL")
 segments=("V" "D" "J")
 
