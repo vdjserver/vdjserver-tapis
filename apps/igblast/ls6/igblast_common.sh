@@ -57,6 +57,7 @@ function print_parameters() {
     echo "Input files:"
     echo "repcalc_image=${repcalc_image}"
     echo "germline_archive=${germline_archive}"
+    echo "airr_germline=${airr_germline}"
     echo "ProjectDirectory=${ProjectDirectory}"
     echo "AIRRMetadata=${AIRRMetadata}"
     echo "JobFiles=${JobFiles}"
@@ -152,10 +153,20 @@ function run_igblast_workflow() {
             fi
             if [ -n $organism ]; then 
                 ARGS="$ARGS -organism $organism"
-                ARGS="$ARGS -auxiliary_data $IGDATA/optional_file/${germline_set}_gl.aux"
+                
                 ARGS="$ARGS -germline_db_V $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_V.fna"
                 ARGS="$ARGS -germline_db_D $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_D.fna"
                 ARGS="$ARGS -germline_db_J $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_J.fna"
+                # If locus is TR then use old auxilary data file.
+                if [ "$locus" == "TR" ]; then
+                    ARGS="$ARGS -auxiliary_data $IGDATA/optional_file/${germline_set}_gl.aux"
+                fi
+
+                # for newer version of igblast we need an extra argument
+                if [ "$locus" == "IG" ]; then
+                    ARGS="$ARGS -auxiliary_data  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}.aux"
+                    ARGS="$ARGS -custom_internal_data $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}.ndm"
+                fi
                 MDARGS="$MDARGS $organism"
             fi
             if [ -n $domain_system ]; then ARGS="$ARGS -domain_system $domain_system"; fi

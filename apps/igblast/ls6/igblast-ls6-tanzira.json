@@ -12,6 +12,7 @@
         "fileInputs":[
           { "name":"repcalc_image", "inputMode": "FIXED", "envKey":"repcalc_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/repcalc-v2.2-imm4.4.sif", "targetPath":"repcalc-v2.2-imm4.4.sif" },
           { "name":"germline_archive", "inputMode": "FIXED", "envKey":"germline_archive", "sourceUrl":"tapis://data-storage.vdjserver.org/akc/germlines/db.2019.01.23.tgz", "targetPath":"db.2019.01.23.tgz" },
+          { "name":"airr_germline", "inputMode": "FIXED", "envKey":"airr_germline", "sourceUrl":"tapis://data-storage.vdjserver.org/akc/germlines/db.2025.10.22.tgz", "targetPath":"db.2025.10.22.tgz" },
           { "name":"StudyMetadata", "inputMode": "OPTIONAL", "envKey":"StudyMetadata", "targetPath":"." },
           { "name":"AIRRMetadata", "inputMode": "OPTIONAL", "envKey":"AIRRMetadata", "targetPath":"." }
         ],

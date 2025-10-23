@@ -2,7 +2,7 @@
     "name": "igblast_test_tan_repim",
     "appId": "igblast-ls6-tanzira",
     "appVersion": "0.6",
-    "maxMinutes": 60,
+    "maxMinutes": 30,
     "nodeCount": 1,
     "fileInputs":[
     ],
