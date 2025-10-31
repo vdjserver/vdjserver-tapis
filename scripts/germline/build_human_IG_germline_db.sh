@@ -19,7 +19,7 @@ if [[ -z "$species_short" ]]; then
 fi
 
 # Set variables for database name, loci and segments
-database_root="/data/db.2025.10.22"
+database_root="/data/db.2025.10.31"
 loci=("IGH" "IGK" "IGL")
 segments=("V" "D" "J")
 
@@ -27,8 +27,26 @@ segments=("V" "D" "J")
 germline_dir="${database_root}/germline/${species_short}/ReferenceDirectorySet"
 mkdir -p "$germline_dir"
 
+## Combine the c files here
+# python merge_c_genes.py
+
+echo "Merging C-gene regions into human_IG_C.fna..."
+if python merge_c_genes.py; then
+    if [[ -f "human_IG_C.fna" ]]; then
+        echo "Successfully created human_IG_C.fna"
+        mv "human_IG_C.fna" "${germline_dir}/"
+        echo "Moved human_IG_C.fna to ${germline_dir}/"
+    else
+        echo "Error: human_IG_C.fna not found after merge_c_genes.py"
+        exit 1
+    fi
+else
+    echo "Error running merge_c_genes.py"
+    exit 1
+fi
+
 ## Install this package for data download.
-pip install receptor-utils
+pip install --quiet receptor-utils
 
 
 ## Download the germline data from orgdb
@@ -81,6 +99,9 @@ for locus in "${loci[@]}"; do
 done
 echo "Gapped V segments are merging complete!"
 
+## Create VDJ and C files here as C is added later. Not changing the file name though.
+segments=("V" "D" "J" "C")
+
 # Build IG_VDJ.fna. Combine fna files to create IG_VDJ.fna with gapped files. Combine IG_V_Gapped with others D and J.
 vdj_file="${germline_dir}/IG_VDJ.fna"
 > "$vdj_file"  # create or empty the combined file
@@ -122,6 +143,7 @@ for ext in aux ndm; do
     done
 done
 echo "Combined aux and ndm!"
+
 
 
 # Build BLAST DBs from combined .fna files in the same directory
