@@ -1,8 +1,8 @@
 # helper commands for tapis v3 apps
 
 APP_NAME=igblast
-APP_VERSION=0.6
-APP_SYSTEM=ls6-tanzira
+APP_VERSION=0.7
+APP_SYSTEM=ls6
 
 APP_ID=${APP_NAME}-${APP_SYSTEM}
 APP_FULL=${APP_ID}-${APP_VERSION}
@@ -80,8 +80,7 @@ build: clean common-scripts
 	tar zcf ${APP_ARCHIVE} -C ${BUILD_DIR} .
 
 deploy: build
-	# vdjserver-tools files upload ${APP_ARCHIVE} /apps/${APP_ARCHIVE}
-	vdjserver-tools files upload ${APP_ARCHIVE} /akc/apps/${APP_ARCHIVE}
+	vdjserver-tools files upload ${APP_ARCHIVE} /apps/${APP_ARCHIVE}
 
 test-bcr:
 	vdjserver-tools jobs submit test/test-bcr.json

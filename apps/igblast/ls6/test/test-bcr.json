@@ -23,8 +23,7 @@
             {"key": "query", "value": "01.fasta 02.fasta with_dupcount.fasta" },
             {"key": "repertoires", "value": "1234 3456 5678" },
             {"key": "species", "value": "human" },
-            {"key": "locus", "value": "IG" },
-            {"key": "ClonalTool", "value": "changeo" }
+            {"key": "locus", "value": "IG" }
         ]
     }
 }

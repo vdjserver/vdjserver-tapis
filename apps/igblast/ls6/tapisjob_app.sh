@@ -20,6 +20,7 @@ module load tacc-apptainer
 IGBLASTN_EXE="apptainer exec ${repcalc_image} igblastn -num_threads 1"
 PYTHON="apptainer exec -e ${repcalc_image} python3"
 AIRR_TOOLS="apptainer exec -e ${repcalc_image} airr-tools"
+export domain_system=imgt
 
 # bring in common functions
 source ./igblast_common.sh
@@ -42,13 +43,14 @@ printf "START at $(date)\n\n"
 export JOB_ERROR=0
 if [ "$locus" == "TR" ]; then
     setup_germline "db.2019.01.23"
+    export ClonalTool=repcalc
 fi
 if [ "$locus" == "IG" ]; then
     setup_germline "db.2025.10.22"
+    export ClonalTool=changeo
 fi
 
 initProvenance
-#gather_secondary_inputs
 print_parameters
 print_versions
 run_igblast_workflow
