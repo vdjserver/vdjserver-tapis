@@ -5,7 +5,7 @@
     "maxMinutes": 30,
     "nodeCount": 1,
     "fileInputs":[
-      { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/repertoire_metadata1.airr.json", "targetPath":"repertoire_metadata1.airr.json" }
+      { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/repertoire_metadata_tcr.airr.json", "targetPath":"repertoire_metadata_tcr.airr.json" }
     ],
     "fileInputArrays":[
       { "name":"query", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/special_seqs.fasta",
