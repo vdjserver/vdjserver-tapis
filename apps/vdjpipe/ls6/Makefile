@@ -51,7 +51,7 @@ common-scripts:
 	cp ${SCRIPTS_DIR}/common_functions.sh ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/provenance_functions.sh ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/airr_metadata.py ${BUILD_DIR}
-	cp ${SCRIPTS_DIR}/process_metadata.py ${BUILD_DIR}
+	cp ${SCRIPTS_DIR}/prov_metadata.py ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/vdjpipe_report.py ${BUILD_DIR}
 
 build: clean common-scripts

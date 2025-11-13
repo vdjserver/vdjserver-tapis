@@ -13,16 +13,59 @@
 #
 
 # ----------------------------------------------------------------------------
+# File archiving functions
+
+function addArchiveFile() {
+    ARCHIVE_FILE_LIST="${ARCHIVE_FILE_LIST} $1"
+}
+
+function gzipFile() {
+    GZIP_FILE_LIST="${GZIP_FILE_LIST} $1"
+}
+
+
+# ----------------------------------------------------------------------------
+# PROVENANCE relationships
+
+function wasGeneratedBy(){
+    $PYTHON ./prov_metadata.py --wasGeneratedBy "$1" "$2" ${analysis_provenance}
+}
+function wasDerivedFrom(){
+    #Check if the file exists first
+    $PYTHON ./prov_metadata.py --wasDerivedFrom "$1" "$2" ${analysis_provenance}
+}
+
+function used(){
+    $PYTHON ./prov_metadata.py --used "$1" "$2" ${analysis_provenance}
+}
+
+function wasAssociatedWith(){
+    $PYTHON ./prov_metadata.py --wasAssociatedWith "$1" "$2" ${analysis_provenance}
+}
+
+function wasAttributedTo(){
+    $PYTHON ./prov_metadata.py --wasAttributedTo "$1" "$2" ${analysis_provenance}
+}
+
+# ----------------------------------------------------------------------------
+# AIRR metadata
+function addProcessingStage() {
+    $PYTHON ./airr_metadata.py --processing_stage $1 study_metadata.airr.json
+}
+
+# ----------------------------------------------------------------------------
+# OLD OBSOLETE
+# ----------------------------------------------------------------------------
 function initProvenance() {
     # init the old process metadata
-    initProcessMetadata
+    #initProcessMetadata
 
     # newer prov metadata
     #initProvMetadata
 }
 
 # ----------------------------------------------------------------------------
-# Process workflow metadata
+# Process workflow metadata - OLD OBSOLETE
 function initProcessMetadata() {
     $PYTHON ./process_metadata.py --init $APP_NAME ${_tapisJobUUID} process_metadata.json
 
@@ -71,14 +114,6 @@ function includeFile() {
     $PYTHON ./process_metadata.py process_metadata.json --include $1
 }
 
-function addArchiveFile() {
-    ARCHIVE_FILE_LIST="${ARCHIVE_FILE_LIST} $1"
-}
-
-function gzipFile() {
-    GZIP_FILE_LIST="${GZIP_FILE_LIST} $1"
-}
-
 function addGroup() {
     $PYTHON ./process_metadata.py --group "$1" "$2" process_metadata.json
 }
@@ -87,8 +122,3 @@ function addCalculation() {
     $PYTHON ./process_metadata.py --calc $1 process_metadata.json
 }
 
-# ----------------------------------------------------------------------------
-# AIRR metadata
-function addProcessingStage() {
-    $PYTHON ./airr_metadata.py --processing_stage $1 study_metadata.airr.json
-}
