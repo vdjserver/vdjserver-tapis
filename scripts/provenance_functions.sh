@@ -29,10 +29,12 @@ function gzipFile() {
 
 function wasGeneratedBy(){
     $PYTHON ./prov_metadata.py --wasGeneratedBy "$1" "$2" ${analysis_provenance}
+    addArchiveFile "$1"
 }
 function wasDerivedFrom(){
     #Check if the file exists first
     $PYTHON ./prov_metadata.py --wasDerivedFrom "$1" "$2" ${analysis_provenance}
+    addArchiveFile "$1"
 }
 
 function used(){
@@ -57,11 +59,10 @@ function addProcessingStage() {
 # OLD OBSOLETE
 # ----------------------------------------------------------------------------
 function initProvenance() {
-    # init the old process metadata
-    #initProcessMetadata
-
-    # newer prov metadata
-    #initProvMetadata
+    # collect all output files
+    mkdir ${_tapisJobUUID}
+    ARCHIVE_FILE_LIST=""
+    GZIP_FILE_LIST=""
 }
 
 # ----------------------------------------------------------------------------

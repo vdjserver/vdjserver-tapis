@@ -11,6 +11,8 @@
 
 # the app
 export APP_NAME=vdjpipe
+# TODO: this is not generic enough
+export ACTIVITY_NAME="vdjserver:activity:vdjpipe"
 
 # bring in common functions
 source ./common_functions.sh
@@ -85,30 +87,27 @@ function print_parameters() {
 function run_vdjpipe() {
     OutPrefix=$1
     ConfigFile=$2
-    WasDerivedFrom=$3
+    SourceEntity=$3
 
     # Pre-filter statistics
     if [[ $PreFilterStatisticsFlag -eq 1 ]]; then
         PreFilterStatisticsFilename="${OutPrefix}.pre-filter_"
         if [[ $PostFilterStatisticsFlag -eq 1 ]]; then
-            # TODO: provenance
-            #addStatisticsFile $group pre composition "${OutPrefix}.pre-filter_composition.csv" "Nucleotide Composition" "tsv" "${WasDerivedFrom}"
-            #addStatisticsFile $group pre gc_hist "${OutPrefix}.pre-filter_gc_hist.csv" "GC% Histogram" "tsv" "${WasDerivedFrom}"
-            #addStatisticsFile $group pre heat_map "${OutPrefix}.pre-filter_heat_map.csv" "Heatmap" "tsv" "${WasDerivedFrom}"
-            #addStatisticsFile $group pre len_hist "${OutPrefix}.pre-filter_len_hist.csv" "Sequence Length Histogram" "tsv" "${WasDerivedFrom}"
-            #addStatisticsFile $group pre mean_q_hist "${OutPrefix}.pre-filter_mean_q_hist.csv" "Mean Quality Histogram" "tsv" "${WasDerivedFrom}"
-            #addStatisticsFile $group pre qstats "${OutPrefix}.pre-filter_qstats.csv" "Quality Scores" "tsv" "${WasDerivedFrom}"
-            #addCalculation "pre-filter_statistics"
+            wasGeneratedBy "${OutPrefix}.pre-filter_composition.csv" "${ACTIVITY_NAME}" "quality_statistics,composition" "Nucleotide Composition" tsv
+            wasGeneratedBy "${OutPrefix}.pre-filter_gc_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,gc_histogram" "GC% Histogram" tsv
+            wasGeneratedBy "${OutPrefix}.pre-filter_heat_map.csv" "${ACTIVITY_NAME}" "quality_statistics,heatmap" "Heatmap" tsv
+            wasGeneratedBy "${OutPrefix}.pre-filter_len_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,length_histogram" "Sequence Length Histogram" tsv
+            wasGeneratedBy "${OutPrefix}.pre-filter_mean_q_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,mean_quality_histogram" "Mean Quality Histogram" tsv
+            wasGeneratedBy "${OutPrefix}.pre-filter_qstats.csv" "${ACTIVITY_NAME}" "quality_statistics" "Quality Scores" tsv
         else
             # if no post then must be just a single statistics run
             PreFilterStatisticsFilename="${OutPrefix}.stats_"
-            # TODO: provenance
-            #addStatisticsFile $group stats composition "${OutPrefix}.stats_composition.csv" "Nucleotide Composition" "tsv" "${WasDerivedFrom}"
-            #addStatisticsFile $group stats gc_hist "${OutPrefix}.stats_gc_hist.csv" "GC% Histogram" "tsv" "${WasDerivedFrom}"
-            #addStatisticsFile $group stats heat_map "${OutPrefix}.stats_heat_map.csv" "Heatmap" "tsv" "${WasDerivedFrom}"
-            #addStatisticsFile $group stats len_hist "${OutPrefix}.stats_len_hist.csv" "Sequence Length Histogram" "tsv" "${WasDerivedFrom}"
-            #addStatisticsFile $group stats mean_q_hist "${OutPrefix}.stats_mean_q_hist.csv" "Mean Quality Histogram" "tsv" "${WasDerivedFrom}"
-            #addStatisticsFile $group stats qstats "${OutPrefix}.stats_qstats.csv" "Quality Scores" "tsv" "${WasDerivedFrom}"
+            wasGeneratedBy "${OutPrefix}.stats_composition.csv" "${ACTIVITY_NAME}" "quality_statistics,composition" "Nucleotide Composition" tsv
+            wasGeneratedBy "${OutPrefix}.stats_gc_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,gc_histogram" "GC% Histogram" tsv
+            wasGeneratedBy "${OutPrefix}.stats_heat_map.csv" "${ACTIVITY_NAME}" "quality_statistics,heatmap" "Heatmap" tsv
+            wasGeneratedBy "${OutPrefix}.stats_len_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,length_histogram" "Sequence Length Histogram" tsv
+            wasGeneratedBy "${OutPrefix}.stats_mean_q_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,mean_quality_histogram" "Mean Quality Histogram" tsv
+            wasGeneratedBy "${OutPrefix}.stats_qstats.csv" "${ACTIVITY_NAME}" "quality_statistics" "Quality Scores" tsv
             #addCalculation "statistics"
         fi
         $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --statistics $PreFilterStatisticsFilename
@@ -129,13 +128,12 @@ function run_vdjpipe() {
     if [[ $PostFilterStatisticsFlag -eq 1 ]]; then
         PostFilterStatisticsFilename="${OutPrefix}.post-filter_"
         $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --statistics $PostFilterStatisticsFilename
-        # TODO: provenance
-        #addStatisticsFile $group post composition "${OutPrefix}.post-filter_composition.csv" "Nucleotide Composition" "tsv" "${WasDerivedFrom}"
-        #addStatisticsFile $group post gc_hist "${OutPrefix}.post-filter_gc_hist.csv" "GC% Histogram" "tsv" "${WasDerivedFrom}"
-        #addStatisticsFile $group post heat_map "${OutPrefix}.post-filter_heat_map.csv" "Heatmap" "tsv" "${WasDerivedFrom}"
-        #addStatisticsFile $group post len_hist "${OutPrefix}.post-filter_len_hist.csv" "Sequence Length Histogram" "tsv" "${WasDerivedFrom}"
-        #addStatisticsFile $group post mean_q_hist "${OutPrefix}.post-filter_mean_q_hist.csv" "Mean Quality Histogram" "tsv" "${WasDerivedFrom}"
-        #addStatisticsFile $group post qstats "${OutPrefix}.post-filter_qstats.csv" "Quality Scores" "tsv" "${WasDerivedFrom}"
+        wasGeneratedBy "${OutPrefix}.post-filter_composition.csv" "${ACTIVITY_NAME}" "quality_statistics,composition" "Nucleotide Composition" tsv
+        wasGeneratedBy "${OutPrefix}.post-filter_gc_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,gc_histogram" "GC% Histogram" tsv
+        wasGeneratedBy "${OutPrefix}.post-filter_heat_map.csv" "${ACTIVITY_NAME}" "quality_statistics,heatmap" "Heatmap" tsv
+        wasGeneratedBy "${OutPrefix}.post-filter_len_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,length_histogram" "Sequence Length Histogram" tsv
+        wasGeneratedBy "${OutPrefix}.post-filter_mean_q_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,mean_quality_histogram" "Mean Quality Histogram" tsv
+        wasGeneratedBy "${OutPrefix}.post-filter_qstats.csv" "${ACTIVITY_NAME}" "quality_statistics" "Quality Scores" tsv
         #addCalculation "post-filter_statistics"
     fi
 
@@ -229,10 +227,10 @@ function run_vdjpipe() {
     TotalOutputFilename="${OutPrefix}.total"
     if [[ $Barcode -eq 1 ]]; then
         $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --write "${TotalOutputFilename}-{MID}.fastq"
+        wasDerivedFrom "${TotalOutputFilename}-{MID}.fastq" "${SourceEntity}" "sequence_reads,sequenced_quality" "Total Post-Filter Sequences (${fileBasename})" "fastq"
     else
         $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --write "${TotalOutputFilename}.fastq"
-        # TODO: provenance
-        #addOutputFile $group $APP_NAME processed_sequence "${TotalOutputFilename}.fastq" "Total Post-Filter Sequences (${fileBasename})" "read" "${WasDerivedFrom}"
+        wasDerivedFrom "${TotalOutputFilename}.fastq" "${SourceEntity}" "sequence_reads,sequenced_quality" "Total Post-Filter Sequences (${fileBasename})" "fastq"
     fi
 
     # Find unique sequences
@@ -246,8 +244,8 @@ function run_vdjpipe() {
             #addLogFile $APP_NAME log sharing_summary sharing_summary.csv "Sharing Summary Log (${fileBasename})" "log" null
         else
             $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --unique "${FindUniqueOutput}.fasta" "${FindUniqueDuplicates}.tsv"
-            #addOutputFile $group $APP_NAME sequence "${FindUniqueOutput}.fasta" "Unique Post-Filter Sequences (${fileBasename})" "read" "${WasDerivedFrom}"
-            #addOutputFile $group $APP_NAME duplicates "${FindUniqueDuplicates}.tsv" "Unique Sequence Duplicates Table (${fileBasename})" "tsv" "${WasDerivedFrom}"
+            wasDerivedFrom "${FindUniqueOutput}.fasta" "${SourceEntity}" sequence "Unique Post-Filter Sequences (${fileBasename})" "fasta"
+            wasDerivedFrom "${FindUniqueDuplicates}.tsv" "${SourceEntity}" duplicates "Unique Sequence Duplicates Table (${fileBasename})" "tsv"
         fi
         #addCalculation find_unique_sequences
     fi
@@ -271,11 +269,11 @@ function run_vdjpipe() {
     if [[ $Barcode -eq 1 ]]; then
         if [[ $BarcodeSplitFlag -eq 1 ]]; then
             # put split files into process metadata
-            $BIO_PYTHON ./vdjpipe_barcodes.py --barcodeFiles "${TotalOutputFilename}-{MID}.fastq" $BarcodeFile "${fileBasename}" "${WasDerivedFrom}" >vdjpipe_barcodes.sh
+            $BIO_PYTHON ./vdjpipe_barcodes.py --barcodeFiles "${TotalOutputFilename}-{MID}.fastq" $BarcodeFile "${fileBasename}" "${SourceEntity}" >vdjpipe_barcodes.sh
             bash ./vdjpipe_barcodes.sh
             rm -f vdjpipe_barcodes.sh
 
-            $BIO_PYTHON ./vdjpipe_barcodes.py --uniqueGroup "${FindUniqueOutput}-{MID}.fasta" "${FindUniqueDuplicates}-{MID}.tsv" $BarcodeFile "${fileBasename}" "${WasDerivedFrom}" >vdjpipe_barcodes.sh
+            $BIO_PYTHON ./vdjpipe_barcodes.py --uniqueGroup "${FindUniqueOutput}-{MID}.fasta" "${FindUniqueDuplicates}-{MID}.tsv" $BarcodeFile "${fileBasename}" "${SourceEntity}" >vdjpipe_barcodes.sh
             bash ./vdjpipe_barcodes.sh
             rm -f vdjpipe_barcodes.sh
 
@@ -291,17 +289,17 @@ function run_vdjpipe() {
             $BIO_PYTHON ./vdjpipe_barcodes.py --catFiles "${TotalOutputFilename}-{MID}.fastq" $BarcodeFile >vdjpipe_barcodes.sh
             bash ./vdjpipe_barcodes.sh "${TotalOutputFilename}.fastq"
             rm -f vdjpipe_barcodes.sh
-            #addOutputFile $group $APP_NAME processed_sequence "${TotalOutputFilename}.fastq" "Total Post-Filter Sequences (${fileBasename})" "read" "${WasDerivedFrom}"
+            wasDerivedFrom "${TotalOutputFilename}.fastq" "${SourceEntity}" "sequence_reads,sequenced_quality" "Total Post-Filter Sequences (${fileBasename})" "fastq"
 
             $BIO_PYTHON ./vdjpipe_barcodes.py --catFiles "${FindUniqueOutput}-{MID}.fasta" $BarcodeFile >vdjpipe_barcodes.sh
             bash ./vdjpipe_barcodes.sh "${FindUniqueOutput}.fasta"
             rm -f vdjpipe_barcodes.sh
-            #addOutputFile $group $APP_NAME sequence "${FindUniqueOutput}.fasta" "Unique Post-Filter Sequences (${fileBasename})" "read" "${WasDerivedFrom}"
+            wasDerivedFrom "${FindUniqueOutput}.fasta" "${SourceEntity}" sequence "Unique Post-Filter Sequences (${fileBasename})" "fasta"
 
             $BIO_PYTHON ./vdjpipe_barcodes.py --catFiles "${FindUniqueDuplicates}-{MID}.tsv" $BarcodeFile >vdjpipe_barcodes.sh
             bash ./vdjpipe_barcodes.sh "${FindUniqueDuplicates}.tsv"
             rm -f vdjpipe_barcodes.sh
-            #addOutputFile $group $APP_NAME duplicates "${FindUniqueDuplicates}.tsv" "Unique Sequence Duplicates Table (${fileBasename})" "tsv" "${WasDerivedFrom}"
+            wasDerivedFrom "${FindUniqueDuplicates}.tsv" "${SourceEntity}" duplicates "Unique Sequence Duplicates Table (${fileBasename})" "tsv"
         fi
     fi
 }
@@ -332,9 +330,6 @@ function run_vdjpipe_workflow() {
             file=${forwardReads[count]}
             rfile=${reverseReads[count]}
 
-            group="merge${count}"
-            addGroup $group file
-
             if [ -z "$MergeMinimumScore" ]; then
                 MergeMinimumScore=10
             fi
@@ -352,21 +347,15 @@ function run_vdjpipe_workflow() {
             MergeFile=${OutputPrefix}.fastq
             $PYTHON ./vdjpipe_create_config.py --init ${SummaryFile} ${ConfigFile}
             $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --merge $MergeMinimumScore $MergeFile --forwardReads $file --reverseReads $rfile
-            wasGeneratedBy "${ConfigFile}" "vdjserver:activity:vdjpipe"
-            wasGeneratedBy "${SummaryFile}" "vdjserver:activity:vdjpipe"
-            addArchiveFile "${SummaryFile}"
-            #addConfigFile $group config paired "${ConfigFile}" "VDJPipe Read Merging Configuration (${fileBasename})" "json" null
-            #addLogFile $group log merge_summary "${SummaryFile}" "VDJPipe Read Merging Output Summary (${fileBasename})" "log" null
+            wasGeneratedBy "${ConfigFile}" "${ACTIVITY_NAME}" config "VDJPipe Read Merging Configuration (${fileBasename})" json
+            wasGeneratedBy "${SummaryFile}" "${ACTIVITY_NAME}" summary "VDJPipe Read Merging Output Summary (${fileBasename})" log
 
             # run the paired merging
             $VDJ_PIPE --config ${ConfigFile}
             addCalculation merge_paired_reads
 
             SequenceFASTQ="$SequenceFASTQ ${MergeFile}"
-            wasDerivedFrom "${MergeFile}" "${file}"
-            wasDerivedFrom "${MergeFile}" "${rfile}"
-            addArchiveFile "${MergeFile}"
-            #addOutputFile $group $APP_NAME merged_sequence "${MergeFile}" "Merged Pre-Filter Sequences (${fileBasename})" "read" $mfile
+            wasDerivedFrom "${MergeFile}" "${file}" "sequence_reads,sequence_quality" "Merged Pre-Filter Sequences (${fileBasename})" fastq
 
             count=$(( $count + 1 ))
         done
@@ -382,9 +371,6 @@ function run_vdjpipe_workflow() {
         file=${readFiles[count]}
         qfile=${qualityFiles[count]}
 
-        group="group${count}"
-        addGroup $group file
-
         filePath="${file##*/}" # path/file.fastq -> file.fastq
         fileExtension="${filePath##*.}" # file.fastq -> fastq
         fileBasename="${filePath%.*}" # file.fastq -> file
@@ -394,15 +380,12 @@ function run_vdjpipe_workflow() {
         ConfigFile=${OutputPrefix}.vdjpipe_config.json
         SummaryFile=${OutputPrefix}.summary.txt
         $PYTHON ./vdjpipe_create_config.py --init ${SummaryFile} ${ConfigFile}
-        wasGeneratedBy "${ConfigFile}" "vdjserver:activity:vdjpipe"
-        wasGeneratedBy "${SummaryFile}" "vdjserver:activity:vdjpipe"
-        addArchiveFile "${SummaryFile}"
-        #addConfigFile $group config main "${ConfigFile}" "VDJPipe Input Configuration (${fileBasename})" "json" null
-        #addLogFile $group log summary "${SummaryFile}" "VDJPipe Output Summary (${fileBasename})" "log" null
+        wasGeneratedBy "${ConfigFile}" "${ACTIVITY_NAME}" config "VDJPipe Input Configuration (${fileBasename})" json
+        wasGeneratedBy "${SummaryFile}" "${ACTIVITY_NAME}" summary "VDJPipe Output Summary (${fileBasename})" log
 
         $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --fasta $file --quals $qfile
 
-        run_vdjpipe "${OutputPrefix}" "${ConfigFile}" "${mfile}"
+        run_vdjpipe "${OutputPrefix}" "${ConfigFile}" "${file}"
 
         count=$(( $count + 1 ))
     done
@@ -415,9 +398,6 @@ function run_vdjpipe_workflow() {
     do
         file=${readFiles[count]}
 
-        group="group${count}"
-        addGroup $group file
-
         filePath="${file##*/}" # path/file.fastq -> file.fastq
         fileExtension="${filePath##*.}" # file.fastq -> fastq
         fileBasename="${filePath%.*}" # file.fastq -> file
@@ -427,24 +407,19 @@ function run_vdjpipe_workflow() {
         ConfigFile=${OutputPrefix}.vdjpipe_config.json
         SummaryFile=${OutputPrefix}.summary.txt
         $PYTHON ./vdjpipe_create_config.py --init ${SummaryFile} ${ConfigFile}
-        wasGeneratedBy "${ConfigFile}" "vdjserver:activity:vdjpipe"
-        wasGeneratedBy "${SummaryFile}" "vdjserver:activity:vdjpipe"
-        addArchiveFile "${SummaryFile}"
-        #addConfigFile $group config main "${ConfigFile}" "VDJPipe Input Configuration (${fileBasename})" "json" null
-        #addLogFile $group log summary "${SummaryFile}" "VDJPipe Output Summary (${fileBasename})" "log" null
+        wasGeneratedBy "${ConfigFile}" "${ACTIVITY_NAME}" config "VDJPipe Input Configuration (${fileBasename})" json
+        wasGeneratedBy "${SummaryFile}" "${ACTIVITY_NAME}" summary "VDJPipe Output Summary (${fileBasename})" log
 
         $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --fastq $file
 
-        run_vdjpipe "${OutputPrefix}" "${ConfigFile}" "${mfile}"
+        run_vdjpipe "${OutputPrefix}" "${ConfigFile}" "${file}"
 
         count=$(( $count + 1 ))
     done
 
     # Generate summary report
     $PYTHON ./vdjpipe_report.py *.summary.txt
-    wasGeneratedBy vdjpipe_summary.csv "vdjserver:activity:vdjpipe"
-    addArchiveFile vdjpipe_summary.csv
-    #addLogFile $APP_NAME log vdjpipe_summary vdjpipe_summary.csv "VDJPipe Summary Report" "csv" null
+    wasGeneratedBy vdjpipe_summary.csv "${ACTIVITY_NAME}" summary "VDJPipe Summary Report" csv
 
     # zip archive of all output files
     for file in $ARCHIVE_FILE_LIST; do
@@ -454,8 +429,6 @@ function run_vdjpipe_workflow() {
         fi
     done
     zip ${_tapisJobUUID}.zip ${_tapisJobUUID}/*
-    wasGeneratedBy ${_tapisJobUUID}.zip "vdjserver:activity:vdjpipe"
-    addArchiveFile ${_tapisJobUUID}.zip
-    #addLogFile $APP_NAME log output_archive ${_tapisJobUUID}.zip "Archive of Output Files" "zip" null
+    wasGeneratedBy ${_tapisJobUUID}.zip "${ACTIVITY_NAME}" job_archive "Archive of Output Files" zip
     cp ${_tapisJobUUID}.zip output
 }

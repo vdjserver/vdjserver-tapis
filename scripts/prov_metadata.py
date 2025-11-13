@@ -19,7 +19,7 @@ def addProvRelation(metadata, relation_type, key, value_dict):
         metadata[relation_type] = {}
     metadata[relation_type][key] = value_dict
     
-def wasDerivedFrom(metadata, generatedEntity, usedEntity):
+def wasDerivedFrom(metadata, generatedEntity, usedEntity, tags, description, format_type):
     workflow_metadata = metadata.get("value")
     entities = workflow_metadata.get("entity")
 
@@ -27,7 +27,7 @@ def wasDerivedFrom(metadata, generatedEntity, usedEntity):
     used_key = None
     used = None
     for ent_key, ent_val in entities.items():
-        if ent_val.get("vdjserver:type") == "app:inputs" and ent_key.endswith(usedEntity):
+        if ent_key.endswith(usedEntity):
             used_key = ent_key
             used = entities[ent_key]
             break
@@ -48,7 +48,12 @@ def wasDerivedFrom(metadata, generatedEntity, usedEntity):
     # create new entity record if needed
     if generated is None:
         generated_key = "vdjserver:project_job_file:" + generatedEntity
-        generated = { "vdjserver:type": "app:outputs" }
+        generated = {
+            "vdjserver:type": "app:outputs",
+            "vdjserver:tags": tags,
+            "vdjserver:description": description,
+            "vdjserver:format": format_type
+        }
         entities[generated_key] = generated
 
     # Add wasDerivedFrom relation
@@ -62,16 +67,55 @@ def wasDerivedFrom(metadata, generatedEntity, usedEntity):
 
     return metadata
 
+def wasGeneratedBy(metadata, entity, activity_key, tags, description, format_type):
+    workflow_metadata = metadata.get("value")
+    entities = workflow_metadata.get("entity")
+    activities = workflow_metadata.get("activity")
 
+    # does entity already exist
+    generated_key = None
+    generated = None
+    for ent_key, ent_val in entities.items():
+        if ent_val.get("vdjserver:type") == "app:outputs" and ent_key.endswith(entity):
+            generated_key = ent_key
+            generated = entities[ent_key]
+            break
+
+    # find the activity
+    if activities.get(activity_key) is None:
+        print(f"ERROR (wasGeneratedBy): Cannot find activity: {activity_key}")
+        sys.exit(1)
+
+    # create new entity record if needed
+    if generated is None:
+        generated_key = "vdjserver:project_job_file:" + entity
+        generated = {
+            "vdjserver:type": "app:outputs",
+            "vdjserver:tags": tags,
+            "vdjserver:description": description,
+            "vdjserver:format": format_type
+        }
+        entities[generated_key] = generated
+
+    # Add wasGeneratedBy relation
+    key = uuid.uuid4().hex[:9]
+    if workflow_metadata['wasGeneratedBy'] is None:
+        workflow_metadata['wasGeneratedBy'] = {}
+    workflow_metadata['wasGeneratedBy'][key] = {
+        "prov:entity": generated_key,
+        "prov:activity": activity_key
+    }
+
+    return metadata
 
 
 if (__name__=="__main__"):
     parser = argparse.ArgumentParser(description='Generate provenance metadata for activity.')
-    parser.add_argument('--wasGeneratedBy', help='Add wasGeneratedBy relation', nargs=2, metavar=('entity', 'activity'))
-    parser.add_argument('--wasDerivedFrom', help='Add was wasDerivedFrom relation', nargs=2, metavar=('generatedEntity', 'usedEntity'))
-    parser.add_argument('--used', help='Add used relation', nargs=2, metavar=('activity', 'entity'))
-    parser.add_argument('--wasAssociatedWith', help='Add wasAssociatedWith relation', nargs=2, metavar=('activity', 'agent'))
-    parser.add_argument('--wasAttributedTo', help='Add wasAttributedTo relation', nargs=2, metavar=('entity', 'agent'))
+    parser.add_argument('--wasGeneratedBy', help='Add wasGeneratedBy relation', nargs=5, metavar=('entity', 'activity', 'tags', 'description', 'format'))
+    parser.add_argument('--wasDerivedFrom', help='Add wasDerivedFrom relation', nargs=5, metavar=('generatedEntity', 'usedEntity', 'tags', 'description', 'format'))
+    #parser.add_argument('--used', help='Add used relation', nargs=2, metavar=('activity', 'entity'))
+    #parser.add_argument('--wasAssociatedWith', help='Add wasAssociatedWith relation', nargs=2, metavar=('activity', 'agent'))
+    #parser.add_argument('--wasAttributedTo', help='Add wasAttributedTo relation', nargs=2, metavar=('entity', 'agent'))
     parser.add_argument('json_file', type=str, help='Metadata JSON file name')
     args = parser.parse_args()
 
@@ -81,37 +125,11 @@ if (__name__=="__main__"):
             metadata = json.load(f)
 
         if args.wasGeneratedBy:
-            entity, activity = args.wasGeneratedBy
-            key = f"{entity}_{activity}"
-            addProvRelation(metadata, "wasGeneratedBy", key, {
-                "prov:entity": entity,
-                "prov:activity": activity
-            })
+            metadata = wasDerivedFrom(metadata, args.wasGeneratedBy[0], args.wasGeneratedBy[1], args.wasGeneratedBy[2], args.wasGeneratedBy[3], args.wasGeneratedBy[4])
 
         if args.wasDerivedFrom:
-            metadata = wasDerivedFrom(metadata, args.wasDerivedFrom[0], args.wasDerivedFrom[1])
+            metadata = wasDerivedFrom(metadata, args.wasDerivedFrom[0], args.wasDerivedFrom[1], args.wasDerivedFrom[2], args.wasDerivedFrom[3], args.wasDerivedFrom[4])
 
-        if args.used:
-            activity, entity = args.used
-            key = f"{activity}_{entity}"
-            addProvRelation(metadata, "used", key, {
-                "prov:activity": activity,
-                "prov:entity": entity
-            })
-        if args.wasAssociatedWith:
-            activity, agent = args.wasAssociatedWith
-            key = f"{activity}_{agent}"
-            addProvRelation(metadata, "wasAssociatedWith", key, {
-                "prov:activity": activity,
-                "prov:agent":agent
-            })
-        if args.wasAttributedTo:
-            entity, agent = args.wasAttributedTo
-            key = F"{entity}_{agent}"
-            addProvRelation(metadata, "wasAttributedTo", key, {
-                "prov:entity":entity,
-                "prov:agent":agent
-            })
         # save the json
         with open(args.json_file, 'w') as json_file:
             json.dump(metadata, json_file, indent=2)
