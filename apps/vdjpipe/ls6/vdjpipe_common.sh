@@ -10,7 +10,7 @@
 # 
 
 # the app
-export APP_NAME=vdjPipe
+export APP_NAME=vdjpipe
 
 # bring in common functions
 source ./common_functions.sh
@@ -19,46 +19,6 @@ source ./common_functions.sh
 source ./provenance_functions.sh
 
 # ----------------------------------------------------------------------------
-
-function gather_secondary_inputs() {
-    # Gather secondary input files
-    # This is used to get around Agave size limits for job inputs and parameters
-    if [[ $SecondaryInputsFlag -eq 1 ]]; then
-        echo "Gathering secondary input"
-        moreFiles=$(${PYTHON} ./process_metadata.py --getSecondaryInput "${ProjectDirectory}/" SequenceFASTQMetadata study_metadata.json)
-        SequenceFASTQ="${SequenceFASTQ} ${moreFiles}"
-        moreFiles=$(${PYTHON} ./process_metadata.py --getSecondaryEntry SequenceFASTQMetadata study_metadata.json)
-        SequenceFASTQMetadata="${SequenceFASTQMetadata} ${moreFiles}"
-        moreFiles=$(${PYTHON} ./process_metadata.py --getSecondaryInput "${ProjectDirectory}/" SequenceFASTAMetadata study_metadata.json)
-        SequenceFASTA="${SequenceFASTA} ${moreFiles}"
-        moreFiles=$(${PYTHON} ./process_metadata.py --getSecondaryEntry SequenceFASTAMetadata study_metadata.json)
-        SequenceFASTAMetadata="${SequenceFASTAMetadata} ${moreFiles}"
-        moreFiles=$(${PYTHON} ./process_metadata.py --getSecondaryInput "${ProjectDirectory}/" SequenceQualityFilesMetadata study_metadata.json)
-        SequenceQualityFiles="${SequenceQualityFiles} ${moreFiles}"
-        moreFiles=$(${PYTHON} ./process_metadata.py --getSecondaryEntry SequenceQualityFilesMetadata study_metadata.json)
-        SequenceQualityFilesMetadata="${SequenceQualityFilesMetadata} ${moreFiles}"
-        moreFiles=$(${PYTHON} ./process_metadata.py --getSecondaryInput "${ProjectDirectory}/" SequenceForwardPairedFilesMetadata study_metadata.json)
-        SequenceForwardPairedFiles="${SequenceForwardPairedFiles} ${moreFiles}"
-        moreFiles=$(${PYTHON} ./process_metadata.py --getSecondaryEntry SequenceForwardPairedFilesMetadata study_metadata.json)
-        SequenceForwardPairedFilesMetadata="${SequenceForwardPairedFilesMetadata} ${moreFiles}"
-        moreFiles=$(${PYTHON} ./process_metadata.py --getSecondaryInput "${ProjectDirectory}/" SequenceReversePairedFilesMetadata study_metadata.json)
-        SequenceReversePairedFiles="${SequenceReversePairedFiles} ${moreFiles}"
-        moreFiles=$(${PYTHON} ./process_metadata.py --getSecondaryEntry SequenceReversePairedFilesMetadata study_metadata.json)
-        SequenceReversePairedFilesMetadata="${SequenceReversePairedFilesMetadata} ${moreFiles}"
-        moreFiles=$(${PYTHON} ./process_metadata.py --getSecondaryInput "${ProjectDirectory}/" ForwardPrimerFileMetadata study_metadata.json)
-        ForwardPrimerFile="${ForwardPrimerFile} ${moreFiles}"
-        moreFiles=$(${PYTHON} ./process_metadata.py --getSecondaryEntry ForwardPrimerFileMetadata study_metadata.json)
-        ForwardPrimerFileMetadata="${ForwardPrimerFileMetadata} ${moreFiles}"
-        moreFiles=$(${PYTHON} ./process_metadata.py --getSecondaryInput "${ProjectDirectory}/" ReversePrimerFileMetadata study_metadata.json)
-        ReversePrimerFile="${ReversePrimerFile} ${moreFiles}"
-        moreFiles=$(${PYTHON} ./process_metadata.py --getSecondaryEntry ReversePrimerFileMetadata study_metadata.json)
-        ReversePrimerFileMetadata="${ReversePrimerFileMetadata} ${moreFiles}"
-        moreFiles=$(${PYTHON} ./process_metadata.py --getSecondaryInput "${ProjectDirectory}/" BarcodeFileMetadata study_metadata.json)
-        BarcodeFile="${BarcodeFile} ${moreFiles}"
-        moreFiles=$(${PYTHON} ./process_metadata.py --getSecondaryEntry BarcodeFileMetadata study_metadata.json)
-        BarcodeFileMetadata="${BarcodeFileMetadata} ${moreFiles}"
-    fi
-}
 
 function print_versions() {
     # Start
@@ -71,6 +31,7 @@ function print_parameters() {
     echo "Input files:"
     echo "vdj_pipe_image=${vdj_pipe_image}"
     echo "repcalc_image=${repcalc_image}"
+    echo "analysis_provenance=${analysis_provenance}"
     echo "ProjectDirectory=${ProjectDirectory}"
     echo "JobFiles=${JobFiles}"
     echo "SequenceFASTQ=$SequenceFASTQ"
@@ -84,16 +45,6 @@ function print_parameters() {
     echo ""
     echo "Application parameters:"
     echo "Workflow=$Workflow"
-    echo "SecondaryInputsFlag=${SecondaryInputsFlag}"
-    echo "Input file metadata:"
-    echo "SequenceFASTQMetadata=${SequenceFASTQMetadata}"
-    echo "SequenceFASTAMetadata=${SequenceFASTAMetadata}"
-    echo "SequenceQualityFilesMetadata=${SequenceQualityFilesMetadata}"
-    echo "SequenceForwardPairedFilesMetadata=${SequenceForwardPairedFilesMetadata}"
-    echo "SequenceReversePairedFilesMetadata=${SequenceReversePairedFilesMetadata}"
-    echo "ForwardPrimerFileMetadata=${ForwardPrimerFileMetadata}"
-    echo "ReversePrimerFileMetadata=${ReversePrimerFileMetadata}"
-    echo "BarcodeFileMetadata=${BarcodeFileMetadata}"
     echo "Merge paired-end reads:"
     echo "MergeMinimumScore=${MergeMinimumScore}"
     echo "Pre-filter statistics:"
@@ -353,9 +304,6 @@ function run_vdjpipe() {
 
 function run_vdjpipe_workflow() {
     initProvenance
-#    addLogFile $APP_NAME log stdout "${AGAVE_LOG_NAME}.out" "Job Output Log" "log" null
-#    addLogFile $APP_NAME log stderr "${AGAVE_LOG_NAME}.err" "Job Error Log" "log" null
-#    addLogFile $APP_NAME log agave_log .agave.log "Agave Output Log" "log" null
 
     # Exclude input files from archive
 #    noArchive "${ProjectDirectory}"
@@ -365,8 +313,6 @@ function run_vdjpipe_workflow() {
     for file in $JobFiles; do
         if [ -f $file ]; then
             expandfile $file
-#            noArchive $file
-#            noArchive "${file%.*}"
         fi
     done
 
@@ -374,17 +320,13 @@ function run_vdjpipe_workflow() {
     if [ "$Workflow" = "paired" ]; then
         echo "Merging paired-end reads."
         forwardReads=($SequenceForwardPairedFiles)
-        forwardReadsMetadata=($SequenceForwardPairedFilesMetadata)
         reverseReads=($SequenceReversePairedFiles)
 
         count=0
         while [ "x${forwardReads[count]}" != "x" ]
         do
             file=${forwardReads[count]}
-            mfile=${forwardReadsMetadata[count]}
             rfile=${reverseReads[count]}
-#            noArchive "$file"
-#            noArchive "$rfile"
 
             group="merge${count}"
             addGroup $group file
@@ -414,7 +356,6 @@ function run_vdjpipe_workflow() {
             addCalculation merge_paired_reads
 
             SequenceFASTQ="$SequenceFASTQ ${MergeFile}"
-            SequenceFASTQMetadata="$SequenceFASTQMetadata $group"
             addOutputFile $group $APP_NAME merged_sequence "${MergeFile}" "Merged Pre-Filter Sequences (${fileBasename})" "read" $mfile
 
             count=$(( $count + 1 ))
@@ -423,14 +364,12 @@ function run_vdjpipe_workflow() {
 
     # FASTA/QUAL workflow
     readFiles=($SequenceFASTA)
-    readFilesMetadata=($SequenceFASTAMetadata)
     qualityFiles=($SequenceQualityFiles)
 
     count=0
     while [ "x${readFiles[count]}" != "x" ]
     do
         file=${readFiles[count]}
-        mfile=${readFilesMetadata[count]}
         qfile=${qualityFiles[count]}
 #        noArchive "$file"
 #        noArchive "$qfile"
@@ -460,13 +399,10 @@ function run_vdjpipe_workflow() {
     # FASTQ workflow
     # use same counter
     readFiles=($SequenceFASTQ)
-    readFilesMetadata=($SequenceFASTQMetadata)
 
     while [ "x${readFiles[count]}" != "x" ]
     do
         file=${readFiles[count]}
-        mfile=${readFilesMetadata[count]}
-#        noArchive "$file"
 
         group="group${count}"
         addGroup $group file
