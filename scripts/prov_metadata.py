@@ -125,7 +125,7 @@ if (__name__=="__main__"):
             metadata = json.load(f)
 
         if args.wasGeneratedBy:
-            metadata = wasDerivedFrom(metadata, args.wasGeneratedBy[0], args.wasGeneratedBy[1], args.wasGeneratedBy[2], args.wasGeneratedBy[3], args.wasGeneratedBy[4])
+            metadata = wasGeneratedBy(metadata, args.wasGeneratedBy[0], args.wasGeneratedBy[1], args.wasGeneratedBy[2], args.wasGeneratedBy[3], args.wasGeneratedBy[4])
 
         if args.wasDerivedFrom:
             metadata = wasDerivedFrom(metadata, args.wasDerivedFrom[0], args.wasDerivedFrom[1], args.wasDerivedFrom[2], args.wasDerivedFrom[3], args.wasDerivedFrom[4])

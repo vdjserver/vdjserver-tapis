@@ -421,6 +421,9 @@ function run_vdjpipe_workflow() {
     $PYTHON ./vdjpipe_report.py *.summary.txt
     wasGeneratedBy vdjpipe_summary.csv "${ACTIVITY_NAME}" summary "VDJPipe Summary Report" csv
 
+    # Provenance file
+    wasGeneratedBy "provenance_output.json" "${ACTIVITY_NAME}" prov "Analysis Provenance" json
+
     # zip archive of all output files
     for file in $ARCHIVE_FILE_LIST; do
         if [ -f $file ]; then

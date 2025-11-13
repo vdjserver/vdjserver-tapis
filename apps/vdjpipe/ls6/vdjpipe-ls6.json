@@ -39,7 +39,6 @@
             ],
             "envVariables": [
                 {"key": "Workflow", "inputMode": "REQUIRED" },
-                {"key": "SecondaryInputsFlag", "inputMode": "REQUIRED", "value": "0" },
                 {"key": "JobFiles", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "SequenceFASTQ", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "SequenceFASTA", "inputMode": "INCLUDE_BY_DEFAULT" },

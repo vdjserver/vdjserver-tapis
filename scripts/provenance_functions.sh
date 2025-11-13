@@ -28,25 +28,25 @@ function gzipFile() {
 # PROVENANCE relationships
 
 function wasGeneratedBy(){
-    $PYTHON ./prov_metadata.py --wasGeneratedBy "$1" "$2" ${analysis_provenance}
+    $PYTHON ./prov_metadata.py --wasGeneratedBy "$1" "$2" "$3" "$4" "$5" provenance_output.json
     addArchiveFile "$1"
 }
 function wasDerivedFrom(){
     #Check if the file exists first
-    $PYTHON ./prov_metadata.py --wasDerivedFrom "$1" "$2" ${analysis_provenance}
+    $PYTHON ./prov_metadata.py --wasDerivedFrom "$1" "$2" "$3" "$4" "$5" provenance_output.json
     addArchiveFile "$1"
 }
 
 function used(){
-    $PYTHON ./prov_metadata.py --used "$1" "$2" ${analysis_provenance}
+    $PYTHON ./prov_metadata.py --used "$1" "$2" provenance_output.json
 }
 
 function wasAssociatedWith(){
-    $PYTHON ./prov_metadata.py --wasAssociatedWith "$1" "$2" ${analysis_provenance}
+    $PYTHON ./prov_metadata.py --wasAssociatedWith "$1" "$2" provenance_output.json
 }
 
 function wasAttributedTo(){
-    $PYTHON ./prov_metadata.py --wasAttributedTo "$1" "$2" ${analysis_provenance}
+    $PYTHON ./prov_metadata.py --wasAttributedTo "$1" "$2" provenance_output.json
 }
 
 # ----------------------------------------------------------------------------
@@ -59,6 +59,8 @@ function addProcessingStage() {
 # OLD OBSOLETE
 # ----------------------------------------------------------------------------
 function initProvenance() {
+    cp ${analysis_provenance} provenance_output.json
+
     # collect all output files
     mkdir ${_tapisJobUUID}
     ARCHIVE_FILE_LIST=""
