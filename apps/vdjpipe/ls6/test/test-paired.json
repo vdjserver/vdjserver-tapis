@@ -4,6 +4,9 @@
     "appVersion": "0.1",
     "maxMinutes":60,
     "nodeCount": 1,
+    "fileInputs":[
+      { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_vdjpipe_paired.json", "targetPath":"analysis_document_vdjpipe_paired.json" }
+    ],
     "fileInputArrays":[
       { "name":"SequenceForwardPairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/test_r1.fastq" ]},
       { "name":"SequenceReversePairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/test_r2.fastq" ]}

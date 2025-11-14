@@ -1,0 +1,84 @@
+{
+    "uuid": "ghi123",
+    "associationIds": [
+        "paired123"
+    ],
+    "owner": "vdj",
+    "created": "2025-11-13T18:44:56.266Z",
+    "lastUpdated": "2025-11-13T17:53:59.152Z",
+    "name": "analysis_document",
+    "value": {
+        "entity": {
+            "airr:Repertoire:abc567": {
+                "airr:type": "Repertoire",
+                "vdjserver:type": "app:inputs",
+                "vdjserver:uuid": "abc567"
+            },
+            "vdjserver:app:parameters:vdjpipe": {
+                    "vdjserver:type": "app:parameters",
+                    "Workflow": "paired",
+                    "SecondaryInputsFlag": false,
+                    "MergeMinimumScore": 10,
+                    "FilterFlag": true,
+                    "MinimumAverageQuality": 35,
+                    "MinimumLength": 200,
+                    "MaximumHomopolymer": 20
+                },
+            "vdjserver:app:outputs:vdjpipe": {
+                "vdjserver:type": "app:outputs"
+            },
+            "vdjserver:project_file:test_r1.fastq": {
+                "vdjserver:type": "app:inputs",
+                "SequenceForwardPairedFiles": "test_r1.fastq",
+                "vdjserver:uuid": "uuid436",
+                "SequenceReversePairedFiles": "test_r2.fastq"
+            }
+        },
+        "agent": {},
+        "activity": {
+            "vdjserver:activity:vdjpipe": {
+                "vdjserver:app:name": "vdjpipe-ls6",
+                "vdjserver:app:version": "0.3",
+                "vdjserver:app:default": true,
+                "prov:startTime": "2025-07-25T20:20:57.688Z",
+                "vdjserver:job": "job999"
+            }
+        },
+        "used": {},
+        "wasAttributedTo": {},
+        "wasAssociatedWith": {},
+        "wasDerivedFrom": {},
+        "wasGeneratedBy": {},
+        "uses": {
+            "airr:Repertoire:abc567": {
+                "prov:activity": "vdjserver:activity:vdjpipe",
+                "prov:entity": "airr:Repertoire:abc567"
+            },
+            "vdjserver:app:parameters:vdjpipe": {
+                "prov:activity": "vdjserver:activity:vdjpipe",
+                "prov:entity": "vdjserver:app:parameters:vdjpipe"
+            },
+            "vdjserver:app:inputs:vdjpipe:test_r1.fastq": {
+                "prov:activity": "vdjserver:activity:vdjpipe",
+                "prov:entity": "vdjserver:project_file:test_r1.fastq"
+            }
+        },
+        "isAttributedTo": {},
+        "isAssociatedWith": {},
+        "isDerivedFrom": {},
+        "isGeneratedBy": {
+            "vdjserver:app:outputs:vdjpipe": {
+                "prov:activity": "vdjserver:activity:vdjpipe",
+                "prov:entity": "vdjserver:app:outputs:vdjpipe"
+            }
+        },
+        "workflow_name": "VDJPipe",
+        "workflow_mode": "vdjpipe",
+        "status": "FINISHED",
+        "status_message": "",
+        "prefix": {
+            "airr": "https://airr-community.org/",
+            "vdjserver": "https://vdjserver.org/"
+        }
+    }
+}

@@ -1,10 +1,11 @@
 {
     "name": "vdjpipe_grieff_test",
     "appId": "vdjpipe-ls6",
-    "appVersion": "0.1",
+    "appVersion": "0.3",
     "maxMinutes":60,
     "nodeCount": 1,
     "fileInputs":[
+      { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_vdjpipe_grieff.json", "targetPath":"analysis_document_vdjpipe_grieff.json" },
       { "name":"ForwardPrimerFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/Greiff2014_VPrimers.fasta", "targetPath":"Greiff2014_VPrimers.fasta" },
       { "name":"ReversePrimerFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/Greiff2014_CPrimers_rev.fasta", "targetPath":"Greiff2014_CPrimers_rev.fasta" }
     ],

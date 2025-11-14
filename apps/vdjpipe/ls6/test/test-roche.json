@@ -5,6 +5,7 @@
     "maxMinutes":60,
     "nodeCount": 1,
     "fileInputs":[
+      { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_vdjpipe_roche.json", "targetPath":"analysis_document_vdjpipe_roche.json" },
       { "name":"BarcodeFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/SRR765688_MIDs.fasta", "targetPath":"SRR765688_MIDs.fasta" },
       { "name":"ForwardPrimerFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/SRX190717_VPrimers.fasta", "targetPath":"SRX190717_VPrimers.fasta" },
       { "name":"ReversePrimerFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/SRX190717_VPrimers.fasta", "targetPath":"SRX190717_VPrimers.fasta" }

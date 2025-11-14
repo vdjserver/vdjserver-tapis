@@ -4,12 +4,15 @@
     "appVersion": "0.1",
     "maxMinutes":60,
     "nodeCount": 1,
+    "fileInputs":[
+        { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_vdjpipe_mixed.json", "targetPath":"analysis_document_vdjpipe_mixed.json" }
+    ],
     "fileInputArrays":[
-      { "name":"SequenceFASTQ", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/Merged_2000.fastq" ]},
-      { "name":"SequenceFASTA", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/Sample00013.fna" ]},
-      { "name":"SequenceQualityFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/Sample00013.qual" ]},
-      { "name":"SequenceForwardPairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/test_r1.fastq" ]},
-      { "name":"SequenceReversePairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/test_r2.fastq" ]}
+        { "name":"SequenceFASTQ", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/Merged_2000.fastq" ]},
+        { "name":"SequenceFASTA", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/Sample00013.fna" ]},
+        { "name":"SequenceQualityFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/Sample00013.qual" ]},
+        { "name":"SequenceForwardPairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/test_r1.fastq" ]},
+        { "name":"SequenceReversePairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/test_r2.fastq" ]}
     ],
     "parameterSet": {
         "schedulerOptions": [
