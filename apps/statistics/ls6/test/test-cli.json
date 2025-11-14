@@ -1,7 +1,7 @@
 {
     "name": "statistics_test",
     "appId": "statistics-ls6",
-    "appVersion": "0.1",
+    "appVersion": "0.2",
     "maxMinutes":60,
     "fileInputs":[
       { "name":"metadata_file", "sourceUrl":"tapis://data-storage.vdjserver.org/irplus/data/TCR/vdjserver1-metadata.airr.json", "targetPath":"vdjserver1-metadata.airr.json" },
