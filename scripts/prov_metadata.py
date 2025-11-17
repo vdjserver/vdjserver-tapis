@@ -108,11 +108,32 @@ def wasGeneratedBy(metadata, entity, activity_key, tags, description, format_typ
 
     return metadata
 
+def addCalculation(metadata, activity_key, tags):
+    workflow_metadata = metadata.get("value")
+    activities = workflow_metadata.get("activity")
+
+    # find the activity
+    activity = activities.get(activity_key)
+    if activity is None:
+        print(f"ERROR (wasGeneratedBy): Cannot find activity: {activity_key}")
+        sys.exit(1)
+
+    # Add or append tags
+    existing_tags = activity.get("vdjserver:tags")
+
+    if existing_tags:
+        activity["vdjserver:tags"] = f"{existing_tags}, {tags}"
+    else:
+        activity["vdjserver:tags"] = tags
+
+    return metadata
+
 
 if (__name__=="__main__"):
     parser = argparse.ArgumentParser(description='Generate provenance metadata for activity.')
     parser.add_argument('--wasGeneratedBy', help='Add wasGeneratedBy relation', nargs=5, metavar=('entity', 'activity', 'tags', 'description', 'format'))
     parser.add_argument('--wasDerivedFrom', help='Add wasDerivedFrom relation', nargs=5, metavar=('generatedEntity', 'usedEntity', 'tags', 'description', 'format'))
+    parser.add_argument('--addCalculation', help='Add calculation tags', nargs=2, metavar=('activity', 'tags'))
     #parser.add_argument('--used', help='Add used relation', nargs=2, metavar=('activity', 'entity'))
     #parser.add_argument('--wasAssociatedWith', help='Add wasAssociatedWith relation', nargs=2, metavar=('activity', 'agent'))
     #parser.add_argument('--wasAttributedTo', help='Add wasAttributedTo relation', nargs=2, metavar=('entity', 'agent'))
@@ -130,6 +151,8 @@ if (__name__=="__main__"):
         if args.wasDerivedFrom:
             metadata = wasDerivedFrom(metadata, args.wasDerivedFrom[0], args.wasDerivedFrom[1], args.wasDerivedFrom[2], args.wasDerivedFrom[3], args.wasDerivedFrom[4])
 
+        if args.addCalculation:
+            metadata = addCalculation(metadata, args.addCalculation[0], args.addCalculation[1])
         # save the json
         with open(args.json_file, 'w') as json_file:
             json.dump(metadata, json_file, indent=2)

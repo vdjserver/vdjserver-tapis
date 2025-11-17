@@ -108,7 +108,7 @@ function run_vdjpipe() {
             wasGeneratedBy "${OutPrefix}.stats_len_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,length_histogram" "Sequence Length Histogram" tsv
             wasGeneratedBy "${OutPrefix}.stats_mean_q_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,mean_quality_histogram" "Mean Quality Histogram" tsv
             wasGeneratedBy "${OutPrefix}.stats_qstats.csv" "${ACTIVITY_NAME}" "quality_statistics" "Quality Scores" tsv
-            #addCalculation "statistics"
+            addCalculation "${ACTIVITY_NAME}"  "statistics"
         fi
         $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --statistics $PreFilterStatisticsFilename
     fi
@@ -118,10 +118,9 @@ function run_vdjpipe() {
         $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --length $MinimumLength
         $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --quality $MinimumAverageQuality
         $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --homopolymer $MaximumHomopolymer
-        # TODO: provenance
-        #addCalculation length_filtering
-        #addCalculation quality_filtering
-        #addCalculation homopolymer_filtering
+        addCalculation "${ACTIVITY_NAME}" "length_filtering"
+        addCalculation "${ACTIVITY_NAME}" "quality_filtering"
+        addCalculation "${ACTIVITY_NAME}" "homopolymer_filtering"
     fi
 
     # Post-filter statistics
@@ -134,7 +133,7 @@ function run_vdjpipe() {
         wasGeneratedBy "${OutPrefix}.post-filter_len_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,length_histogram" "Sequence Length Histogram" tsv
         wasGeneratedBy "${OutPrefix}.post-filter_mean_q_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,mean_quality_histogram" "Mean Quality Histogram" tsv
         wasGeneratedBy "${OutPrefix}.post-filter_qstats.csv" "${ACTIVITY_NAME}" "quality_statistics" "Quality Scores" tsv
-        #addCalculation "post-filter_statistics"
+        addCalculation "${ACTIVITY_NAME}" "post-filter_statistics"
     fi
 
     # Barcode
@@ -169,8 +168,7 @@ function run_vdjpipe() {
         ARGS="${ARGS} MID"
 
         $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --barcode $ARGS
-        # TODO: provenance
-        #addCalculation barcode_demultiplexing
+        addCalculation "${ACTIVITY_NAME}" "barcode_demultiplexing"
     fi
 
     # Forward primer
@@ -194,8 +192,7 @@ function run_vdjpipe() {
         fi
 
         $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --forwardPrimer $ARGS
-        # TODO: provenance
-        #addCalculation forward_primer
+        addCalculation "${ACTIVITY_NAME}" "forward_primer"
     fi
 
     # Reverse primer
@@ -219,8 +216,7 @@ function run_vdjpipe() {
         fi
 
         $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --reversePrimer $ARGS
-        # TODO: provenance
-        #addCalculation reverse_primer
+        addCalculation "${ACTIVITY_NAME}" "reverse_primer"
     fi
 
     # Write final sequences
@@ -247,7 +243,7 @@ function run_vdjpipe() {
             wasDerivedFrom "${FindUniqueOutput}.fasta" "${SourceEntity}" sequence "Unique Post-Filter Sequences (${fileBasename})" "fasta"
             wasDerivedFrom "${FindUniqueDuplicates}.tsv" "${SourceEntity}" duplicates "Unique Sequence Duplicates Table (${fileBasename})" "tsv"
         fi
-        #addCalculation find_unique_sequences
+        addCalculation "${ACTIVITY_NAME}" "find_unique_sequences"
     fi
 
     # Barcode histogram
@@ -256,7 +252,7 @@ function run_vdjpipe() {
         # TODO: provenance
         #addStatisticsFile $group barcode value "${OutPrefix}.MID.tsv" "Barcode Histogram (${fileBasename})" "tsv" "${WasDerivedFrom}"
         #addStatisticsFile $group barcode score "${OutPrefix}.MID-score.tsv" "Barcode Score Histogram (${fileBasename})" "tsv" "${WasDerivedFrom}"
-        #addCalculation barcode_histogram
+        addCalculation "${ACTIVITY_NAME}" "barcode_histogram"
     fi
 
     # run the main workflow

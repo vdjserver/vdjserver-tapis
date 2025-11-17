@@ -37,6 +37,10 @@ function wasDerivedFrom(){
     addArchiveFile "$1"
 }
 
+function addCalculation(){
+    $PYTHON ./prov_metadata.py --addCalculation "$1" "$2" provenance_output.json
+}
+
 function used(){
     $PYTHON ./prov_metadata.py --used "$1" "$2" provenance_output.json
 }
@@ -121,7 +125,7 @@ function addGroup() {
     $PYTHON ./process_metadata.py --group "$1" "$2" process_metadata.json
 }
 
-function addCalculation() {
-    $PYTHON ./process_metadata.py --calc $1 process_metadata.json
-}
+# function addCalculation() {
+#     $PYTHON ./process_metadata.py --calc $1 process_metadata.json
+# }
 
