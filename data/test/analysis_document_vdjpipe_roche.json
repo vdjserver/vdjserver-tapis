@@ -56,13 +56,17 @@
             "vdjserver:project_file:SRX190717_VPrimers.fasta": {
                 "vdjserver:type": "app:inputs",
                 "ForwardPrimerFile": "SRX190717_VPrimers.fasta",
-                "vdjserver:uuid": "uuid434",
-                "ReversePrimerFile": "SRX190717_VPrimers.fasta"
+                "vdjserver:uuid": "uuid434"
+            },
+            "vdjserver:project_file:SRX190717_CPrimers_rev.fasta": {
+                "vdjserver:type": "app:inputs",
+                "ReversePrimerFile": "SRX190717_CPrimers_rev.fasta",
+                "vdjserver:uuid": "uuid435"
             },
             "vdjserver:project_file:SRR765688.fastq": {
                 "vdjserver:type": "app:inputs",
                 "SequenceFASTQ": "SRR765688.fastq",
-                "vdjserver:uuid": "uuid435"
+                "vdjserver:uuid": "uuid436"
             }
         },
         "agent": {},
@@ -71,7 +75,7 @@
                 "vdjserver:app:name": "vdjpipe-ls6",
                 "vdjserver:app:version": "0.3",
                 "vdjserver:app:default": true,
-                "prov:startTime": "2025-07-25T20:20:57.688Z",
+                "prov:startTime": "2025-11-17T20:20:57.688Z",
                 "vdjserver:job": "job999"
             }
         },
@@ -96,6 +100,10 @@
             "vdjserver:app:inputs:vdjpipe:SRX190717_VPrimers.fasta": {
                 "prov:activity": "vdjserver:activity:vdjpipe",
                 "prov:entity": "vdjserver:project_file:SRX190717_VPrimers.fasta"
+            },
+            "vdjserver:app:inputs:vdjpipe:SRX190717_CPrimers_rev.fasta": {
+                "prov:activity": "vdjserver:activity:vdjpipe",
+                "prov:entity": "vdjserver:project_file:SRX190717_CPrimers_rev.fasta"
             },
             "vdjserver:app:inputs:vdjpipe:SRR765688.fastq": {
                 "prov:activity": "vdjserver:activity:vdjpipe",

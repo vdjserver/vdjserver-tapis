@@ -340,6 +340,7 @@ function run_igblast_workflow() {
         count=$(( $count + 1 ))
     done
 
+    #add provenance here.
 
     # ----------------------------------------------------------------------------
     # generate count statistics

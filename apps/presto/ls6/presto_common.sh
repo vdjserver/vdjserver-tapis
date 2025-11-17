@@ -404,6 +404,7 @@ function single_presto_workflow() {
 
         $PYTHON3 ./statistics.py statistics-template.json $file "pre-filter_" "pre-statistics.json"
         addStatisticsFile $group pre composition "pre-filter_${file}.composition.csv" "Nucleotide Composition" "tsv" null
+        # wasDerivedFrom "pre-filter_${file}.composition.csv" $file
         addStatisticsFile $group pre gc_hist "pre-filter_${file}.gc_hist.csv" "GC% Histogram" "tsv" null
         addStatisticsFile $group pre heat_map "pre-filter_${file}.heat_map.csv" "Heatmap" "tsv" null
         addStatisticsFile $group pre len_hist "pre-filter_${file}.len_hist.csv" "Sequence Length Histogram" "tsv" null
