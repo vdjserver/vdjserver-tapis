@@ -22,9 +22,7 @@
         "envVariables": [
             {"key": "Workflow", "value": "paired" },
             {"key": "SequenceForwardPairedFiles", "value": "test_r1.fastq" },
-            {"key": "SequenceForwardPairedFilesMetadata", "value": "12348" },
             {"key": "SequenceReversePairedFiles", "value": "test_r2.fastq" },
-            {"key": "SequenceReversePairedFilesMetadata", "value": "4567" },
             {"key": "MergeMinimumScore", "value": "10" },
             {"key": "FilterFlag", "value": "1" },
             {"key": "MinimumAverageQuality", "value": "35" },

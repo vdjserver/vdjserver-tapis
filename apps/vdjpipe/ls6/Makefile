@@ -69,9 +69,9 @@ test-job:
 	tapis_jobs_submit test/test-cli.json
 
 test-all:
-	echo tapis_jobs_submit test/test-cli.json
+	tapis_jobs_submit test/test-cli.json
 	tapis_jobs_submit test/test-grieff.json
 	tapis_jobs_submit test/test-mixed.json
 	tapis_jobs_submit test/test-paired.json
 	tapis_jobs_submit test/test-roche.json
-	tapis_jobs_submit test/test-secondary.json
+	tapis_jobs_submit test/test-roche-split.json

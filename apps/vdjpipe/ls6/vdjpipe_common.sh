@@ -223,10 +223,10 @@ function run_vdjpipe() {
     TotalOutputFilename="${OutPrefix}.total"
     if [[ $Barcode -eq 1 ]]; then
         $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --write "${TotalOutputFilename}-{MID}.fastq"
-        wasDerivedFrom "${TotalOutputFilename}-{MID}.fastq" "${SourceEntity}" "sequence_reads,sequenced_quality" "Total Post-Filter Sequences (${fileBasename})" "fastq"
+        # barcode provenance files are added later
     else
         $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --write "${TotalOutputFilename}.fastq"
-        wasDerivedFrom "${TotalOutputFilename}.fastq" "${SourceEntity}" "sequence_reads,sequenced_quality" "Total Post-Filter Sequences (${fileBasename})" "fastq"
+        wasDerivedFrom "${TotalOutputFilename}.fastq" "${SourceEntity}" "sequence_reads,sequence_quality" "Total Post-Filter Sequences (${fileBasename})" "fastq"
     fi
 
     # Find unique sequences
@@ -234,10 +234,9 @@ function run_vdjpipe() {
         FindUniqueOutput="${OutPrefix}.unique"
         FindUniqueDuplicates="${OutPrefix}.unique-duplicates"
 
-        # TODO: provenance
         if [[ $Barcode -eq 1 ]]; then
             $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --uniqueGroup "${FindUniqueOutput}-{MID}.fasta" "${FindUniqueDuplicates}-{MID}.tsv"
-            #addLogFile $APP_NAME log sharing_summary sharing_summary.csv "Sharing Summary Log (${fileBasename})" "log" null
+            wasGeneratedBy "sharing_summary.csv" "${ACTIVITY_NAME}" sharing_summary "Sharing Summary Log (${fileBasename})" log
         else
             $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --unique "${FindUniqueOutput}.fasta" "${FindUniqueDuplicates}.tsv"
             wasDerivedFrom "${FindUniqueOutput}.fasta" "${SourceEntity}" sequence "Unique Post-Filter Sequences (${fileBasename})" "fasta"
@@ -249,9 +248,8 @@ function run_vdjpipe() {
     # Barcode histogram
     if [[ $BarcodeGenerateHistogram -eq 1 ]]; then
         $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --barcodeHistogram MID
-        # TODO: provenance
-        #addStatisticsFile $group barcode value "${OutPrefix}.MID.tsv" "Barcode Histogram (${fileBasename})" "tsv" "${WasDerivedFrom}"
-        #addStatisticsFile $group barcode score "${OutPrefix}.MID-score.tsv" "Barcode Score Histogram (${fileBasename})" "tsv" "${WasDerivedFrom}"
+        wasGeneratedBy "${OutPrefix}.MID.tsv" "${ACTIVITY_NAME}" barcode_histogram "Barcode Histogram (${fileBasename})" log
+        wasGeneratedBy "${OutPrefix}.MID-score.tsv" "${ACTIVITY_NAME}" barcode_score_histogram "Barcode Score Histogram (${fileBasename})" log
         addCalculation "${ACTIVITY_NAME}" "barcode_histogram"
     fi
 
@@ -264,28 +262,25 @@ function run_vdjpipe() {
     # split then concatenate if the user does not want them split.
     if [[ $Barcode -eq 1 ]]; then
         if [[ $BarcodeSplitFlag -eq 1 ]]; then
-            # put split files into process metadata
-            $BIO_PYTHON ./vdjpipe_barcodes.py --barcodeFiles "${TotalOutputFilename}-{MID}.fastq" $BarcodeFile "${fileBasename}" "${SourceEntity}" >vdjpipe_barcodes.sh
-            bash ./vdjpipe_barcodes.sh
-            rm -f vdjpipe_barcodes.sh
-
-            $BIO_PYTHON ./vdjpipe_barcodes.py --uniqueGroup "${FindUniqueOutput}-{MID}.fasta" "${FindUniqueDuplicates}-{MID}.tsv" $BarcodeFile "${fileBasename}" "${SourceEntity}" >vdjpipe_barcodes.sh
-            bash ./vdjpipe_barcodes.sh
-            rm -f vdjpipe_barcodes.sh
-
-            # make sure spit files get archived
+            # put split files into provenance
             fileList=$($BIO_PYTHON ./vdjpipe_barcodes.py --fileList "${TotalOutputFilename}-{MID}.fastq" $BarcodeFile)
-            addArchiveFile ${fileList}
+            for split_file in ${fileList}; do
+                wasDerivedFrom "${split_file}" "${SourceEntity}" "sequence_reads,sequence_quality" "Total Post-Filter Sequences (${fileBasename})" "fastq"
+            done
             fileList=$($BIO_PYTHON ./vdjpipe_barcodes.py --fileList "${FindUniqueOutput}-{MID}.fasta" $BarcodeFile)
-            addArchiveFile ${fileList}
+            for split_file in ${fileList}; do
+                wasDerivedFrom "${split_file}" "${SourceEntity}" sequence "Unique Post-Filter Sequences (${fileBasename})" "fasta"
+            done
             fileList=$($BIO_PYTHON ./vdjpipe_barcodes.py --fileList "${FindUniqueDuplicates}-{MID}.tsv" $BarcodeFile)
-            addArchiveFile ${fileList}
+            for split_file in ${fileList}; do
+                wasDerivedFrom "${split_file}" "${SourceEntity}" duplicates "Unique Sequence Duplicates Table (${fileBasename})" "tsv"
+            done
         else
             # concatenate, exclude the split files from archiving
             $BIO_PYTHON ./vdjpipe_barcodes.py --catFiles "${TotalOutputFilename}-{MID}.fastq" $BarcodeFile >vdjpipe_barcodes.sh
             bash ./vdjpipe_barcodes.sh "${TotalOutputFilename}.fastq"
             rm -f vdjpipe_barcodes.sh
-            wasDerivedFrom "${TotalOutputFilename}.fastq" "${SourceEntity}" "sequence_reads,sequenced_quality" "Total Post-Filter Sequences (${fileBasename})" "fastq"
+            wasDerivedFrom "${TotalOutputFilename}.fastq" "${SourceEntity}" "sequence_reads,sequence_quality" "Total Post-Filter Sequences (${fileBasename})" "fastq"
 
             $BIO_PYTHON ./vdjpipe_barcodes.py --catFiles "${FindUniqueOutput}-{MID}.fasta" $BarcodeFile >vdjpipe_barcodes.sh
             bash ./vdjpipe_barcodes.sh "${FindUniqueOutput}.fasta"
@@ -303,11 +298,7 @@ function run_vdjpipe() {
 function run_vdjpipe_workflow() {
     initProvenance
 
-    # Exclude input files from archive
-#    noArchive "${ProjectDirectory}"
-#    for file in $SequenceFASTQ; do
-#        noArchive "$file"
-#    done
+    # Extract data from previous jobs
     for file in $JobFiles; do
         if [ -f $file ]; then
             expandfile $file
