@@ -227,8 +227,8 @@ function takara_bio_umi_workflow() {
     # Identify primers and UMI in -2 reads
     printf "  %2d: %-*s $(date +'%H:%M %D')\n" $((++STEP)) 24 "MaskPrimers extract"
     $MASK_PRIMERS_PY extract -s ${MPR2_FILE} --nproc ${NPROC} \
-         --start 12 --len 7 --barcode --bf BARCODE --mode cut \
-         --log "${LOGDIR}/primers-2.log" \
+        --start 12 --len 7 --barcode --bf BARCODE --mode cut \
+        --log "${LOGDIR}/primers-2.log" \
         --outname "${OUTNAME}-R2" --outdir .  >> $PIPELINE_LOG 2> $ERROR_LOG
     check_presto_error
     if [ $? -ne 0 ]; then
@@ -268,15 +268,15 @@ function takara_bio_umi_workflow() {
     # UMI consensus
     printf "  %2d: %-*s $(date +'%H:%M %D')\n" $((++STEP)) 24 "BuildConsensus"
     $BUILD_CONSENSUS_PY -s ${BCR1_FILE} \
-       --bf BARCODE --pf ${C_FIELD} --prcons ${BC_PRCONS} \
-       -n ${BC_MINCOUNT} -q ${BC_QUAL} --maxerror ${BC_MAXERR} --maxgap ${BC_MAXGAP}  \
-       --nproc ${NPROC} --log "${LOGDIR}/consensus-1.log"  \
-       --outdir . --outname "${OUTNAME}-R1" >> $PIPELINE_LOG 2> $ERROR_LOG
+        --bf BARCODE --pf ${C_FIELD} --prcons ${BC_PRCONS} \
+        -n ${BC_MINCOUNT} -q ${BC_QUAL} --maxerror ${BC_MAXERR} --maxgap ${BC_MAXGAP}  \
+        --nproc ${NPROC} --log "${LOGDIR}/consensus-1.log"  \
+        --outdir . --outname "${OUTNAME}-R1" >> $PIPELINE_LOG 2> $ERROR_LOG
     $BUILD_CONSENSUS_PY -s ${BCR2_FILE} \
-       --bf BARCODE --pf ${C_FIELD} --prcons ${BC_PRCONS} \
-       -n ${BC_MINCOUNT} -q ${BC_QUAL} --maxerror ${BC_MAXERR} --maxgap ${BC_MAXGAP}  \
-       --nproc ${NPROC} --log "${LOGDIR}/consensus-2.log" \
-       --outdir . --outname "${OUTNAME}-R2" >> $PIPELINE_LOG 2> $ERROR_LOG
+        --bf BARCODE --pf ${C_FIELD} --prcons ${BC_PRCONS} \
+        -n ${BC_MINCOUNT} -q ${BC_QUAL} --maxerror ${BC_MAXERR} --maxgap ${BC_MAXGAP}  \
+        --nproc ${NPROC} --log "${LOGDIR}/consensus-2.log" \
+        --outdir . --outname "${OUTNAME}-R2" >> $PIPELINE_LOG 2> $ERROR_LOG
     check_presto_error
     if [ $? -ne 0 ]; then
         return 1

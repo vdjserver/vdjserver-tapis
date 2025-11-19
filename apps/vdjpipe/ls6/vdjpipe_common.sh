@@ -339,7 +339,7 @@ function run_vdjpipe_workflow() {
 
             # run the paired merging
             $VDJ_PIPE --config ${ConfigFile}
-            addCalculation merge_paired_reads
+            addCalculation "${ACTIVITY_NAME}"  merge_paired_reads
 
             SequenceFASTQ="$SequenceFASTQ ${MergeFile}"
             wasDerivedFrom "${MergeFile}" "${file}" "sequence_reads,sequence_quality" "Merged Pre-Filter Sequences (${fileBasename})" fastq
