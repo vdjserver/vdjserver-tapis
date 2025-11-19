@@ -1,0 +1,117 @@
+{
+    "uuid": "presto_names1",
+    "associationIds": [
+        "presto_project_names1"
+    ],
+    "owner": "vdj",
+    "created": "2025-11-18T10:16:03.101Z",
+    "lastUpdated": "2025-11-18T17:53:59.594Z",
+    "name": "analysis_document",
+    "value": {
+        "entity": {
+            "airr:Repertoire:1fea9299-a371-4c03-9dcc-26c88a884e2c": {
+                "airr:type": "Repertoire",
+                "vdjserver:type": "app:inputs",
+                "vdjserver:uuid": "1fea9299-a371-4c03-9dcc-26c88a884e2c"
+            },
+            "vdjserver:app:parameters:presto": {
+                "vdjserver:type": "app:parameters",
+                "Workflow": "paired",
+                "SequenceFileTypes": "illumina",
+                "PreFilterStatisticsFlag": true,
+                "FilterFlag": true,
+                "MinimumQuality": 20,
+                "MinimumLength": 0,
+                "PostFilterStatisticsFlag": true,
+                "UMIConsensus": true,
+                "UMIMaxError":0.1,
+                "UMIMaxGap": 0.5,
+                "UMIMinFrequency": 0.6,
+                "ForwardPrimer": "score",
+                "ForwardPrimerStartPosition": 0,
+                "ReversePrimer": "score",
+                "ReversePrimerFile": "",
+                "ReversePrimerUMI": true,
+                "ReversePrimerStartPosition": 15,
+                "FindUniqueFlag": true,
+                "FindUniqueMaxNucleotides": 20,
+                "FindUniqueExclude": true
+            },
+            "vdjserver:app:outputs:presto": {
+                "vdjserver:type": "app:outputs"
+            },
+            "vdjserver:project_file:Stern2014_VPrimers.fasta": {
+                "vdjserver:type": "app:inputs",
+                "ForwardPrimerFile": "Stern2014_VPrimers.fasta",
+                "vdjserver:uuid": "uuid433"
+            },
+            "vdjserver:project_file:Stern2014_CPrimers.fasta": {
+                "vdjserver:type": "app:inputs",
+                "ReversePrimerFile": "Stern2014_CPrimers.fasta",
+                "vdjserver:uuid": "uuid434"
+            },
+            "vdjserver:project_file:SRR1383456_2.fq.gz": {
+                "vdjserver:type": "app:inputs",
+                "SequenceForwardPairedFiles": "SRR1383456_2.fq.gz",
+                "vdjserver:uuid": "uuid435",
+                "SequenceReversePairedFiles": "SRR1383456_1.fq.gz"
+            }
+        },
+        "agent": {},
+        "activity": {
+            "vdjserver:activity:presto": {
+                "vdjserver:app:name": "presto-ls6",
+                "vdjserver:app:version": "0.3",
+                "vdjserver:app:default": true,
+                "prov:startTime": "2025-08-02T10:16:07.484Z",
+                "vdjserver:job": "727aea92-d242-4846-bfd5-55ae6a83c8f5-007",
+                "prov:endTime": "2025-08-02T23:23:44.001211Z"
+            }
+        },
+        "used": {},
+        "wasAttributedTo": {},
+        "wasAssociatedWith": {},
+        "wasDerivedFrom": {},
+        "wasGeneratedBy": {},
+        "uses": {
+            "airr:Repertoire:1fea9299-a371-4c03-9dcc-26c88a884e2c": {
+                "prov:activity": "vdjserver:activity:presto",
+                "prov:entity": "airr:Repertoire:1fea9299-a371-4c03-9dcc-26c88a884e2c"
+            },
+            "vdjserver:app:parameters:presto": {
+                "prov:activity": "vdjserver:activity:presto",
+                "prov:entity": "vdjserver:app:parameters:presto"
+            },
+            "vdjserver:app:inputs:presto:Stern2014_VPrimers.fasta": {
+                "prov:activity": "vdjserver:activity:presto",
+                "prov:entity": "vdjserver:project_file:Stern2014_VPrimers.fasta"
+            },
+            "vdjserver:app:inputs:presto:Stern2014_CPrimers.fasta": {
+                "prov:activity": "vdjserver:activity:presto",
+                "prov:entity": "vdjserver:project_file:Stern2014_CPrimers.fasta"
+            },
+            "vdjserver:app:inputs:presto:SRR1383456_2.fq.gz": {
+                "prov:activity": "vdjserver:activity:presto",
+                "prov:entity": "vdjserver:project_file:SRR1383456_2.fq.gz"
+            }
+        },
+        "isAttributedTo": {},
+        "isAssociatedWith": {},
+        "isDerivedFrom": {},
+        "isGeneratedBy": {
+            "vdjserver:app:outputs:presto": {
+                "prov:activity": "vdjserver:activity:presto",
+                "prov:entity": "vdjserver:app:outputs:presto"
+            }
+        },
+        "workflow_name": "Presto",
+        "workflow_mode": "presto",
+        "status": "FINISHED",
+        "status_message": "",
+        "prefix": {
+            "airr": "https://airr-community.org/",
+            "vdjserver": "https://vdjserver.org/"
+        }
+    }
+
+}
