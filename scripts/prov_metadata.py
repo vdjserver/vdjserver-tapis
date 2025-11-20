@@ -33,7 +33,8 @@ def wasDerivedFrom(metadata, generatedEntity, usedEntity, tags, description, for
             break
 
     if used is None:
-        print(f"ERROR: Cannot find used entity: {usedEntity}")
+        print(f"ERROR(wasDerivedFrom): Cannot find used entity: {usedEntity}")
+        print("From wasDerivedFrom: ", generatedEntity, usedEntity, tags, description, format_type)
         sys.exit(1)
 
     # does generated entity already exist
