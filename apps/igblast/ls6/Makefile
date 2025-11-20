@@ -1,7 +1,7 @@
 # helper commands for tapis v3 apps
 
 APP_NAME=igblast
-APP_VERSION=0.5
+APP_VERSION=0.7
 APP_SYSTEM=ls6
 
 APP_ID=${APP_NAME}-${APP_SYSTEM}

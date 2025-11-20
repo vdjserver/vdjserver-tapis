@@ -1,22 +1,22 @@
 {
-    "id":"igblast-ls6",
-    "version":"0.7",
+    "id":"igblast-ls6-tanzira",
+    "version":"0.6",
     "description":"IgBLAST on Lonestar6",
     "runtime":"ZIP",
     "runtimeOptions": ["NONE"],
-    "containerImage":"tapis://data-storage.vdjserver.org/apps/igblast-ls6-0.7.tgz",
+    "containerImage":"tapis://data-storage.vdjserver.org/akc/apps/igblast-ls6-tanzira-0.6.tgz",
     "jobType":"BATCH",
     "jobAttributes": {
         "description": "default job description",
         "execSystemId": "test-ls6.tacc.utexas.edu",
         "fileInputs":[
           { "name":"repcalc_image", "inputMode": "FIXED", "envKey":"repcalc_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/repcalc-v2.2-imm4.4.sif", "targetPath":"repcalc-v2.2-imm4.4.sif" },
-          { "name":"AIRRMetadata", "inputMode": "REQUIRED", "envKey":"AIRRMetadata", "targetPath":"." }
+          { "name":"germline_archive", "inputMode": "FIXED", "envKey":"germline_archive", "sourceUrl":"tapis://data-storage.vdjserver.org/akc/germlines/db.2019.01.23.tgz", "targetPath":"db.2019.01.23.tgz" },
+          { "name":"airr_germline", "inputMode": "FIXED", "envKey":"airr_germline", "sourceUrl":"tapis://data-storage.vdjserver.org/akc/germlines/db.2025.10.22.tgz", "targetPath":"db.2025.10.22.tgz" },
+          { "name":"StudyMetadata", "inputMode": "OPTIONAL", "envKey":"StudyMetadata", "targetPath":"." },
+          { "name":"AIRRMetadata", "inputMode": "OPTIONAL", "envKey":"AIRRMetadata", "targetPath":"." }
         ],
         "fileInputArrays":[
-          { "name":"germline_archives", "inputMode": "FIXED", "targetDir":".",
-            "sourceUrls": [ "tapis://data-storage.vdjserver.org/akc/germlines/db.2019.01.23.tgz",
-                            "tapis://data-storage.vdjserver.org/akc/germlines/db.2025.10.31.tgz" ]},
           { "name":"JobFiles", "inputMode": "OPTIONAL", "targetDir":"." },
           { "name":"query", "inputMode": "OPTIONAL", "targetDir":"." }
         ],
@@ -30,14 +30,15 @@
             "appArgs": [
             ],
             "envVariables": [
-                {"key": "germline_archives", "inputMode": "FIXED", "value": "db.2019.01.23 db.2025.10.31" },
+                {"key": "SecondaryInputsFlag", "inputMode": "REQUIRED", "value": "0" },
                 {"key": "JobFiles", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "query", "inputMode": "INCLUDE_BY_DEFAULT" },
-                {"key": "repertoires", "inputMode": "REQUIRED" },
+                {"key": "repertoires", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "species", "inputMode": "REQUIRED" },
                 {"key": "strain", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "locus", "inputMode": "REQUIRED" },
-                {"key": "ClonalTool", "inputMode": "INCLUDE_BY_DEFAULT" }
+                {"key": "domain_system", "inputMode": "REQUIRED", "value": "imgt" },
+                {"key": "ClonalTool", "inputMode": "REQUIRED" }
             ]
         }
     }
