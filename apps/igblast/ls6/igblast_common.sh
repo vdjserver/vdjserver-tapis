@@ -207,9 +207,9 @@ function run_igblast_workflow() {
         # no merging so rename to remove extension
         mv ${file}.igblast.airr.tsv ${fileOutname}.igblast.airr.new.tsv
         mv ${file}.igblast.makedb.airr.tsv ${fileOutname}.igblast.makedb.airr.tsv
-        mv ${file}.igblast.fail-makedb.airr.tsv ${fileOutname}.igblast.fail-makedb.airr.tsv
 
-        if [ -f "${fileOutname}.igblast.fail-makedb.airr.tsv" ]; then
+        if [ -f "${file}.igblast.fail-makedb.airr.tsv" ]; then
+            mv ${file}.igblast.fail-makedb.airr.tsv ${fileOutname}.igblast.fail-makedb.airr.tsv
             wasDerivedFrom "${fileOutname}.igblast.fail-makedb.airr.tsv" "${file}" "airr-fail-makedb" "Change-O MakeDb Failed" tsv
             #addOutputFile $group $APP_NAME airr-fail-makedb ${fileOutname}.igblast.fail-makedb.airr.tsv "${fileOutname} Change-O MakeDb Failed" "tsv" $mfile
         fi
@@ -331,9 +331,15 @@ function run_igblast_workflow() {
     wasGeneratedBy "makedb_count_statistics.csv" "${ACTIVITY_NAME}" makedb_count_statistics "Change-O MakeDb AIRR TSV Count Statistics" csv
     #addLogFile $APP_NAME log makedb_count_statistics makedb_count_statistics.csv "Change-O MakeDb AIRR TSV Count Statistics" "csv" null
     #addArchiveFile makedb_count_statistics.csv
-    $PYTHON count_statistics.py *.fail-makedb.airr.tsv
-    mv count_statistics.csv fail-makedb_count_statistics.csv
-    wasGeneratedBy "fail-makedb_count_statistics.csv" "${ACTIVITY_NAME}" fail-makedb_count_statistics "Change-O MakeDb Failed Count Statistics" csv
+    has_fail_makedb=0
+    if ls *.fail-makedb.airr.tsv 1> /dev/null 2>&1; then
+        has_fail_makedb=1
+    fi
+    if [[ $has_fail_makedb -eq 1 ]]; then
+        $PYTHON count_statistics.py *.fail-makedb.airr.tsv
+        mv count_statistics.csv fail-makedb_count_statistics.csv
+        wasGeneratedBy "fail-makedb_count_statistics.csv" "${ACTIVITY_NAME}" fail-makedb_count_statistics "Change-O MakeDb Failed Count Statistics" csv
+    fi
     #addLogFile $APP_NAME log fail-makedb_count_statistics fail-makedb_count_statistics.csv "Change-O MakeDb Failed Count Statistics" "csv" null
     #addArchiveFile fail-makedb_count_statistics.csv
 }
@@ -376,8 +382,8 @@ function run_assign_clones() {
             cloneFileList[${#cloneFileList[@]}]=$geneFile
 
             # will get compressed at end
-            wasDerivedFrom "${alleleFile}.gz" "${file}" "assigned_clones, allele_clones" "${fileOutname} Change-O IG Allele Clones" tsv
-            wasDerivedFrom "${geneFile}.gz" "${file}" "assigned_clones, gene_clones" "${fileOutname} Change-O IG Gene Clones" tsv
+            wasDerivedFrom "${alleleFile}.gz" "${file}.gz" "assigned_clones, allele_clones" "${fileOutname} Change-O IG Allele Clones" tsv
+            wasDerivedFrom "${geneFile}.gz" "${file}.gz" "assigned_clones, gene_clones" "${fileOutname} Change-O IG Gene Clones" tsv
             #group="group${count}"
             #addOutputFile $group $APP_NAME igblast-makedb-allele-clone ${alleleFile}.gz "${fileOutname} Change-O IG Allele Clones" "tsv" $mfile
             #addOutputFile $group $APP_NAME igblast-makedb-gene-clone ${geneFile}.gz "${fileOutname} Change-O IG Gene Clones" "tsv" $mfile
@@ -408,8 +414,8 @@ function run_assign_clones() {
             geneFile=${out_prefix}.gene.clone.airr.tsv
 
             # will get compressed at end
-            wasDerivedFrom "${alleleFile}.gz" "${file}" "assigned_clones, allele_clones" "${rep_id} RepCalc TCR Allele Clones (${processing_stage})" tsv
-            wasDerivedFrom "${geneFile}.gz" "${file}" "assigned_clones, gene_clones" "${rep_id} RepCalc TCR Gene Clones (${processing_stage})" tsv
+            wasDerivedFrom "${alleleFile}.gz" "${file}.gz" "assigned_clones, allele_clones" "${rep_id} RepCalc TCR Allele Clones (${processing_stage})" tsv
+            wasDerivedFrom "${geneFile}.gz" "${file}.gz" "assigned_clones, gene_clones" "${rep_id} RepCalc TCR Gene Clones (${processing_stage})" tsv
             #group="group${count}"
             #addOutputFile $group $APP_NAME igblast-allele-clone ${alleleFile}.gz "${rep_id} RepCalc TCR Allele Clones (${processing_stage})" "tsv" $mfile
             #addOutputFile $group $APP_NAME igblast-gene-clone ${geneFile}.gz "${rep_id} RepCalc TCR Gene Clones (${processing_stage})" "tsv" $mfile
@@ -426,8 +432,8 @@ function run_assign_clones() {
             geneFile=${out_prefix}.gene.clone.airr.tsv
 
             # will get compressed at end
-            wasDerivedFrom "${alleleFile}.gz" "${file}" "assigned_clones, allele_clones" "${rep_id} RepCalc TCR Allele Clones (${processing_stage})" tsv
-            wasDerivedFrom "${geneFile}.gz" "${file}" "assigned_clones, gene_clones" "${rep_id} RepCalc TCR Gene Clones (${processing_stage})" tsv
+            wasDerivedFrom "${alleleFile}.gz" "${file}.gz" "assigned_clones, allele_clones" "${rep_id} RepCalc TCR Allele Clones (${processing_stage})" tsv
+            wasDerivedFrom "${geneFile}.gz" "${file}.gz" "assigned_clones, gene_clones" "${rep_id} RepCalc TCR Gene Clones (${processing_stage})" tsv
             #group="group${count}"
             #addOutputFile $group $APP_NAME igblast-makedb-allele-clone ${alleleFile}.gz "${rep_id} RepCalc TCR Allele Clones (${processing_stage})" "tsv" $mfile
             #addOutputFile $group $APP_NAME igblast-makedb-gene-clone ${geneFile}.gz "${rep_id} RepCalc TCR Gene Clones (${processing_stage})" "tsv" $mfile

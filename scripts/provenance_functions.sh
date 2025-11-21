@@ -27,6 +27,10 @@ function gzipFile() {
 # ----------------------------------------------------------------------------
 # PROVENANCE relationships
 function initProvenance() {
+    if [ -f provenance_output.json ]; then
+        echo "Warning: removing file 'provenance_output.json'.  That filename is reserved." 1>&2
+        rm provenance_output.json
+    fi
     cp ${analysis_provenance} provenance_output.json
 
     # collect all output files
