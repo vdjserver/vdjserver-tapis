@@ -33,8 +33,8 @@ def wasDerivedFrom(metadata, generatedEntity, usedEntity, tags, description, for
             break
 
     if used is None:
-        print(f"ERROR(wasDerivedFrom): Cannot find used entity: {usedEntity}")
-        print("From wasDerivedFrom: ", generatedEntity, usedEntity, tags, description, format_type)
+        print(f"ERROR (wasDerivedFrom): Cannot find used entity: {usedEntity}", file=sys.stderr)
+        print("From wasDerivedFrom: ", generatedEntity, usedEntity, tags, description, format_type, file=sys.stderr)
         sys.exit(1)
 
     # does generated entity already exist
@@ -84,7 +84,7 @@ def wasGeneratedBy(metadata, entity, activity_key, tags, description, format_typ
 
     # find the activity
     if activities.get(activity_key) is None:
-        print(f"ERROR (wasGeneratedBy): Cannot find activity: {activity_key}")
+        print(f"ERROR (wasGeneratedBy): Cannot find activity: {activity_key}", file=sys.stderr)
         sys.exit(1)
 
     # create new entity record if needed
@@ -116,7 +116,7 @@ def addCalculation(metadata, activity_key, tags):
     # find the activity
     activity = activities.get(activity_key)
     if activity is None:
-        print(f"ERROR (wasGeneratedBy): Cannot find activity: {activity_key}")
+        print(f"ERROR (addCalculation): Cannot find activity: {activity_key}", file=sys.stderr)
         sys.exit(1)
 
     # Add or append tags
@@ -129,12 +129,36 @@ def addCalculation(metadata, activity_key, tags):
 
     return metadata
 
+def getRepertoireForFile(metadata, filename):
+    workflow_metadata = metadata.get("value")
+    entities = workflow_metadata.get("entity")
+
+    # find the entity for file
+    used_key = None
+    used = None
+    for ent_key, ent_val in entities.items():
+        if ent_key.endswith(filename):
+            used_key = ent_key
+            used = entities[ent_key]
+            break
+
+    if used is None:
+        print(f"ERROR (getRepertoireForFile): Cannot find file in entities: {filename}", file=sys.stderr)
+        sys.exit(1)
+
+    if used.get('airr:Repertoire') is None:
+        print(f"ERROR (getRepertoireForFile): entity {used_key} for file {filename} does not have airr:Repertoire", file=sys.stderr)
+        sys.exit(1)
+    else:
+        # print repertoire_id
+        print(used.get('airr:Repertoire'))
 
 if (__name__=="__main__"):
     parser = argparse.ArgumentParser(description='Generate provenance metadata for activity.')
     parser.add_argument('--wasGeneratedBy', help='Add wasGeneratedBy relation', nargs=5, metavar=('entity', 'activity', 'tags', 'description', 'format'))
     parser.add_argument('--wasDerivedFrom', help='Add wasDerivedFrom relation', nargs=5, metavar=('generatedEntity', 'usedEntity', 'tags', 'description', 'format'))
     parser.add_argument('--addCalculation', help='Add calculation tags', nargs=2, metavar=('activity', 'tags'))
+    parser.add_argument('--getRepertoireForFile', help='Get repertoire ID for file', nargs=1, metavar=('filename'))
     #parser.add_argument('--used', help='Add used relation', nargs=2, metavar=('activity', 'entity'))
     #parser.add_argument('--wasAssociatedWith', help='Add wasAssociatedWith relation', nargs=2, metavar=('activity', 'agent'))
     #parser.add_argument('--wasAttributedTo', help='Add wasAttributedTo relation', nargs=2, metavar=('entity', 'agent'))
@@ -154,6 +178,10 @@ if (__name__=="__main__"):
 
         if args.addCalculation:
             metadata = addCalculation(metadata, args.addCalculation[0], args.addCalculation[1])
+
+        if args.getRepertoireForFile:
+            getRepertoireForFile(metadata, args.getRepertoireForFile[0])
+
         # save the json
         with open(args.json_file, 'w') as json_file:
             json.dump(metadata, json_file, indent=2)

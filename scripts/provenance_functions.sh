@@ -26,6 +26,14 @@ function gzipFile() {
 
 # ----------------------------------------------------------------------------
 # PROVENANCE relationships
+function initProvenance() {
+    cp ${analysis_provenance} provenance_output.json
+
+    # collect all output files
+    mkdir ${_tapisJobUUID}
+    ARCHIVE_FILE_LIST=""
+    GZIP_FILE_LIST=""
+}
 
 function wasGeneratedBy(){
     $PYTHON ./prov_metadata.py --wasGeneratedBy "$1" "$2" "$3" "$4" "$5" provenance_output.json
@@ -53,22 +61,14 @@ function wasAttributedTo(){
     $PYTHON ./prov_metadata.py --wasAttributedTo "$1" "$2" provenance_output.json
 }
 
+function getRepertoireForFile(){
+    $PYTHON ./prov_metadata.py --getRepertoireForFile "$1" provenance_output.json
+}
+
 # ----------------------------------------------------------------------------
 # AIRR metadata
 function addProcessingStage() {
     $PYTHON ./airr_metadata.py --processing_stage $1 study_metadata.airr.json
-}
-
-# ----------------------------------------------------------------------------
-# OLD OBSOLETE
-# ----------------------------------------------------------------------------
-function initProvenance() {
-    cp ${analysis_provenance} provenance_output.json
-
-    # collect all output files
-    mkdir ${_tapisJobUUID}
-    ARCHIVE_FILE_LIST=""
-    GZIP_FILE_LIST=""
 }
 
 # ----------------------------------------------------------------------------
