@@ -54,7 +54,7 @@ common-scripts:
 	cp ${SCRIPTS_DIR}/common_functions.sh ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/provenance_functions.sh ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/airr_metadata.py ${BUILD_DIR}
-	cp ${SCRIPTS_DIR}/process_metadata.py ${BUILD_DIR}
+	cp ${SCRIPTS_DIR}/prov_metadata.py ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/presto_annotations.py ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/count_statistics.py ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/changeo_clones.sh ${BUILD_DIR}

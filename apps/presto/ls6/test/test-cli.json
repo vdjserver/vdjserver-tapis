@@ -1,11 +1,14 @@
 {
     "name": "presto_test",
     "appId": "presto-ls6",
-    "appVersion": "0.2",
-    "maxMinutes":60,
+    "appVersion": "0.3",
+    "maxMinutes":30,
     "nodeCount": 1,
+    "fileInputs":[
+        { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_presto.json", "targetPath":"analysis_document_presto.json" }
+    ],
     "fileInputArrays":[
-      { "name":"SequenceFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/Merged_40000.fastq" ]}
+        { "name":"SequenceFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/Merged_40000.fastq" ]}
     ],
     "parameterSet": {
         "schedulerOptions": [

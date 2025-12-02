@@ -37,7 +37,7 @@
             {"key": "BarcodeMaximumMismatches", "value": "1" },
             {"key": "BarcodeTrim", "value": "1" },
             {"key": "BarcodeSearchWindow", "value": "15" },
-            {"key": "BarcodeSplitFlag", "value": "0" },
+            {"key": "BarcodeSplitFlag", "value": "1" },
             {"key": "ForwardPrimer", "value": "1" },
             {"key": "ForwardPrimerMaximumMismatches", "value": "1" },
             {"key": "ForwardPrimerTrim", "value": "1" },
