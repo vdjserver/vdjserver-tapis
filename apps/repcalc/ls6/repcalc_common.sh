@@ -1187,5 +1187,9 @@ function run_repcalc_workflow() {
     addLogFile $APP_NAME log output_archive ${_tapisJobUUID}.zip "Archive of Output Files" "zip" null
     cp ${_tapisJobUUID}.zip output
 
-    cp -f ${_tapisJobUUID}/* /corral-repl/projects/vdjZ${_tapisArchiveSystemDir}
+    archive_dir=${_tapisArchiveSystemDir#/}
+    archive_dir=${archive_dir%%/*}
+    if [[ "$archive_dir" != "scratch" ]] ; then
+        cp -f ${_tapisJobUUID}/* /corral-repl/projects/vdjZ${_tapisArchiveSystemDir}
+    fi
 }
