@@ -1,7 +1,7 @@
 # helper commands for tapis v3 apps
 
 APP_NAME=presto
-APP_VERSION=0.2
+APP_VERSION=0.3
 APP_SYSTEM=ls6
 
 APP_ID=${APP_NAME}-${APP_SYSTEM}
@@ -50,6 +50,7 @@ common-scripts:
 	mkdir ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/common_functions.sh ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/provenance_functions.sh ${BUILD_DIR}
+	cp ${SCRIPTS_DIR}/prov_metadata.py ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/process_metadata.py ${BUILD_DIR}
 
 build: clean common-scripts

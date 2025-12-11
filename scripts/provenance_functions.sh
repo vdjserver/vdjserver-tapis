@@ -13,16 +13,70 @@
 #
 
 # ----------------------------------------------------------------------------
-function initProvenance() {
-    # init the old process metadata
-    initProcessMetadata
+# File archiving functions
 
-    # newer prov metadata
-    #initProvMetadata
+function addArchiveFile() {
+    ARCHIVE_FILE_LIST="${ARCHIVE_FILE_LIST} $1"
+}
+
+function gzipFile() {
+    GZIP_FILE_LIST="${GZIP_FILE_LIST} $1"
+}
+
+
+# ----------------------------------------------------------------------------
+# PROVENANCE relationships
+function initProvenance() {
+    if [ -f provenance_output.json ]; then
+        echo "Warning: removing file 'provenance_output.json'.  That filename is reserved." 1>&2
+        rm provenance_output.json
+    fi
+    cp ${analysis_provenance} provenance_output.json
+
+    # collect all output files
+    mkdir ${_tapisJobUUID}
+    ARCHIVE_FILE_LIST=""
+    GZIP_FILE_LIST=""
+}
+
+function wasGeneratedBy(){
+    $PYTHON ./prov_metadata.py --wasGeneratedBy "$1" "$2" "$3" "$4" "$5" provenance_output.json
+    addArchiveFile "$1"
+}
+function wasDerivedFrom(){
+    #Check if the file exists first
+    $PYTHON ./prov_metadata.py --wasDerivedFrom "$1" "$2" "$3" "$4" "$5" provenance_output.json
+    addArchiveFile "$1"
+}
+
+function addCalculation(){
+    $PYTHON ./prov_metadata.py --addCalculation "$1" "$2" provenance_output.json
+}
+
+function used(){
+    $PYTHON ./prov_metadata.py --used "$1" "$2" provenance_output.json
+}
+
+function wasAssociatedWith(){
+    $PYTHON ./prov_metadata.py --wasAssociatedWith "$1" "$2" provenance_output.json
+}
+
+function wasAttributedTo(){
+    $PYTHON ./prov_metadata.py --wasAttributedTo "$1" "$2" provenance_output.json
+}
+
+function getRepertoireForFile(){
+    $PYTHON ./prov_metadata.py --getRepertoireForFile "$1" provenance_output.json
 }
 
 # ----------------------------------------------------------------------------
-# Process workflow metadata
+# AIRR metadata
+function addProcessingStage() {
+    $PYTHON ./airr_metadata.py --processing_stage $1 study_metadata.airr.json
+}
+
+# ----------------------------------------------------------------------------
+# Process workflow metadata - OLD OBSOLETE
 function initProcessMetadata() {
     $PYTHON ./process_metadata.py --init $APP_NAME ${_tapisJobUUID} process_metadata.json
 
@@ -71,24 +125,11 @@ function includeFile() {
     $PYTHON ./process_metadata.py process_metadata.json --include $1
 }
 
-function addArchiveFile() {
-    ARCHIVE_FILE_LIST="${ARCHIVE_FILE_LIST} $1"
-}
-
-function gzipFile() {
-    GZIP_FILE_LIST="${GZIP_FILE_LIST} $1"
-}
-
 function addGroup() {
     $PYTHON ./process_metadata.py --group "$1" "$2" process_metadata.json
 }
 
-function addCalculation() {
-    $PYTHON ./process_metadata.py --calc $1 process_metadata.json
-}
+# function addCalculation() {
+#     $PYTHON ./process_metadata.py --calc $1 process_metadata.json
+# }
 
-# ----------------------------------------------------------------------------
-# AIRR metadata
-function addProcessingStage() {
-    $PYTHON ./airr_metadata.py --processing_stage $1 study_metadata.airr.json
-}

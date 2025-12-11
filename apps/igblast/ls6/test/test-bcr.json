@@ -5,6 +5,7 @@
     "maxMinutes": 30,
     "nodeCount": 1,
     "fileInputs":[
+      { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_igblast_ig.json", "targetPath":"analysis_document_igblast_ig.json" },
       { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/repertoire_metadata_ig.airr.json", "targetPath":"repertoire_metadata_ig.airr.json" }
     ],
     "fileInputArrays":[
@@ -22,7 +23,6 @@
         ],
         "envVariables": [
             {"key": "query", "value": "01.fasta 02.fasta with_dupcount.fasta" },
-            {"key": "repertoires", "value": "1234 3456 5678" },
             {"key": "species", "value": "human" },
             {"key": "locus", "value": "IG" }
         ]

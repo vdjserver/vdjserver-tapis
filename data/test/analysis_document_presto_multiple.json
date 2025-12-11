@@ -1,0 +1,103 @@
+{
+    "uuid": "presto_multiple",
+    "associationIds": [
+        "presto_project_multiple"
+    ],
+    "owner": "vdj",
+    "created": "2025-08-02T10:16:03.101Z",
+    "lastUpdated": "2025-10-24T17:53:59.594Z",
+    "name": "analysis_document",
+    "value": {
+        "entity": {
+            "airr:Repertoire:1fea9299-a371-4c03-9dcc-26c88a884e2c": {
+                "airr:type": "Repertoire",
+                "vdjserver:type": "app:inputs",
+                "vdjserver:uuid": "1fea9299-a371-4c03-9dcc-26c88a884e2c"
+            },
+            "vdjserver:app:parameters:presto": {
+                "vdjserver:type": "app:parameters",
+                "Workflow": "single",
+                "SequenceFileTypes": "illumina",
+                "PreFilterStatisticsFlag": true,
+                "FilterFlag": true,
+                "MinimumQuality": 25,
+                "MinimumLength": 200,
+                "PostFilterStatisticsFlag": true
+            },
+            "vdjserver:app:outputs:presto": {
+                "vdjserver:type": "app:outputs"
+            },
+            "vdjserver:project_file:Merged_40000.fastq": {
+                "vdjserver:type": "app:inputs",
+                "SequenceFiles": "Merged_40000.fastq",
+                "vdjserver:uuid": "uuid432"
+            },
+            "vdjserver:project_file:Merged_2000.fastq": {
+                "vdjserver:type": "app:inputs",
+                "SequenceFiles": "Merged_2000.fastq",
+                "vdjserver:uuid": "uuid433"
+            },
+            "vdjserver:project_file:Merged_400000.fastq.gz": {
+                "vdjserver:type": "app:inputs",
+                "SequenceFiles": "Merged_400000.fastq.gz",
+                "vdjserver:uuid": "uuid434"
+            }
+        },
+        "agent": {},
+        "activity": {
+            "vdjserver:activity:presto": {
+                "vdjserver:app:name": "presto-ls6",
+                "vdjserver:app:version": "0.3",
+                "vdjserver:app:default": true,
+                "prov:startTime": "2025-08-02T10:16:07.484Z",
+                "vdjserver:job": "727aea92-d242-4846-bfd5-55ae6a83c8f5-007",
+                "prov:endTime": "2025-08-02T23:23:44.001211Z"
+            }
+        },
+        "used": {},
+        "wasAttributedTo": {},
+        "wasAssociatedWith": {},
+        "wasDerivedFrom": {},
+        "wasGeneratedBy": {},
+        "uses": {
+            "airr:Repertoire:1fea9299-a371-4c03-9dcc-26c88a884e2c": {
+                "prov:activity": "vdjserver:activity:presto",
+                "prov:entity": "airr:Repertoire:1fea9299-a371-4c03-9dcc-26c88a884e2c"
+            },
+            "vdjserver:app:parameters:presto": {
+                "prov:activity": "vdjserver:activity:presto",
+                "prov:entity": "vdjserver:app:parameters:presto"
+            },
+            "vdjserver:app:inputs:presto:Merged_40000.fastq": {
+                "prov:activity": "vdjserver:activity:presto",
+                "prov:entity": "vdjserver:project_file:Merged_40000.fastq"
+            },
+            "vdjserver:app:inputs:presto:Merged_2000.fastq": {
+                "prov:activity": "vdjserver:activity:presto",
+                "prov:entity": "vdjserver:project_file:Merged_2000.fastq"
+            },
+            "vdjserver:app:inputs:presto:Merged_400000.fastq.gz": {
+                "prov:activity": "vdjserver:activity:presto",
+                "prov:entity": "vdjserver:project_file:Merged_400000.fastq.gz"
+            }
+        },
+        "isAttributedTo": {},
+        "isAssociatedWith": {},
+        "isDerivedFrom": {},
+        "isGeneratedBy": {
+            "vdjserver:app:outputs:presto": {
+                "prov:activity": "vdjserver:activity:presto",
+                "prov:entity": "vdjserver:app:outputs:presto"
+            }
+        },
+        "workflow_name": "Presto",
+        "workflow_mode": "presto",
+        "status": "FINISHED",
+        "status_message": "",
+        "prefix": {
+            "airr": "https://airr-community.org/",
+            "vdjserver": "https://vdjserver.org/"
+        }
+    }
+
+}

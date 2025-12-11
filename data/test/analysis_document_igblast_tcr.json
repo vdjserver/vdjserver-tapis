@@ -1,0 +1,95 @@
+{
+    "uuid": "abc123",
+    "associationIds": [
+        "project123"
+    ],
+    "owner": "vdj",
+    "created": "2025-07-25T18:44:56.266Z",
+    "lastUpdated": "2025-10-24T17:53:59.152Z",
+    "name": "analysis_document",
+    "value": {
+        "entity": {
+            "airr:Repertoire:abc567": {
+                "airr:type": "Repertoire",
+                "vdjserver:type": "app:inputs",
+                "vdjserver:uuid": "abc567"
+            },
+            "airr:Repertoire:abc123": {
+                "airr:type": "Repertoire",
+                "vdjserver:type": "app:inputs",
+                "vdjserver:uuid": "abc123"
+            },
+            "vdjserver:app:parameters:igblast": {
+                "vdjserver:type": "app:parameters",
+                "query": "special_seqs.fasta funky_ids.fasta",
+                "species": "human",
+                "locus": "TR"
+            },
+            "vdjserver:app:outputs:igblast": {
+                "vdjserver:type": "app:outputs"
+            },
+            "vdjserver:project_file:special_seqs.fasta": {
+                "vdjserver:type": "app:inputs",
+                "SequenceFASTQ": "special_seqs.fasta",
+                "airr:Repertoire": "abc123",
+                "vdjserver:uuid": "uuid432"
+            },
+            "vdjserver:project_file:funky_ids.fasta": {
+                "vdjserver:type": "app:inputs",
+                "SequenceFASTQ": "funky_ids.fasta",
+                "airr:Repertoire": "abc567",
+                "vdjserver:uuid": "uuid567"
+            }
+        },
+        "agent": {},
+        "activity": {
+            "vdjserver:activity:igblast": {
+                "vdjserver:app:name": "igblast-ls6",
+                "vdjserver:app:version": "0.7",
+                "vdjserver:app:default": true,
+                "prov:startTime": "2025-07-25T20:20:57.688Z",
+                "vdjserver:job": "job983"
+            }
+        },
+        "used": {},
+        "wasAttributedTo": {},
+        "wasAssociatedWith": {},
+        "wasDerivedFrom": {},
+        "wasGeneratedBy": {},
+        "uses": {
+            "airr:Repertoire:abc567": {
+                "prov:activity": "vdjserver:activity:igblast",
+                "prov:entity": "airr:Repertoire:abc567"
+            },
+            "vdjserver:app:parameters:igblast": {
+                "prov:activity": "vdjserver:activity:igblast",
+                "prov:entity": "vdjserver:app:parameters:igblast"
+            },
+            "vdjserver:app:inputs:igblast:special_seqs.fasta": {
+                "prov:activity": "vdjserver:activity:igblast",
+                "prov:entity": "vdjserver:project_file:special_seqs.fasta"
+            },
+            "vdjserver:app:inputs:igblast:funky_ids.fasta": {
+                "prov:activity": "vdjserver:activity:igblast",
+                "prov:entity": "vdjserver:project_file:funky_ids.fasta"
+            }
+        },
+        "isAttributedTo": {},
+        "isAssociatedWith": {},
+        "isDerivedFrom": {},
+        "isGeneratedBy": {
+            "vdjserver:app:outputs:igblast": {
+                "prov:activity": "vdjserver:activity:igblast",
+                "prov:entity": "vdjserver:app:outputs:igblast"
+            }
+        },
+        "workflow_name": "IgBLAST",
+        "workflow_mode": "igblast",
+        "status": "FINISHED",
+        "status_message": "",
+        "prefix": {
+            "airr": "https://airr-community.org/",
+            "vdjserver": "https://vdjserver.org/"
+        }
+    }
+}

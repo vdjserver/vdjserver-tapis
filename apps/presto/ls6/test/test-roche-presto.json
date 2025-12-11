@@ -1,10 +1,11 @@
 {
     "name": "presto_roche_test",
     "appId": "presto-ls6",
-    "appVersion": "0.1",
-    "maxMinutes":60,
+    "appVersion": "0.3",
+    "maxMinutes":30,
     "nodeCount": 1,
     "fileInputs":[
+      { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_presto_roche.json", "targetPath":"analysis_document_presto_roche.json" },
       { "name":"BarcodeFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/SRR765688_MIDs.txt", "targetPath":"SRR765688_MIDs.txt" },
       { "name":"ForwardPrimerFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/SRX190717_VPrimers.txt", "targetPath":"SRX190717_VPrimers.txt" },
       { "name":"ReversePrimerFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/SRX190717_CPrimers.txt", "targetPath":"SRX190717_CPrimers.txt" }

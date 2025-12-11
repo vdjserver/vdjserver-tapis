@@ -1,12 +1,15 @@
 {
     "name": "takara_tcr_v2_test",
     "appId": "presto-ls6",
-    "appVersion": "0.2",
-    "maxMinutes": 60,
+    "appVersion": "0.3",
+    "maxMinutes": 30,
     "nodeCount": 1,
+    "fileInputs":[
+        { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_presto_takara_tcr_v2.json", "targetPath":"analysis_document_presto_takara_tcr_v2.json" }
+    ],
     "fileInputArrays":[
-      { "name":"SequenceForwardPairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/healthy-171-19-117_S1_L004_R2_001.fastq.gz" ]},
-      { "name":"SequenceReversePairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/healthy-171-19-117_S1_L004_R1_001.fastq.gz" ]}
+        { "name":"SequenceForwardPairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/healthy-171-19-117_S1_L004_R2_001.fastq.gz" ]},
+        { "name":"SequenceReversePairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/healthy-171-19-117_S1_L004_R1_001.fastq.gz" ]}
     ],
     "parameterSet": {
         "schedulerOptions": [
