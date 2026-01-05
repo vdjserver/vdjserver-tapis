@@ -1,7 +1,7 @@
 {
     "name": "repcalc_bcr4_mutations_test",
     "appId": "repcalc2-ls6",
-    "appVersion": "0.1",
+    "appVersion": "0.5",
     "maxMinutes": 180,
     "nodeCount": 4,
     "fileInputs":[
