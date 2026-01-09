@@ -5,10 +5,10 @@
     "maxMinutes": 480,
     "fileInputs":[
       { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_repcalc_bcr.json", "targetPath":"analysis_document_repcalc_bcr.json" },
-      { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/e8bc1523-db4f-432f-9de8-83545d6dc577/analyses/e0021ece-0947-45ce-9b10-d7cc913bdcfd/repertoires.airr.json", "targetPath":"repertoires.airr.json" }
+      { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/e8bc1523-db4f-432f-9de8-83545d6dc577/analyses/2f3f5540-1455-4422-bbd5-371c48c0c024/repertoires.airr.json", "targetPath":"repertoires.airr.json" }
     ],
     "fileInputArrays":[
-      { "name":"JobFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/projects/e8bc1523-db4f-432f-9de8-83545d6dc577/analyses/e0021ece-0947-45ce-9b10-d7cc913bdcfd/5f8aa14b-50d3-4989-9ee6-821e1b565f34-007/5f8aa14b-50d3-4989-9ee6-821e1b565f34-007.zip" ]}
+      { "name":"JobFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/projects/e8bc1523-db4f-432f-9de8-83545d6dc577/analyses/2f3f5540-1455-4422-bbd5-371c48c0c024/1d56a9eb-24b1-4370-adab-bab9f0d291e5-007/1d56a9eb-24b1-4370-adab-bab9f0d291e5-007.zip" ]}
     ],
     "parameterSet": {
         "schedulerOptions": [
@@ -19,7 +19,7 @@
         "appArgs": [
         ],
         "envVariables": [
-            {"key": "JobFiles", "value": "5f8aa14b-50d3-4989-9ee6-821e1b565f34-007.zip" },
+            {"key": "JobFiles", "value": "1d56a9eb-24b1-4370-adab-bab9f0d291e5-007.zip" },
             {"key": "species", "value": "human" },
             {"key": "locus", "value": "IG" },
             {"key": "GeneSegmentFlag", "value": "1" },

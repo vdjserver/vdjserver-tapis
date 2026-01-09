@@ -1,0 +1,553 @@
+{
+    "uuid": "e0021ece-0947-45ce-9b10-d7cc913bdcfd",
+    "name": "analysis_document",
+    "value": {
+      "entity": {
+        "airr:Repertoire:f1a6d379-8200-484e-a3bc-148eec408c20": {
+          "airr:type": "Repertoire",
+          "vdjserver:type": "app:inputs",
+          "vdjserver:uuid": "f1a6d379-8200-484e-a3bc-148eec408c20"
+        },
+        "airr:Repertoire:d1f0aa54-7306-49dc-8b83-46d0e0b292e0": {
+          "airr:type": "Repertoire",
+          "vdjserver:type": "app:inputs",
+          "vdjserver:uuid": "d1f0aa54-7306-49dc-8b83-46d0e0b292e0"
+        },
+        "airr:Repertoire:48ed4e54-a0d3-4bac-a706-6cec13fa54d1": {
+          "airr:type": "Repertoire",
+          "vdjserver:type": "app:inputs",
+          "vdjserver:uuid": "48ed4e54-a0d3-4bac-a706-6cec13fa54d1"
+        },
+        "airr:Repertoire:68ec10cf-d980-4248-a75b-fb66482787b0": {
+          "airr:type": "Repertoire",
+          "vdjserver:type": "app:inputs",
+          "vdjserver:uuid": "68ec10cf-d980-4248-a75b-fb66482787b0"
+        },
+        "airr:Repertoire:34dfb44f-594e-427f-a636-88d9068aa6dd": {
+          "airr:type": "Repertoire",
+          "vdjserver:type": "app:inputs",
+          "vdjserver:uuid": "34dfb44f-594e-427f-a636-88d9068aa6dd"
+        },
+        "airr:Repertoire:3eb05403-c03f-4c23-a47f-a0ae66f4275a": {
+          "airr:type": "Repertoire",
+          "vdjserver:type": "app:inputs",
+          "vdjserver:uuid": "3eb05403-c03f-4c23-a47f-a0ae66f4275a"
+        },
+        "vdjserver:app:parameters:igblast": {
+          "vdjserver:type": "app:parameters",
+          "species": "human",
+          "strain": "",
+          "locus": "IG",
+          "germlineDb": "db.2019.01.23"
+        },
+        "vdjserver:app:parameters:repcalc": {
+        "vdjserver:type": "app:parameters",
+        "JobFiles": "5f8aa14b-50d3-4989-9ee6-821e1b565f34-007.zip",
+        "species": "human",
+        "locus": "IG",
+        "GeneSegmentFlag": true,
+        "CDR3Flag":true,
+        "DiversityFlag":true,
+        "ClonalFlag":true,
+        "LineageFlag":true,
+        "MutationalFlag":true
+        },
+        "vdjserver:app:outputs:igblast": {
+          "vdjserver:type": "app:outputs"
+        },
+        "vdjserver:app:outputs:repcalc": {
+          "vdjserver:type": "app:outputs"
+        },
+        "vdjserver:project_job_file:5f8aa14b-50d3-4989-9ee6-821e1b565f34-007.zip": {
+        "vdjserver:type": "app:inputs",
+        "JobFiles": "5f8aa14b-50d3-4989-9ee6-821e1b565f34-007.zip",
+        "airr:Repertoire": "abc123",
+        "vdjserver:uuid": "uuid432"
+        },
+        "vdjserver:project_file:4518_S41_L001_R1_001.fastq.merged.unique.fasta": {
+          "vdjserver:type": "app:inputs",
+          "query": "4518_S41_L001_R1_001.fastq.merged.unique.fasta",
+          "airr:Repertoire": "f1a6d379-8200-484e-a3bc-148eec408c20",
+          "vdjserver:uuid": "11cf976d-f855-43bc-88fe-70cb73b5401a"
+        },
+        "vdjserver:project_file:4569_S20_L001_R1_001.fastq.merged.unique.fasta": {
+          "vdjserver:type": "app:inputs",
+          "query": "4569_S20_L001_R1_001.fastq.merged.unique.fasta",
+          "airr:Repertoire": "d1f0aa54-7306-49dc-8b83-46d0e0b292e0",
+          "vdjserver:uuid": "44704f60-7d89-45ee-8c20-ef3090c7ee0e"
+        },
+        "vdjserver:project_file:4573_S21_L001_R1_001.fastq.merged.unique.fasta": {
+          "vdjserver:type": "app:inputs",
+          "query": "4573_S21_L001_R1_001.fastq.merged.unique.fasta",
+          "airr:Repertoire": "48ed4e54-a0d3-4bac-a706-6cec13fa54d1",
+          "vdjserver:uuid": "a6902dec-09e7-4388-9a5b-574b4f69963b"
+        },
+        "vdjserver:project_file:4575_S1_L001_R1_001.fastq.merged.unique.fasta": {
+          "vdjserver:type": "app:inputs",
+          "query": "4575_S1_L001_R1_001.fastq.merged.unique.fasta",
+          "airr:Repertoire": "68ec10cf-d980-4248-a75b-fb66482787b0",
+          "vdjserver:uuid": "477fdac5-82d4-46c8-a241-716596d49feb"
+        },
+        "vdjserver:project_file:4587_S42_L001_R1_001.fastq.merged.unique.fasta": {
+          "vdjserver:type": "app:inputs",
+          "query": "4587_S42_L001_R1_001.fastq.merged.unique.fasta",
+          "airr:Repertoire": "34dfb44f-594e-427f-a636-88d9068aa6dd",
+          "vdjserver:uuid": "475f5dae-1e68-43d4-9a12-a62f26d88891"
+        },
+        "vdjserver:project_file:4599_S16_L001_R1_001.fastq.merged.unique.fasta": {
+          "vdjserver:type": "app:inputs",
+          "query": "4599_S16_L001_R1_001.fastq.merged.unique.fasta",
+          "airr:Repertoire": "3eb05403-c03f-4c23-a47f-a0ae66f4275a",
+          "vdjserver:uuid": "a7eeea15-0009-46d3-94c2-9cbf3d0190d9"
+        },
+        "vdjserver:project_job_file:4518_S41_L001_R1_001.fastq.merged.unique.igblast.fail-makedb.airr.tsv": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "airr-fail-makedb",
+          "vdjserver:description": "Change-O MakeDb Failed",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:4569_S20_L001_R1_001.fastq.merged.unique.igblast.fail-makedb.airr.tsv": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "airr-fail-makedb",
+          "vdjserver:description": "Change-O MakeDb Failed",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:4573_S21_L001_R1_001.fastq.merged.unique.igblast.fail-makedb.airr.tsv": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "airr-fail-makedb",
+          "vdjserver:description": "Change-O MakeDb Failed",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:4575_S1_L001_R1_001.fastq.merged.unique.igblast.fail-makedb.airr.tsv": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "airr-fail-makedb",
+          "vdjserver:description": "Change-O MakeDb Failed",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:4587_S42_L001_R1_001.fastq.merged.unique.igblast.fail-makedb.airr.tsv": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "airr-fail-makedb",
+          "vdjserver:description": "Change-O MakeDb Failed",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:4599_S16_L001_R1_001.fastq.merged.unique.igblast.fail-makedb.airr.tsv": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "airr-fail-makedb",
+          "vdjserver:description": "Change-O MakeDb Failed",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:f1a6d379-8200-484e-a3bc-148eec408c20.igblast.airr.tsv.gz": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "vdj_sequence_annotation",
+          "vdjserver:description": "IgBlast AIRR TSV",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:f1a6d379-8200-484e-a3bc-148eec408c20.igblast.makedb.airr.tsv.gz": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "vdj_sequence_annotation",
+          "vdjserver:description": "Change-O MakeDb AIRR TSV",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:d1f0aa54-7306-49dc-8b83-46d0e0b292e0.igblast.airr.tsv.gz": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "vdj_sequence_annotation",
+          "vdjserver:description": "IgBlast AIRR TSV",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:d1f0aa54-7306-49dc-8b83-46d0e0b292e0.igblast.makedb.airr.tsv.gz": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "vdj_sequence_annotation",
+          "vdjserver:description": "Change-O MakeDb AIRR TSV",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:48ed4e54-a0d3-4bac-a706-6cec13fa54d1.igblast.airr.tsv.gz": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "vdj_sequence_annotation",
+          "vdjserver:description": "IgBlast AIRR TSV",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:48ed4e54-a0d3-4bac-a706-6cec13fa54d1.igblast.makedb.airr.tsv.gz": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "vdj_sequence_annotation",
+          "vdjserver:description": "Change-O MakeDb AIRR TSV",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:68ec10cf-d980-4248-a75b-fb66482787b0.igblast.airr.tsv.gz": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "vdj_sequence_annotation",
+          "vdjserver:description": "IgBlast AIRR TSV",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:68ec10cf-d980-4248-a75b-fb66482787b0.igblast.makedb.airr.tsv.gz": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "vdj_sequence_annotation",
+          "vdjserver:description": "Change-O MakeDb AIRR TSV",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:34dfb44f-594e-427f-a636-88d9068aa6dd.igblast.airr.tsv.gz": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "vdj_sequence_annotation",
+          "vdjserver:description": "IgBlast AIRR TSV",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:34dfb44f-594e-427f-a636-88d9068aa6dd.igblast.makedb.airr.tsv.gz": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "vdj_sequence_annotation",
+          "vdjserver:description": "Change-O MakeDb AIRR TSV",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:3eb05403-c03f-4c23-a47f-a0ae66f4275a.igblast.airr.tsv.gz": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "vdj_sequence_annotation",
+          "vdjserver:description": "IgBlast AIRR TSV",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:3eb05403-c03f-4c23-a47f-a0ae66f4275a.igblast.makedb.airr.tsv.gz": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "vdj_sequence_annotation",
+          "vdjserver:description": "Change-O MakeDb AIRR TSV",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:igblast_count_statistics.csv": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "igblast_count_statistics",
+          "vdjserver:description": "IgBlast AIRR TSV Count Statistics",
+          "vdjserver:format": "csv"
+        },
+        "vdjserver:project_job_file:makedb_count_statistics.csv": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "makedb_count_statistics",
+          "vdjserver:description": "Change-O MakeDb AIRR TSV Count Statistics",
+          "vdjserver:format": "csv"
+        },
+        "vdjserver:project_job_file:fail-makedb_count_statistics.csv": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "fail-makedb_count_statistics",
+          "vdjserver:description": "Change-O MakeDb Failed Count Statistics",
+          "vdjserver:format": "csv"
+        },
+        "vdjserver:project_job_file:f1a6d379-8200-484e-a3bc-148eec408c20.igblast.makedb.allele.clone.airr.tsv.gz": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "assigned_clones, allele_clones",
+          "vdjserver:description": "f1a6d379-8200-484e-a3bc-148eec408c20.igblast.makedb Change-O IG Allele Clones",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:f1a6d379-8200-484e-a3bc-148eec408c20.igblast.makedb.gene.clone.airr.tsv.gz": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "assigned_clones, gene_clones",
+          "vdjserver:description": "f1a6d379-8200-484e-a3bc-148eec408c20.igblast.makedb Change-O IG Gene Clones",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:d1f0aa54-7306-49dc-8b83-46d0e0b292e0.igblast.makedb.allele.clone.airr.tsv.gz": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "assigned_clones, allele_clones",
+          "vdjserver:description": "d1f0aa54-7306-49dc-8b83-46d0e0b292e0.igblast.makedb Change-O IG Allele Clones",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:d1f0aa54-7306-49dc-8b83-46d0e0b292e0.igblast.makedb.gene.clone.airr.tsv.gz": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "assigned_clones, gene_clones",
+          "vdjserver:description": "d1f0aa54-7306-49dc-8b83-46d0e0b292e0.igblast.makedb Change-O IG Gene Clones",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:48ed4e54-a0d3-4bac-a706-6cec13fa54d1.igblast.makedb.allele.clone.airr.tsv.gz": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "assigned_clones, allele_clones",
+          "vdjserver:description": "48ed4e54-a0d3-4bac-a706-6cec13fa54d1.igblast.makedb Change-O IG Allele Clones",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:48ed4e54-a0d3-4bac-a706-6cec13fa54d1.igblast.makedb.gene.clone.airr.tsv.gz": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "assigned_clones, gene_clones",
+          "vdjserver:description": "48ed4e54-a0d3-4bac-a706-6cec13fa54d1.igblast.makedb Change-O IG Gene Clones",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:68ec10cf-d980-4248-a75b-fb66482787b0.igblast.makedb.allele.clone.airr.tsv.gz": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "assigned_clones, allele_clones",
+          "vdjserver:description": "68ec10cf-d980-4248-a75b-fb66482787b0.igblast.makedb Change-O IG Allele Clones",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:68ec10cf-d980-4248-a75b-fb66482787b0.igblast.makedb.gene.clone.airr.tsv.gz": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "assigned_clones, gene_clones",
+          "vdjserver:description": "68ec10cf-d980-4248-a75b-fb66482787b0.igblast.makedb Change-O IG Gene Clones",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:34dfb44f-594e-427f-a636-88d9068aa6dd.igblast.makedb.allele.clone.airr.tsv.gz": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "assigned_clones, allele_clones",
+          "vdjserver:description": "34dfb44f-594e-427f-a636-88d9068aa6dd.igblast.makedb Change-O IG Allele Clones",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:34dfb44f-594e-427f-a636-88d9068aa6dd.igblast.makedb.gene.clone.airr.tsv.gz": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "assigned_clones, gene_clones",
+          "vdjserver:description": "34dfb44f-594e-427f-a636-88d9068aa6dd.igblast.makedb Change-O IG Gene Clones",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:3eb05403-c03f-4c23-a47f-a0ae66f4275a.igblast.makedb.allele.clone.airr.tsv.gz": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "assigned_clones, allele_clones",
+          "vdjserver:description": "3eb05403-c03f-4c23-a47f-a0ae66f4275a.igblast.makedb Change-O IG Allele Clones",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:3eb05403-c03f-4c23-a47f-a0ae66f4275a.igblast.makedb.gene.clone.airr.tsv.gz": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "assigned_clones, gene_clones",
+          "vdjserver:description": "3eb05403-c03f-4c23-a47f-a0ae66f4275a.igblast.makedb Change-O IG Gene Clones",
+          "vdjserver:format": "tsv"
+        },
+        "vdjserver:project_job_file:clone_report.csv": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "clone_report",
+          "vdjserver:description": "Clonal Assignment Summary Report",
+          "vdjserver:format": "csv"
+        },
+        "vdjserver:project_job_file:provenance_output.json": {
+          "vdjserver:type": "app:outputs",
+          "vdjserver:tags": "prov",
+          "vdjserver:description": "Analysis Provenance",
+          "vdjserver:format": "json"
+        }
+      },
+      "agent": {},
+      "activity": {
+        "vdjserver:activity:igblast": {
+          "vdjserver:app:name": "igblast-ls6",
+          "vdjserver:app:version": "0.7",
+          "vdjserver:app:default": true,
+          "vdjserver:tags": "vdj_annotation, clonal_assignment"
+        },
+        "vdjserver:activity:repcalc": {
+          "vdjserver:app:name": "repcalc2-ls6",
+          "vdjserver:app:version": "0.6",
+          "vdjserver:app:default": true,
+          "vdjserver:tags": ""
+        }
+      },
+      "used": {},
+      "wasAttributedTo": {},
+      "wasAssociatedWith": {},
+      "wasDerivedFrom": {
+        "4d7178234": {
+          "prov:generatedEntity": "vdjserver:project_job_file:4518_S41_L001_R1_001.fastq.merged.unique.igblast.fail-makedb.airr.tsv",
+          "prov:usedEntity": "vdjserver:project_file:4518_S41_L001_R1_001.fastq.merged.unique.fasta"
+        },
+        "9a252b413": {
+          "prov:generatedEntity": "vdjserver:project_job_file:4569_S20_L001_R1_001.fastq.merged.unique.igblast.fail-makedb.airr.tsv",
+          "prov:usedEntity": "vdjserver:project_file:4569_S20_L001_R1_001.fastq.merged.unique.fasta"
+        },
+        "d7c40b8c4": {
+          "prov:generatedEntity": "vdjserver:project_job_file:4573_S21_L001_R1_001.fastq.merged.unique.igblast.fail-makedb.airr.tsv",
+          "prov:usedEntity": "vdjserver:project_file:4573_S21_L001_R1_001.fastq.merged.unique.fasta"
+        },
+        "edda7d31c": {
+          "prov:generatedEntity": "vdjserver:project_job_file:4575_S1_L001_R1_001.fastq.merged.unique.igblast.fail-makedb.airr.tsv",
+          "prov:usedEntity": "vdjserver:project_file:4575_S1_L001_R1_001.fastq.merged.unique.fasta"
+        },
+        "e88d2579d": {
+          "prov:generatedEntity": "vdjserver:project_job_file:4587_S42_L001_R1_001.fastq.merged.unique.igblast.fail-makedb.airr.tsv",
+          "prov:usedEntity": "vdjserver:project_file:4587_S42_L001_R1_001.fastq.merged.unique.fasta"
+        },
+        "6b2a39239": {
+          "prov:generatedEntity": "vdjserver:project_job_file:4599_S16_L001_R1_001.fastq.merged.unique.igblast.fail-makedb.airr.tsv",
+          "prov:usedEntity": "vdjserver:project_file:4599_S16_L001_R1_001.fastq.merged.unique.fasta"
+        },
+        "7ad242d7b": {
+          "prov:generatedEntity": "vdjserver:project_job_file:f1a6d379-8200-484e-a3bc-148eec408c20.igblast.airr.tsv.gz",
+          "prov:usedEntity": "vdjserver:project_file:4518_S41_L001_R1_001.fastq.merged.unique.fasta"
+        },
+        "45d3ef54f": {
+          "prov:generatedEntity": "vdjserver:project_job_file:f1a6d379-8200-484e-a3bc-148eec408c20.igblast.makedb.airr.tsv.gz",
+          "prov:usedEntity": "vdjserver:project_file:4518_S41_L001_R1_001.fastq.merged.unique.fasta"
+        },
+        "a3d90510f": {
+          "prov:generatedEntity": "vdjserver:project_job_file:d1f0aa54-7306-49dc-8b83-46d0e0b292e0.igblast.airr.tsv.gz",
+          "prov:usedEntity": "vdjserver:project_file:4569_S20_L001_R1_001.fastq.merged.unique.fasta"
+        },
+        "70932e95e": {
+          "prov:generatedEntity": "vdjserver:project_job_file:d1f0aa54-7306-49dc-8b83-46d0e0b292e0.igblast.makedb.airr.tsv.gz",
+          "prov:usedEntity": "vdjserver:project_file:4569_S20_L001_R1_001.fastq.merged.unique.fasta"
+        },
+        "7fa849063": {
+          "prov:generatedEntity": "vdjserver:project_job_file:48ed4e54-a0d3-4bac-a706-6cec13fa54d1.igblast.airr.tsv.gz",
+          "prov:usedEntity": "vdjserver:project_file:4573_S21_L001_R1_001.fastq.merged.unique.fasta"
+        },
+        "4bd07c6cc": {
+          "prov:generatedEntity": "vdjserver:project_job_file:48ed4e54-a0d3-4bac-a706-6cec13fa54d1.igblast.makedb.airr.tsv.gz",
+          "prov:usedEntity": "vdjserver:project_file:4573_S21_L001_R1_001.fastq.merged.unique.fasta"
+        },
+        "0e61ea44d": {
+          "prov:generatedEntity": "vdjserver:project_job_file:68ec10cf-d980-4248-a75b-fb66482787b0.igblast.airr.tsv.gz",
+          "prov:usedEntity": "vdjserver:project_file:4575_S1_L001_R1_001.fastq.merged.unique.fasta"
+        },
+        "e1636800f": {
+          "prov:generatedEntity": "vdjserver:project_job_file:68ec10cf-d980-4248-a75b-fb66482787b0.igblast.makedb.airr.tsv.gz",
+          "prov:usedEntity": "vdjserver:project_file:4575_S1_L001_R1_001.fastq.merged.unique.fasta"
+        },
+        "9a43936cf": {
+          "prov:generatedEntity": "vdjserver:project_job_file:34dfb44f-594e-427f-a636-88d9068aa6dd.igblast.airr.tsv.gz",
+          "prov:usedEntity": "vdjserver:project_file:4587_S42_L001_R1_001.fastq.merged.unique.fasta"
+        },
+        "b95ae2de7": {
+          "prov:generatedEntity": "vdjserver:project_job_file:34dfb44f-594e-427f-a636-88d9068aa6dd.igblast.makedb.airr.tsv.gz",
+          "prov:usedEntity": "vdjserver:project_file:4587_S42_L001_R1_001.fastq.merged.unique.fasta"
+        },
+        "79fad6051": {
+          "prov:generatedEntity": "vdjserver:project_job_file:3eb05403-c03f-4c23-a47f-a0ae66f4275a.igblast.airr.tsv.gz",
+          "prov:usedEntity": "vdjserver:project_file:4599_S16_L001_R1_001.fastq.merged.unique.fasta"
+        },
+        "f608641ac": {
+          "prov:generatedEntity": "vdjserver:project_job_file:3eb05403-c03f-4c23-a47f-a0ae66f4275a.igblast.makedb.airr.tsv.gz",
+          "prov:usedEntity": "vdjserver:project_file:4599_S16_L001_R1_001.fastq.merged.unique.fasta"
+        },
+        "c2805fd70": {
+          "prov:generatedEntity": "vdjserver:project_job_file:f1a6d379-8200-484e-a3bc-148eec408c20.igblast.makedb.allele.clone.airr.tsv.gz",
+          "prov:usedEntity": "vdjserver:project_job_file:f1a6d379-8200-484e-a3bc-148eec408c20.igblast.makedb.airr.tsv.gz"
+        },
+        "6231ed766": {
+          "prov:generatedEntity": "vdjserver:project_job_file:f1a6d379-8200-484e-a3bc-148eec408c20.igblast.makedb.gene.clone.airr.tsv.gz",
+          "prov:usedEntity": "vdjserver:project_job_file:f1a6d379-8200-484e-a3bc-148eec408c20.igblast.makedb.airr.tsv.gz"
+        },
+        "4a4d21018": {
+          "prov:generatedEntity": "vdjserver:project_job_file:d1f0aa54-7306-49dc-8b83-46d0e0b292e0.igblast.makedb.allele.clone.airr.tsv.gz",
+          "prov:usedEntity": "vdjserver:project_job_file:d1f0aa54-7306-49dc-8b83-46d0e0b292e0.igblast.makedb.airr.tsv.gz"
+        },
+        "5099c2efc": {
+          "prov:generatedEntity": "vdjserver:project_job_file:d1f0aa54-7306-49dc-8b83-46d0e0b292e0.igblast.makedb.gene.clone.airr.tsv.gz",
+          "prov:usedEntity": "vdjserver:project_job_file:d1f0aa54-7306-49dc-8b83-46d0e0b292e0.igblast.makedb.airr.tsv.gz"
+        },
+        "322d9cb00": {
+          "prov:generatedEntity": "vdjserver:project_job_file:48ed4e54-a0d3-4bac-a706-6cec13fa54d1.igblast.makedb.allele.clone.airr.tsv.gz",
+          "prov:usedEntity": "vdjserver:project_job_file:48ed4e54-a0d3-4bac-a706-6cec13fa54d1.igblast.makedb.airr.tsv.gz"
+        },
+        "255862f02": {
+          "prov:generatedEntity": "vdjserver:project_job_file:48ed4e54-a0d3-4bac-a706-6cec13fa54d1.igblast.makedb.gene.clone.airr.tsv.gz",
+          "prov:usedEntity": "vdjserver:project_job_file:48ed4e54-a0d3-4bac-a706-6cec13fa54d1.igblast.makedb.airr.tsv.gz"
+        },
+        "e7858a3d8": {
+          "prov:generatedEntity": "vdjserver:project_job_file:68ec10cf-d980-4248-a75b-fb66482787b0.igblast.makedb.allele.clone.airr.tsv.gz",
+          "prov:usedEntity": "vdjserver:project_job_file:68ec10cf-d980-4248-a75b-fb66482787b0.igblast.makedb.airr.tsv.gz"
+        },
+        "584564eeb": {
+          "prov:generatedEntity": "vdjserver:project_job_file:68ec10cf-d980-4248-a75b-fb66482787b0.igblast.makedb.gene.clone.airr.tsv.gz",
+          "prov:usedEntity": "vdjserver:project_job_file:68ec10cf-d980-4248-a75b-fb66482787b0.igblast.makedb.airr.tsv.gz"
+        },
+        "0ecd6053c": {
+          "prov:generatedEntity": "vdjserver:project_job_file:34dfb44f-594e-427f-a636-88d9068aa6dd.igblast.makedb.allele.clone.airr.tsv.gz",
+          "prov:usedEntity": "vdjserver:project_job_file:34dfb44f-594e-427f-a636-88d9068aa6dd.igblast.makedb.airr.tsv.gz"
+        },
+        "b7118005d": {
+          "prov:generatedEntity": "vdjserver:project_job_file:34dfb44f-594e-427f-a636-88d9068aa6dd.igblast.makedb.gene.clone.airr.tsv.gz",
+          "prov:usedEntity": "vdjserver:project_job_file:34dfb44f-594e-427f-a636-88d9068aa6dd.igblast.makedb.airr.tsv.gz"
+        },
+        "2315b07fd": {
+          "prov:generatedEntity": "vdjserver:project_job_file:3eb05403-c03f-4c23-a47f-a0ae66f4275a.igblast.makedb.allele.clone.airr.tsv.gz",
+          "prov:usedEntity": "vdjserver:project_job_file:3eb05403-c03f-4c23-a47f-a0ae66f4275a.igblast.makedb.airr.tsv.gz"
+        },
+        "68e50de6e": {
+          "prov:generatedEntity": "vdjserver:project_job_file:3eb05403-c03f-4c23-a47f-a0ae66f4275a.igblast.makedb.gene.clone.airr.tsv.gz",
+          "prov:usedEntity": "vdjserver:project_job_file:3eb05403-c03f-4c23-a47f-a0ae66f4275a.igblast.makedb.airr.tsv.gz"
+        }
+      },
+      "wasGeneratedBy": {
+        "d65447328": {
+          "prov:entity": "vdjserver:project_job_file:igblast_count_statistics.csv",
+          "prov:activity": "vdjserver:activity:igblast"
+        },
+        "7a821b8ab": {
+          "prov:entity": "vdjserver:project_job_file:makedb_count_statistics.csv",
+          "prov:activity": "vdjserver:activity:igblast"
+        },
+        "f8820f6e3": {
+          "prov:entity": "vdjserver:project_job_file:fail-makedb_count_statistics.csv",
+          "prov:activity": "vdjserver:activity:igblast"
+        },
+        "404ef22b9": {
+          "prov:entity": "vdjserver:project_job_file:clone_report.csv",
+          "prov:activity": "vdjserver:activity:igblast"
+        },
+        "1c205daf8": {
+          "prov:entity": "vdjserver:project_job_file:provenance_output.json",
+          "prov:activity": "vdjserver:activity:igblast"
+        }
+      },
+      "uses": {
+        "airr:Repertoire:f1a6d379-8200-484e-a3bc-148eec408c20": {
+          "prov:activity": "vdjserver:activity:igblast",
+          "prov:entity": "airr:Repertoire:f1a6d379-8200-484e-a3bc-148eec408c20"
+        },
+        "airr:Repertoire:d1f0aa54-7306-49dc-8b83-46d0e0b292e0": {
+          "prov:activity": "vdjserver:activity:igblast",
+          "prov:entity": "airr:Repertoire:d1f0aa54-7306-49dc-8b83-46d0e0b292e0"
+        },
+        "airr:Repertoire:48ed4e54-a0d3-4bac-a706-6cec13fa54d1": {
+          "prov:activity": "vdjserver:activity:igblast",
+          "prov:entity": "airr:Repertoire:48ed4e54-a0d3-4bac-a706-6cec13fa54d1"
+        },
+        "airr:Repertoire:68ec10cf-d980-4248-a75b-fb66482787b0": {
+          "prov:activity": "vdjserver:activity:igblast",
+          "prov:entity": "airr:Repertoire:68ec10cf-d980-4248-a75b-fb66482787b0"
+        },
+        "airr:Repertoire:34dfb44f-594e-427f-a636-88d9068aa6dd": {
+          "prov:activity": "vdjserver:activity:igblast",
+          "prov:entity": "airr:Repertoire:34dfb44f-594e-427f-a636-88d9068aa6dd"
+        },
+        "airr:Repertoire:3eb05403-c03f-4c23-a47f-a0ae66f4275a": {
+          "prov:activity": "vdjserver:activity:igblast",
+          "prov:entity": "airr:Repertoire:3eb05403-c03f-4c23-a47f-a0ae66f4275a"
+        },
+        "vdjserver:app:parameters:igblast": {
+          "prov:activity": "vdjserver:activity:igblast",
+          "prov:entity": "vdjserver:app:parameters:igblast"
+        },
+        "vdjserver:app:inputs:igblast:4518_S41_L001_R1_001.fastq.merged.unique.fasta": {
+          "prov:activity": "vdjserver:activity:igblast",
+          "prov:entity": "vdjserver:project_file:4518_S41_L001_R1_001.fastq.merged.unique.fasta"
+        },
+        "vdjserver:app:inputs:igblast:4569_S20_L001_R1_001.fastq.merged.unique.fasta": {
+          "prov:activity": "vdjserver:activity:igblast",
+          "prov:entity": "vdjserver:project_file:4569_S20_L001_R1_001.fastq.merged.unique.fasta"
+        },
+        "vdjserver:app:inputs:igblast:4573_S21_L001_R1_001.fastq.merged.unique.fasta": {
+          "prov:activity": "vdjserver:activity:igblast",
+          "prov:entity": "vdjserver:project_file:4573_S21_L001_R1_001.fastq.merged.unique.fasta"
+        },
+        "vdjserver:app:inputs:igblast:4575_S1_L001_R1_001.fastq.merged.unique.fasta": {
+          "prov:activity": "vdjserver:activity:igblast",
+          "prov:entity": "vdjserver:project_file:4575_S1_L001_R1_001.fastq.merged.unique.fasta"
+        },
+        "vdjserver:app:inputs:igblast:4587_S42_L001_R1_001.fastq.merged.unique.fasta": {
+          "prov:activity": "vdjserver:activity:igblast",
+          "prov:entity": "vdjserver:project_file:4587_S42_L001_R1_001.fastq.merged.unique.fasta"
+        },
+        "vdjserver:app:inputs:igblast:4599_S16_L001_R1_001.fastq.merged.unique.fasta": {
+          "prov:activity": "vdjserver:activity:igblast",
+          "prov:entity": "vdjserver:project_file:4599_S16_L001_R1_001.fastq.merged.unique.fasta"
+        }
+      },
+      "isAttributedTo": {},
+      "isAssociatedWith": {},
+      "isDerivedFrom": {},
+      "isGeneratedBy": {
+        "vdjserver:app:outputs:igblast": {
+          "prov:activity": "vdjserver:activity:igblast",
+          "prov:entity": "vdjserver:app:outputs:igblast"
+        },
+        "vdjserver:app:outputs:repcalc": {
+          "prov:activity": "vdjserver:activity:repcalc",
+          "prov:entity": "vdjserver:app:outputs:repcalc"
+        }
+      },
+      "workflow_name": "RepCalc",
+      "workflow_mode": "repcalc",
+      "workflow_description": "RepCalc Test Job for Repcalc",
+      "status": "STARTED",
+      "status_message": "",
+      "prefix": {
+        "airr": "https://airr-community.org/",
+        "vdjserver": "https://vdjserver.org/"
+      }
+    }
+  }

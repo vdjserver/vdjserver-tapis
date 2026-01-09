@@ -46,7 +46,7 @@ if [ "$locus" == "TR" ]; then
     setup_germline "db.2019.01.23"
 fi
 if [ "$locus" == "IG" ]; then
-    setup_germline "db.2025.10.31"
+    setup_germline "db.2026.01.09"
 fi
 
 initProvenance

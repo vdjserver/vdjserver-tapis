@@ -17,7 +17,8 @@
         "fileInputArrays":[
           { "name":"germline_archives", "inputMode": "FIXED", "targetDir":".",
             "sourceUrls": [ "tapis://data-storage.vdjserver.org/akc/germlines/db.2019.01.23.tgz",
-                            "tapis://data-storage.vdjserver.org/akc/germlines/db.2025.10.31.tgz" ]},
+                            "tapis://data-storage.vdjserver.org/akc/germlines/db.2025.10.31.tgz",
+                            "tapis://data-storage.vdjserver.org/akc/germlines/db.2026.01.09.tgz"  ]},
           { "name":"JobFiles", "inputMode": "OPTIONAL", "targetDir":"." },
           { "name":"query", "inputMode": "OPTIONAL", "targetDir":"." }
         ],
@@ -31,7 +32,7 @@
             "appArgs": [
             ],
             "envVariables": [
-                {"key": "germline_archives", "inputMode": "FIXED", "value": "db.2019.01.23 db.2025.10.31" },
+                {"key": "germline_archives", "inputMode": "FIXED", "value": "db.2019.01.23 db.2025.10.31 db.2026.01.09" },
                 {"key": "JobFiles", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "query", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "species", "inputMode": "REQUIRED" },
