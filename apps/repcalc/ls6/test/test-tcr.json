@@ -1,11 +1,12 @@
 {
     "name": "repcalc_test_tcr",
     "appId": "repcalc2-ls6",
-    "appVersion": "0.5",
-    "maxMinutes": 120,
+    "appVersion": "0.6",
+    "maxMinutes": 30,
     "nodeCount": 1,
     "fileInputs":[
-      { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/8638731678148465131-242ac117-0001-012/analyses/2023-07-10-21-50-29-56-test-new-igblast/study_metadata.airr.json", "targetPath":"study_metadata.airr.json" }
+      { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_repcalc_tcr.json", "targetPath":"analysis_document_repcalc_tcr.json" },
+      { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/repertoire_metadata_tcr.airr.json", "targetPath":"repertoire_metadata_tcr.airr.json" }
     ],
     "fileInputArrays":[
       { "name":"JobFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/projects/8638731678148465131-242ac117-0001-012/analyses/2023-07-10-21-50-29-56-test-new-igblast/9f5621d5-558e-4f04-abc6-498ecf885605-007.zip" ]}

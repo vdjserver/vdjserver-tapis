@@ -1,7 +1,7 @@
 # helper commands for tapis v3 apps
 
 APP_NAME=repcalc2
-APP_VERSION=0.5
+APP_VERSION=0.6
 APP_SYSTEM=ls6
 
 APP_ID=${APP_NAME}-${APP_SYSTEM}
@@ -52,7 +52,7 @@ common-scripts:
 	cp ${SCRIPTS_DIR}/common_functions.sh ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/provenance_functions.sh ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/airr_metadata.py ${BUILD_DIR}
-	cp ${SCRIPTS_DIR}/process_metadata.py ${BUILD_DIR}
+	cp ${SCRIPTS_DIR}/prov_metadata.py ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/repcalc_create_config.py ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/parse_changeo.py ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/gene_usage_template.json ${BUILD_DIR}

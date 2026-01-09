@@ -86,48 +86,59 @@ function initProcessMetadata() {
     GZIP_FILE_LIST=""
 }
 
-function addLogFile() {
-    $PYTHON ./process_metadata.py --entry log "$1" "$2" "$3" "$4" "$5" "$6" "$7" process_metadata.json
-    ARCHIVE_FILE_LIST="${ARCHIVE_FILE_LIST} $4"
-}
+# function addLogFile() {
+#     $PYTHON ./process_metadata.py --entry log "$1" "$2" "$3" "$4" "$5" "$6" "$7" process_metadata.json
+#     ARCHIVE_FILE_LIST="${ARCHIVE_FILE_LIST} $4"
+# }
 
-function addConfigFile() {
-    $PYTHON ./process_metadata.py --entry config "$1" "$2" "$3" "$4" "$5" "$6" "$7" process_metadata.json
-}
+# function addConfigFile() {
+#     $PYTHON ./process_metadata.py --entry config "$1" "$2" "$3" "$4" "$5" "$6" "$7" process_metadata.json
+# }
 
-function addStatisticsFile() {
-    $PYTHON ./process_metadata.py --entry statistics "$1" "$2" "$3" "$4" "$5" "$6" "$7" process_metadata.json
-    ARCHIVE_FILE_LIST="${ARCHIVE_FILE_LIST} $4"
-}
+# function addStatisticsFile() {
+#     $PYTHON ./process_metadata.py --entry statistics "$1" "$2" "$3" "$4" "$5" "$6" "$7" process_metadata.json
+#     ARCHIVE_FILE_LIST="${ARCHIVE_FILE_LIST} $4"
+# }
 
-function addOutputFile() {
-    $PYTHON ./process_metadata.py --entry output "$1" "$2" "$3" "$4" "$5" "$6" "$7" process_metadata.json
-    # add file to list to be archived
-    ARCHIVE_FILE_LIST="${ARCHIVE_FILE_LIST} $4"
-}
+# function addOutputFile() {
+#     $PYTHON ./process_metadata.py --entry output "$1" "$2" "$3" "$4" "$5" "$6" "$7" process_metadata.json
+#     # add file to list to be archived
+#     ARCHIVE_FILE_LIST="${ARCHIVE_FILE_LIST} $4"
+# }
 
 function initEntryFile() {
-    echo "entryType,group,name,key,value,description,fileType,derivedFrom" > $1
+    echo "generatedEntity,usedEntity,tags,description,format_type" > $1
+}
+
+function initGroupEntryFile() {
+    echo "entity,activity_key,tags,description,format_type" > $1
 }
 
 function addEntryToFile() {
-    echo "$2,$3,$4,$5,$6,$7,$8,$9" >> $1
+    echo "$3,$4,$5,$6,$7" >> $1
     if [ "$2" == "output" ]; then
-        ARCHIVE_FILE_LIST="${ARCHIVE_FILE_LIST} $6"
+        ARCHIVE_FILE_LIST="${ARCHIVE_FILE_LIST} $3"
     fi
 }
 
+# function addFileEntries() {
+#     $PYTHON ./process_metadata.py --fileEntries "$1" process_metadata.json
+# }
 function addFileEntries() {
-    $PYTHON ./process_metadata.py --fileEntries "$1" process_metadata.json
+    $PYTHON ./prov_metadata.py --fileEntries "$1" provenance_output.json
 }
 
-function includeFile() {
-    $PYTHON ./process_metadata.py process_metadata.json --include $1
+function addGroupFileEntries() {
+    $PYTHON ./prov_metadata.py --groupFileEntries "$1" provenance_output.json
 }
 
-function addGroup() {
-    $PYTHON ./process_metadata.py --group "$1" "$2" process_metadata.json
-}
+# function includeFile() {
+#     $PYTHON ./process_metadata.py process_metadata.json --include $1
+# }
+
+# function addGroup() {
+#     $PYTHON ./process_metadata.py --group "$1" "$2" process_metadata.json
+# }
 
 # function addCalculation() {
 #     $PYTHON ./process_metadata.py --calc $1 process_metadata.json
