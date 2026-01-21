@@ -6,11 +6,6 @@ import sys
 import argparse
 from Bio import SeqIO
 
-
-species_short = sys.argv[1]
-base_dir = sys.argv[2]
-
-
 def mergeAirrJson(species_short, base_dir):
     # Look for germline JSON files (modify path if needed)
     json_files = glob.glob(f"{base_dir}/ReferenceDirectorySet/*_germline.airr.json")
@@ -60,16 +55,38 @@ def geneExistence(base_dir):
     print("Only in JSON:", sorted(only_in_json))
 
     
+# # Remove Alleles that has _SC in them
+# def removeSCGgenes(base_dir):
+#     kept = 0
+#     removed = 0
+#     input_fna = f'{base_dir}/IG_VDJ.fna'
+#     output_fna = f'{base_dir}/IG_VDJ_updated.fna'
+#     with open(output_fna, "w") as out_handle:
+#         for record in SeqIO.parse(input_fna, "fasta"):
+#             gene = record.id
+#             if gene.endswith("_SC"):
+#                 removed += 1
+#                 continue
+#             SeqIO.write(record, out_handle, "fasta")
+#             kept += 1
+
+#     print(f"Kept records: {kept}")
+#     print(f"Removed _SC records: {removed}")
+    
+    
+    
 # Remove Alleles that has _SC in them
-def removeSCGgenes(base_dir):
+def removeSCGgenes(species_short, base_dir):
     kept = 0
     removed = 0
-    input_fna = f'{base_dir}/IG_VDJ.fna'
-    output_fna = f'{base_dir}/IG_VDJ_updated.fna'
+    input_fna = f'{base_dir}/{species_short}_IGH_C.fasta'
+    output_fna = f'{base_dir}/{species_short}_IGH_C_updated.fasta'
     with open(output_fna, "w") as out_handle:
         for record in SeqIO.parse(input_fna, "fasta"):
             gene = record.id
+            #remove all genes that has underscore in it
             if gene.endswith("_SC"):
+            # if "_" in gene:
                 removed += 1
                 continue
             SeqIO.write(record, out_handle, "fasta")
@@ -83,7 +100,7 @@ if (__name__=="__main__"):
     parser = argparse.ArgumentParser(description='Functions for merging and checking the airr json files.')
     parser.add_argument('--mergeAirrJson', help='Merge Airr Json Files', nargs=2, metavar=('species_short', 'base_dir'))
     parser.add_argument('--geneExistence', help='Check if genes exists in both IG_VDJ and airr json files', nargs=1, metavar=('base_dir'))
-    parser.add_argument('--removeSCGgenes', help='Remove _SC genes from IG_VDJ file', nargs=1, metavar=('base_dir'))
+    parser.add_argument('--removeSCGgenes', help='Remove _SC genes from the file', nargs=2, metavar=('species_short', 'base_dir'))
 
     args = parser.parse_args()
 
@@ -93,4 +110,4 @@ if (__name__=="__main__"):
         if args.geneExistence:
             metadata = geneExistence(args.geneExistence[0])
         if args.removeSCGgenes:
-            metadata = removeSCGgenes(args.removeSCGgenes[0])
+            metadata = removeSCGgenes(args.removeSCGgenes[0], args.removeSCGgenes[1])

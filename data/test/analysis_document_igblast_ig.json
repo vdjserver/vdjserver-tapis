@@ -24,11 +24,16 @@
                 "vdjserver:type": "app:inputs",
                 "vdjserver:uuid": "5678"
             },
+            "airr:Repertoire:78910": {
+                "airr:type": "Repertoire",
+                "vdjserver:type": "app:inputs",
+                "vdjserver:uuid": "78910"
+            },
             "vdjserver:app:parameters:igblast": {
                 "vdjserver:type": "app:parameters",
-                "query": "special_seqs.fasta funky_ids.fasta",
+                "query": "01.fasta 02.fasta with_dupcount.fasta HD13M.fasta",
                 "species": "human",
-                "locus": "TR"
+                "locus": "IG"
             },
             "vdjserver:app:outputs:igblast": {
                 "vdjserver:type": "app:outputs"
@@ -50,6 +55,12 @@
                 "SequenceFASTQ": "with_dupcount.fasta",
                 "airr:Repertoire": "5678",
                 "vdjserver:uuid": "uuid5678"
+            },
+            "vdjserver:project_file:HD13M.fasta": {
+                "vdjserver:type": "app:inputs",
+                "SequenceFASTQ": "HD13M.fasta",
+                "airr:Repertoire": "78910",
+                "vdjserver:uuid": "uuid56789"
             }
         },
         "agent": {},
@@ -59,7 +70,7 @@
                 "vdjserver:app:version": "0.7",
                 "vdjserver:app:default": true,
                 "prov:startTime": "2025-07-25T20:20:57.688Z",
-                "vdjserver:job": "job983"
+                "vdjserver:job": "job9839"
             }
         },
         "used": {},
@@ -87,6 +98,10 @@
             "vdjserver:app:inputs:igblast:with_dupcount.fasta": {
                 "prov:activity": "vdjserver:activity:igblast",
                 "prov:entity": "vdjserver:project_file:with_dupcount.fasta"
+            },
+            "vdjserver:app:inputs:igblast:HD13M.fasta": {
+                "prov:activity": "vdjserver:activity:igblast",
+                "prov:entity": "vdjserver:project_file:HD13M.fasta"
             }
         },
         "isAttributedTo": {},

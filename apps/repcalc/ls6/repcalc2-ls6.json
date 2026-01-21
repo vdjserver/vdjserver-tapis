@@ -11,7 +11,6 @@
         "execSystemId": "test-ls6.tacc.utexas.edu",
         "fileInputs":[
           { "name":"repcalc_image", "inputMode": "FIXED", "envKey":"repcalc_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/repcalc-v2.2-imm4.4.sif", "targetPath":"repcalc-v2.2-imm4.4.sif" },
-          { "name":"germline_archive", "inputMode": "FIXED", "envKey":"germline_archive", "sourceUrl":"tapis://data-storage.vdjserver.org/akc/germlines/db.2019.01.23.tgz", "targetPath":"db.2019.01.23.tgz" },
           { "name":"analysis_provenance", "inputMode": "REQUIRED", "envKey":"analysis_provenance", "targetPath":"." },
           { "name":"AIRRMetadata", "inputMode": "REQUIRED", "envKey":"AIRRMetadata", "targetPath":"." },
           { "name":"RepertoireGroupMetadata", "inputMode": "OPTIONAL", "envKey":"RepertoireGroupMetadata", "targetPath":"." }
@@ -20,7 +19,7 @@
          {  "name":"germline_archives", "inputMode": "FIXED", "targetDir":".",
             "sourceUrls": [ "tapis://data-storage.vdjserver.org/akc/germlines/db.2019.01.23.tgz",
                         "tapis://data-storage.vdjserver.org/akc/germlines/db.2025.10.31.tgz",
-                        "tapis://data-storage.vdjserver.org/akc/germlines/db.2026.01.09.tgz"]},
+                        "tapis://data-storage.vdjserver.org/akc/germlines/db.2026.01.12.tgz"]},
           { "name":"JobFiles", "inputMode": "OPTIONAL", "envKey":"JobFiles", "targetDir":"." },
           { "name":"AIRRFiles", "inputMode": "OPTIONAL", "envKey":"AIRRFiles", "targetDir":"." }
         ],

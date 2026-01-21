@@ -38,11 +38,11 @@
           "species": "human",
           "strain": "",
           "locus": "IG",
-          "germlineDb": "db.2019.01.23"
+          "germlineDb": "db.2026.01.12"
         },
         "vdjserver:app:parameters:repcalc": {
         "vdjserver:type": "app:parameters",
-        "JobFiles": "5f8aa14b-50d3-4989-9ee6-821e1b565f34-007.zip",
+        "JobFiles": "3aafc644-0be4-47ce-a3a8-001292866eb1-007.zip",
         "species": "human",
         "locus": "IG",
         "GeneSegmentFlag": true,
@@ -58,9 +58,9 @@
         "vdjserver:app:outputs:repcalc": {
           "vdjserver:type": "app:outputs"
         },
-        "vdjserver:project_job_file:5f8aa14b-50d3-4989-9ee6-821e1b565f34-007.zip": {
+        "vdjserver:project_job_file:3aafc644-0be4-47ce-a3a8-001292866eb1-007.zip": {
         "vdjserver:type": "app:inputs",
-        "JobFiles": "5f8aa14b-50d3-4989-9ee6-821e1b565f34-007.zip",
+        "JobFiles": "3aafc644-0be4-47ce-a3a8-001292866eb1-007.zip",
         "airr:Repertoire": "abc123",
         "vdjserver:uuid": "uuid432"
         },

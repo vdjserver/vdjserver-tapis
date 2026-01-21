@@ -11,7 +11,8 @@
     "fileInputArrays":[
       { "name":"query", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/01.fasta",
                                         "tapis://data-storage.vdjserver.org/apps/data/test/02.fasta",
-                                        "tapis://data-storage.vdjserver.org/apps/data/test/with_dupcount.fasta" ]}
+                                        "tapis://data-storage.vdjserver.org/apps/data/test/with_dupcount.fasta",
+                                        "tapis://data-storage.vdjserver.org/apps/data/test/HD13M.fasta" ]}
     ],
     "parameterSet": {
         "schedulerOptions": [
@@ -22,7 +23,7 @@
         "appArgs": [
         ],
         "envVariables": [
-            {"key": "query", "value": "01.fasta 02.fasta with_dupcount.fasta" },
+            {"key": "query", "value": "01.fasta 02.fasta with_dupcount.fasta HD13M.fasta" },
             {"key": "species", "value": "human" },
             {"key": "locus", "value": "IG" }
         ]

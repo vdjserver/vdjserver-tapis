@@ -19,9 +19,11 @@ if [[ -z "$species_short" ]]; then
 fi
 
 # Set variables for database name, loci and segments
-database_root="/data/db.2026.01.09"
+database_root="/data/db.2026.01.12"
 loci=("IGH" "IGK" "IGL")
 segments=("V" "D" "J" "C")
+# segments=("V" "D" "J")
+
 
 # Set Paths
 germline_dir="${database_root}/germline/${species_short}/ReferenceDirectorySet"
@@ -29,17 +31,18 @@ mkdir -p "$germline_dir"
 
 
 # Install this package for data download.
-# pip install --quiet receptor-utils
+pip install --quiet receptor-utils
 # pip install git+https://github.com/williamdlees/receptor_utils.git
 
 # Download the germline data from orgdb
 for locus in "${loci[@]}"; do
     echo "Downloading $species $locus into $germline_dir..."
-    echo "Processing Locus = $locus"
     cd "$germline_dir"
     if [[ $locus == "IGH" ]]; then
-        download_germline_set "$species" "$locus" -n IGH_VDJ -f MULTI-IGBLAST -p "${species_short}_${locus}_"
+        # Download C genes first otherwise it overrides the aux and ndm file for IGH
         download_germline_set "$species" "$locus" -n IGHC -f MULTI-IGBLAST -p "${species_short}_${locus}_"
+        download_germline_set "$species" "$locus" -n IGH_VDJ -f MULTI-IGBLAST -p "${species_short}_${locus}_"
+        
         #download the json file
         download_germline_set "$species" "$locus" -n IGH_VDJ -f AIRRC-JSON -p "${species_short}_${locus}_VDJ_vdjserver_germline.airr"
         download_germline_set "$species" "$locus" -n IGHC -f AIRRC-JSON -p "${species_short}_${locus}C_vdjserver_germline.airr"
@@ -50,7 +53,20 @@ for locus in "${loci[@]}"; do
 done
 
 echo "Germline dataset download — complete!"
+cd /data
+# Combine All downloaded AIRR JSON files into one
+echo "Combine all germline JSON files into a single file and put them up a directory!"
+airr_json_dir="${database_root}/germline/${species_short}"
+python combine_airr_json.py --mergeAirrJson "$species_short" "$airr_json_dir"
 
+echo "Removing all json files from germline directory."
+rm "${germline_dir}/"*_germline.airr.json
+
+#Remove _SC alleles as they do not appear in the airr json file yet.
+echo "Remove All _SC alleles from ${species_short}_IGH_C.fna!"
+python combine_airr_json.py --removeSCGgenes "$species_short" "$germline_dir"
+#rename the updated file to the old file
+mv -f "${germline_dir}/${species_short}_IGH_C_updated.fasta" "${germline_dir}/${species_short}_IGH_C.fasta"
 # Combine downloaded fasta files for each segment (V, D, J) across loci into one .fna file in the same directory
 
 for segment in "${segments[@]}"; do
@@ -84,6 +100,9 @@ for locus in "${loci[@]}"; do
 done
 echo "Gapped V segments are merging complete!"
 
+## Create VDJ and C files here as C is added later. Not changing the file name though.
+# segments=("V" "D" "J")
+
 # Build IG_VDJ.fna. Combine fna files to create IG_VDJ.fna with gapped files. Combine IG_V_Gapped with others D and J.
 vdj_file="${germline_dir}/IG_VDJ.fna"
 > "$vdj_file"  # create or empty the combined file
@@ -102,6 +121,11 @@ for segment in "${segments[@]}"; do
 done
 echo "IG_VDJ.fna creation complete!"
 
+# Final check on IG_VDJ.fna and vs vdjserver_germline.airr.json for inconsistencies
+echo "CHECK Allele existenece between IG_VDJ and AIRR json file!"
+airr_json_dir="${database_root}/germline/${species_short}"
+python combine_airr_json.py --geneExistence "$airr_json_dir" 
+
 # Merge .aux and .ndm files across loci
 combined_base="${germline_dir}/${species_short}_IG"
 for ext in aux ndm; do
@@ -113,10 +137,10 @@ for ext in aux ndm; do
 
         if [[ -f "$src_file" ]]; then
             if [[ ! -s "$combined_file" ]]; then
-                # First file → include header
+                # First file - include header
                 cat "$src_file" >> "$combined_file"
             else
-                # Subsequent files → skip header (first line)
+                # Subsequent files - skip header (first line)
                 tail -n +2 "$src_file" >> "$combined_file"
             fi
         else
@@ -141,31 +165,15 @@ done
 
 echo "Download, combine, and BLAST DB creation complete!"
 
-cd /data
-# Combine All downloaded AIRR JSON files into one
-echo "Combine all germline JSON files into a single file and put them up a directory!"
-airr_json_dir="${database_root}/germline/${species_short}"
-python combine_airr_json.py --mergeAirrJson "$species_short" "$airr_json_dir"
-
-#Remove _SC alleles as they do not appear in the airr json file yet.
-echo "Remove All _SC alleles from IG_VDJ!"
-python combine_airr_json.py --removeSCGgenes "$germline_dir"
-#rename the updated file to the old file
-mv -f "${germline_dir}/IG_VDJ_updated.fna" "${germline_dir}/IG_VDJ.fna"
-
-# Final check on IG_VDJ.fna and vs vdjserver_germline.airr.json for inconsistencies
-echo "CHECK Allele existenece between IG_VDJ and AIRR json file!"
-airr_json_dir="${database_root}/germline/${species_short}"
-python combine_airr_json.py --geneExistence "$airr_json_dir" 
-
-
 # Copy internal_data dir and keep in base directory
 echo "Copy internal data folder and keep it in base directory !"
 internal_data_dir="/usr/local/share/igblast/internal_data"
+optional_data_dir="/usr/local/share/igblast/optional_file"
 dest="$database_root"
 echo "Copying internal_data folders to $dest..."
 cp -r "$internal_data_dir" "$dest"
-echo "internal_data folder copy complete."
+cp -r "$optional_data_dir" "$dest"
+echo "internal_data and optional_file folder copy complete."
 
 
 # Archive the whole folder into .tgz format
