@@ -62,8 +62,15 @@ function run_igblast_workflow() {
     for file in $JobFiles; do
         if [ -f $file ]; then
             expandfile $file
+
+            # copy files that will be processed
+            fileBasename="${file%.*}" # test/file.fasta -> test/file
+            for file2 in $query; do
+                if [ -f $fileBasename/$file2 ]; then
+                    cp $fileBasename/$file2 .
+                fi
+            done
         fi
-        # TODO: we should copy some files out of job subdirectory into current working directory
     done
 
     # launcher job file
