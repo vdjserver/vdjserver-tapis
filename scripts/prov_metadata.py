@@ -51,10 +51,13 @@ def wasDerivedFrom(metadata, generatedEntity, usedEntity, tags, description, for
         generated_key = "vdjserver:project_job_file:" + generatedEntity
         generated = {
             "vdjserver:type": "app:outputs",
+            "vdjserver:project_job_file": generatedEntity,
             "vdjserver:tags": tags,
             "vdjserver:description": description,
             "vdjserver:format": format_type
         }
+        if used.get('airr:Repertoire'):
+            generated['airr:Repertoire'] = used['airr:Repertoire']
         entities[generated_key] = generated
 
     # Add wasDerivedFrom relation
@@ -92,6 +95,7 @@ def wasGeneratedBy(metadata, entity, activity_key, tags, description, format_typ
         generated_key = "vdjserver:project_job_file:" + entity
         generated = {
             "vdjserver:type": "app:outputs",
+            "vdjserver:project_job_file": entity,
             "vdjserver:tags": tags,
             "vdjserver:description": description,
             "vdjserver:format": format_type
