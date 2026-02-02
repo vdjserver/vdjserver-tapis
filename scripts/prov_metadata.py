@@ -157,12 +157,12 @@ def getRepertoireForFile(metadata, filename):
         # print repertoire_id
         print(used.get('airr:Repertoire'))
         
-def fileEntries(metadata, filename):
+def addWasDerivedFrom(metadata, filename):
     entry_file = csv.DictReader(open(filename, 'r'))
     for row in entry_file:
         wasDerivedFrom(metadata, row['generatedEntity'], row['usedEntity'], row['tags'], row['description'], row['format_type'])
 
-def groupFileEntries(metadata, filename):
+def addWasGeneratedBy(metadata, filename):
     entry_file = csv.DictReader(open(filename, 'r'))
     for row in entry_file:
         wasGeneratedBy(metadata, row['entity'], row['activity_key'], row['tags'], row['description'], row['format_type'])
@@ -174,8 +174,8 @@ if (__name__=="__main__"):
     parser.add_argument('--wasDerivedFrom', help='Add wasDerivedFrom relation', nargs=5, metavar=('generatedEntity', 'usedEntity', 'tags', 'description', 'format'))
     parser.add_argument('--addCalculation', help='Add calculation tags', nargs=2, metavar=('activity', 'tags'))
     parser.add_argument('--getRepertoireForFile', help='Get repertoire ID for file', nargs=1, metavar=('filename'))
-    parser.add_argument('--fileEntries', help='Add prov entries from file', nargs=1, metavar=('filename'))
-    parser.add_argument('--groupFileEntries', help='Add prov entries from file', nargs=1, metavar=('filename'))
+    parser.add_argument('--addWasDerivedFrom', help='Add wasDerivedFrom prov entries from file', nargs=1, metavar=('filename'))
+    parser.add_argument('--addWasGeneratedBy', help='Add wasGeneratedBy prov entries from file', nargs=1, metavar=('filename'))
     
     #parser.add_argument('--used', help='Add used relation', nargs=2, metavar=('activity', 'entity'))
     #parser.add_argument('--wasAssociatedWith', help='Add wasAssociatedWith relation', nargs=2, metavar=('activity', 'agent'))
@@ -200,11 +200,11 @@ if (__name__=="__main__"):
         if args.getRepertoireForFile:
             getRepertoireForFile(metadata, args.getRepertoireForFile[0])
             
-        if args.fileEntries:
-            fileEntries(metadata, args.fileEntries[0])
+        if args.addWasDerivedFrom:
+            addWasDerivedFrom(metadata, args.addWasDerivedFrom[0])
             
-        if args.groupFileEntries:
-            fileEntries(metadata, args.groupFileEntries[0])
+        if args.addWasGeneratedBy:
+            addWasGeneratedBy(metadata, args.addWasGeneratedBy[0])
             
 
         # save the json

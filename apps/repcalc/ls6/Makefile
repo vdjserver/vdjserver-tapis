@@ -75,7 +75,6 @@ build: clean common-scripts
 	cp ${APP_JSON} ${BUILD_DIR}
 	cp tapisjob_app.sh ${BUILD_DIR}
 	cp repcalc_common.sh ${BUILD_DIR}
-	cp get_parameter.py ${BUILD_DIR}
 	tar zcf ${APP_ARCHIVE} -C ${BUILD_DIR} .
 
 deploy: build

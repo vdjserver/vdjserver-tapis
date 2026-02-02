@@ -69,6 +69,35 @@ function getRepertoireForFile(){
     $PYTHON ./prov_metadata.py --getRepertoireForFile "$1" provenance_output.json
 }
 
+#
+# Bulk provenance entries
+#
+
+# bulk file for wasDerivedFrom relations
+function initEntryFile() {
+    echo "generatedEntity,usedEntity,tags,description,format_type" > $1
+}
+
+function initGroupEntryFile() {
+    echo "entity,activity_key,tags,description,format_type" > $1
+}
+
+function addEntryToFile() {
+    echo "$3,$4,$5,$6,$7" >> $1
+    if [ "$2" == "output" ]; then
+        addArchiveFile "$3"
+    fi
+}
+
+function addFileEntries() {
+    $PYTHON ./prov_metadata.py --addWasDerivedFrom "$1" provenance_output.json
+}
+
+function addGroupFileEntries() {
+    $PYTHON ./prov_metadata.py --addWasGeneratedBy "$1" provenance_output.json
+}
+
+
 # ----------------------------------------------------------------------------
 # AIRR metadata
 function addProcessingStage() {
@@ -77,14 +106,14 @@ function addProcessingStage() {
 
 # ----------------------------------------------------------------------------
 # Process workflow metadata - OLD OBSOLETE
-function initProcessMetadata() {
-    $PYTHON ./process_metadata.py --init $APP_NAME ${_tapisJobUUID} process_metadata.json
+#function initProcessMetadata() {
+#    $PYTHON ./process_metadata.py --init $APP_NAME ${_tapisJobUUID} process_metadata.json
 
     # collect all output files
-    mkdir ${_tapisJobUUID}
-    ARCHIVE_FILE_LIST=""
-    GZIP_FILE_LIST=""
-}
+#    mkdir ${_tapisJobUUID}
+#    ARCHIVE_FILE_LIST=""
+#    GZIP_FILE_LIST=""
+#}
 
 # function addLogFile() {
 #     $PYTHON ./process_metadata.py --entry log "$1" "$2" "$3" "$4" "$5" "$6" "$7" process_metadata.json
@@ -106,32 +135,9 @@ function initProcessMetadata() {
 #     ARCHIVE_FILE_LIST="${ARCHIVE_FILE_LIST} $4"
 # }
 
-function initEntryFile() {
-    echo "generatedEntity,usedEntity,tags,description,format_type" > $1
-}
-
-function initGroupEntryFile() {
-    echo "entity,activity_key,tags,description,format_type" > $1
-}
-
-function addEntryToFile() {
-    echo "$3,$4,$5,$6,$7" >> $1
-    if [ "$2" == "output" ]; then
-        ARCHIVE_FILE_LIST="${ARCHIVE_FILE_LIST} $3"
-    fi
-}
-
 # function addFileEntries() {
 #     $PYTHON ./process_metadata.py --fileEntries "$1" process_metadata.json
 # }
-function addFileEntries() {
-    $PYTHON ./prov_metadata.py --fileEntries "$1" provenance_output.json
-}
-
-function addGroupFileEntries() {
-    $PYTHON ./prov_metadata.py --groupFileEntries "$1" provenance_output.json
-}
-
 # function includeFile() {
 #     $PYTHON ./process_metadata.py process_metadata.json --include $1
 # }
