@@ -41,7 +41,15 @@ printf "START at $(date)\n\n"
 export JOB_ERROR=0
 
 #gather_secondary_inputs
-setup_germline "db.2019.01.23"
+
+if [ "$locus" == "TR" ]; then
+    setup_germline "db.2019.01.23"
+fi
+if [ "$locus" == "IG" ]; then
+    setup_germline "db.2026.01.12"
+fi
+
+initProvenance
 print_parameters
 print_versions
 run_repcalc_workflow

@@ -3,7 +3,7 @@ Run the docker command and then use run the **build_human_IG_germline_db.sh** fi
 
 ```
 docker run -it -v $(pwd):/data:z immcantation/suite:4.5.0 bash
-./build_human_IG_germline_db.sh
+./build_human_IG_germline_db_v2.sh
 ```
 This will create and save the database archive as: **db.2025.10.31.tgz**
 ---

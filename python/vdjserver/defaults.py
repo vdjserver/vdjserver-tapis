@@ -40,8 +40,10 @@ tapis_host = "vdjserver.tapis.io"
 
 ## Change vdj server default host here
 vdj_host = "vdj-staging.tacc.utexas.edu"
+if os.environ.get('vdj_default_host'):
+    vdj_host = os.environ['vdj_default_host']
 
-if os.environ['tapis_default_host']:
+if os.environ.get('tapis_default_host'):
     tapis_host = os.environ['tapis_default_host']
 
 def vdjserver_token(token):

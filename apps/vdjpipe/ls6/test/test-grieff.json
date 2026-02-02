@@ -1,10 +1,11 @@
 {
     "name": "vdjpipe_grieff_test",
     "appId": "vdjpipe-ls6",
-    "appVersion": "0.1",
+    "appVersion": "0.3",
     "maxMinutes":60,
     "nodeCount": 1,
     "fileInputs":[
+      { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_vdjpipe_grieff.json", "targetPath":"analysis_document_vdjpipe_grieff.json" },
       { "name":"ForwardPrimerFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/Greiff2014_VPrimers.fasta", "targetPath":"Greiff2014_VPrimers.fasta" },
       { "name":"ReversePrimerFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/Greiff2014_CPrimers_rev.fasta", "targetPath":"Greiff2014_CPrimers_rev.fasta" }
     ],
@@ -24,10 +25,6 @@
             {"key": "Workflow", "value": "paired" },
             {"key": "SequenceForwardPairedFiles", "value": "ERR346600_2.fastq" },
             {"key": "SequenceReversePairedFiles", "value": "ERR346600_1.fastq" },
-            {"key": "SequenceForwardPairedFilesMetadata", "value": "1234" },
-            {"key": "SequenceReversePairedFilesMetadata", "value": "4567" },
-            {"key": "ForwardPrimerFileMetadata", "value": "6789" },
-            {"key": "ReversePrimerFileMetadata", "value": "8901" },
             {"key": "MergeMinimumScore", "value": "10" },
             {"key": "PreFilterStatisticsFlag", "value": "1" },
             {"key": "FilterFlag", "value": "1" },

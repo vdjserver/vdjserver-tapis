@@ -5,19 +5,14 @@
 # VDJServer Tapis applications
 # https://vdjserver.org
 #
-# Copyright (C) 2016-2024 The University of Texas Southwestern Medical Center
+# Copyright (C) 2016-2025 The University of Texas Southwestern Medical Center
 # Author: Scott Christley
 # Date: Sep 1, 2016
 # 
 
-# required global variables:
-# IGBLASTN_EXE
-# PYTHON
-# AIRR_TOOLS
-# and...
-# The agave app input and parameters
-
-APP_NAME=igBlast
+APP_NAME=igblast
+# TODO: this is not generic enough
+export ACTIVITY_NAME="vdjserver:activity:igblast"
 
 # automatic parallelization of large files
 READS_PER_FILE=10000
@@ -30,18 +25,6 @@ source ./provenance_functions.sh
 
 # ----------------------------------------------------------------------------
 # IgBlast workflow
-
-function gather_secondary_inputs() {
-    # Gather secondary input files
-    # This is used to get around Agave size limits for job inputs and parameters
-    if [[ $SecondaryInputsFlag -eq 1 ]]; then
-        echo "Gathering secondary inputs"
-        moreFiles=$(${PYTHON} ./process_metadata.py --getSecondaryInput "${ProjectDirectory}/" QueryFilesMetadata study_metadata.json)
-        query="${query} ${moreFiles}"
-        moreFiles=$(${PYTHON} ./process_metadata.py --getSecondaryEntry QueryFilesMetadata study_metadata.json)
-        QueryFilesMetadata="${QueryFilesMetadata} ${moreFiles}"
-    fi
-}
 
 function print_versions() {
     echo "VERSIONS:"
@@ -56,16 +39,13 @@ function print_versions() {
 function print_parameters() {
     echo "Input files:"
     echo "repcalc_image=${repcalc_image}"
-    echo "germline_archive=${germline_archive}"
-    echo "airr_germline=${airr_germline}"
-    echo "ProjectDirectory=${ProjectDirectory}"
+    echo "germline_archives=${germline_archives}"
+    echo "analysis_provenance=${analysis_provenance}"
     echo "AIRRMetadata=${AIRRMetadata}"
     echo "JobFiles=${JobFiles}"
     echo "query=$query"
     echo ""
     echo "Application parameters:"
-    echo "SecondaryInputsFlag=${SecondaryInputsFlag}"
-    echo "repertoires=$repertoires"
     echo "species=$species"
     echo "strain=$strain"
     echo "locus=$locus"
@@ -76,13 +56,20 @@ function print_parameters() {
 }
 
 function run_igblast_workflow() {
-    addCalculation vdj_alignment
-    addCalculation parse_igblast
+    addCalculation "${ACTIVITY_NAME}" vdj_annotation
 
-    # Exclude input files from archive
+    # unarchive job files
     for file in $JobFiles; do
         if [ -f $file ]; then
             expandfile $file
+
+            # copy files that will be processed
+            fileBasename="${file%.*}" # test/file.fasta -> test/file
+            for file2 in $query; do
+                if [ -f $fileBasename/$file2 ]; then
+                    cp $fileBasename/$file2 .
+                fi
+            done
         fi
     done
 
@@ -101,13 +88,15 @@ function run_igblast_workflow() {
 
     filelist=()
     count=0
+    repertoires=""
     for file in $query; do
-        # unique group name to put in metadata
-        group="group${count}"
-        addGroup $group file
+        query_file=$file
+        rep_id=$(getRepertoireForFile $file)
+        # TODO: check error
+        repertoires="${repertoires} ${rep_id}"
 
         fileOutname="${file##*/}" # test/file -> file
-        addOutputFile $group $APP_NAME assignment_sequence "$file" "Input Sequences ($fileOutname)" "read" null
+        #addOutputFile $group $APP_NAME assignment_sequence "$file" "Input Sequences ($fileOutname)" "read" null
 
         expandfile $file
         fileExtension="${file##*.}" # file.fastq -> fastq
@@ -121,77 +110,68 @@ function run_igblast_workflow() {
         # save expanded filenames for later merging
         filelist[${#filelist[@]}]=$file
 
-        if [ "$(grep '>' $file | wc -l)" -gt $READS_PER_FILE ]; then
-            splitfasta.pl -f $file -r $READS_PER_FILE -o . -s ${fileBasename}_p
-            smallFiles="$(ls ${fileBasename}_p*.fasta)"
-        else
-            smallFiles="$file"
+        # These come from Agave, but I need to assign them inside the loop.
+        # TODO: get these from repertoire metadata
+        organism=${species}
+        germline_set=${species}
+        if [ "$species" == "macaque" ]; then
+            organism="rhesus_monkey"
+            strain="indian"
+            germline_set="macaque_indian"
         fi
-
-        for smallFile in $smallFiles; do
-            # These come from Agave, but I need to assign them inside the loop.
-            organism=${species}
-            germline_set=${species}
-            if [ "$species" == "macaque" ]; then
-                organism="rhesus_monkey"
-                strain="indian"
-                germline_set="macaque_indian"
+        QUERY_ARGS=""
+        ARGS=""
+        MDARGS=""
+        if [ -f $smallFile ]; then 
+            QUERY_ARGS="-query $file" 
+            MDARGS="$MDARGS $file"
+            MDARGS="$MDARGS $PWD/${file}.igblast.txt"
+        fi
+        if [ -n $locus ]; then 
+            if [ "$locus" == "TR" ]; then seqType="TCR"; fi  
+            if [ "$locus" == "IG" ]; then seqType="Ig"; fi  
+            ARGS="$ARGS -ig_seqtype $seqType"
+            MDARGS="$MDARGS $locus"
+        fi
+        if [ -n $organism ]; then 
+            ARGS="$ARGS -organism $organism"
+            
+            ARGS="$ARGS -germline_db_V $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_V.fna"
+            ARGS="$ARGS -germline_db_D $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_D.fna"
+            ARGS="$ARGS -germline_db_J $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_J.fna"
+            # If locus is TR then use old auxilary data file.
+            if [ "$locus" == "TR" ]; then
+                ARGS="$ARGS -auxiliary_data $IGDATA/optional_file/${germline_set}_gl.aux"
             fi
-            QUERY_ARGS=""
-            ARGS=""
-            MDARGS=""
-            if [ -f $smallFile ]; then 
-                QUERY_ARGS="-query $smallFile" 
-                MDARGS="$MDARGS $smallFile"
-                MDARGS="$MDARGS $PWD/${smallFile}.igblast.txt"
+
+            # for newer version of igblast we need an extra argument
+            if [ "$locus" == "IG" ]; then
+                ARGS="$ARGS -c_region_db  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_C.fna"
+                ARGS="$ARGS -auxiliary_data  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}.aux"
+                ARGS="$ARGS -custom_internal_data $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}.ndm"
             fi
-            if [ -n $locus ]; then 
-                if [ "$locus" == "TR" ]; then seqType="TCR"; fi  
-                if [ "$locus" == "IG" ]; then seqType="Ig"; fi  
-                ARGS="$ARGS -ig_seqtype $seqType"
-                MDARGS="$MDARGS $locus"
-            fi
-            if [ -n $organism ]; then 
-                ARGS="$ARGS -organism $organism"
-                
-                ARGS="$ARGS -germline_db_V $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_V.fna"
-                ARGS="$ARGS -germline_db_D $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_D.fna"
-                ARGS="$ARGS -germline_db_J $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_J.fna"
-                # If locus is TR then use old auxilary data file.
-                if [ "$locus" == "TR" ]; then
-                    ARGS="$ARGS -auxiliary_data $IGDATA/optional_file/${germline_set}_gl.aux"
-                fi
+            MDARGS="$MDARGS $organism"
+        fi
+        if [ -n $domain_system ]; then ARGS="$ARGS -domain_system $domain_system"; fi
 
-                # for newer version of igblast we need an extra argument
-                if [ "$locus" == "IG" ]; then
-                    ARGS="$ARGS -c_region_db  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_C.fna"
-                    ARGS="$ARGS -auxiliary_data  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}.aux"
-                    ARGS="$ARGS -custom_internal_data $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}.ndm"
-                fi
-                MDARGS="$MDARGS $organism"
-            fi
-            if [ -n $domain_system ]; then ARGS="$ARGS -domain_system $domain_system"; fi
+        IGBLAST_PARAMS="$ARGS"
 
-            IGBLAST_PARAMS="$ARGS"
+        # AIRR output
+        AIRR_ARGS="$QUERY_ARGS $ARGS -outfmt 19"
+        echo "export IGDATA=\"$IGDATA\" && $IGBLASTN_EXE $AIRR_ARGS > ${file}.igblast.airr.tsv" >> joblist
 
-            # AIRR output
-            AIRR_ARGS="$QUERY_ARGS $ARGS -outfmt 19"
-            echo "export IGDATA=\"$IGDATA\" && $IGBLASTN_EXE $AIRR_ARGS > ${smallFile}.igblast.airr.tsv" >> joblist
+        # ChangeO output
+        CO_ARGS="$QUERY_ARGS $ARGS -outfmt "
+        OUTFMT="7 qseqid qgi qacc qaccver qlen sseqid sallseqid sgi sallgi sacc saccver sallacc slen qstart qend sstart send qseq sseq evalue bitscore score length pident nident mismatch positive gapopen gaps ppos frames qframe sframe btop"
 
-            # ChangeO output
-            CO_ARGS="$QUERY_ARGS $ARGS -outfmt "
-            OUTFMT="7 qseqid qgi qacc qaccver qlen sseqid sallseqid sgi sallgi sacc saccver sallacc slen qstart qend sstart send qseq sseq evalue bitscore score length pident nident mismatch positive gapopen gaps ppos frames qframe sframe btop"
+        # macaque not support yet
+        #if [ "$species" != "macaque" ]; then
+            # igblast jobs
+            echo "export IGDATA=\"$IGDATA\" && export VDJ_DB_ROOT=\"$VDJ_DB_ROOT\" && $IGBLASTN_EXE $CO_ARGS \"$OUTFMT\" > ${file}.igblast.txt" >> joblist
 
-            # macaque not support yet
-            #if [ "$species" != "macaque" ]; then
-                # igblast jobs
-                echo "export IGDATA=\"$IGDATA\" && export VDJ_DB_ROOT=\"$VDJ_DB_ROOT\" && $IGBLASTN_EXE $CO_ARGS \"$OUTFMT\" > ${smallFile}.igblast.txt" >> joblist
-
-                # the post processing jobs
-                echo "export IGDATA=\"$IGDATA\" && export VDJ_DB_ROOT=\"$VDJ_DB_ROOT\" && apptainer exec ${repcalc_image} bash ./do_airr_makedb.sh $MDARGS" >> joblist-post-process
-            #fi
-
-        done
+            # the post processing jobs
+            echo "export IGDATA=\"$IGDATA\" && export VDJ_DB_ROOT=\"$VDJ_DB_ROOT\" && apptainer exec ${repcalc_image} bash ./do_airr_makedb.sh $MDARGS" >> joblist-post-process
+        #fi
 
         count=$(( $count + 1 ))
     done
@@ -218,43 +198,36 @@ function run_igblast_workflow() {
         export LAUNCHER_PPN=$numJobs
     fi
 
+    # ----------------------------------------------------------------------------
+
     echo "Starting post processing on $(date)"
     $LAUNCHER_DIR/paramrun
 
-    # ----------------------------------------------------------------------------
-    # and now to knit smallFiles back together
     seqMetadata=($repertoires)
     count=0
     for file in ${filelist[@]}; do
         mfile=${seqMetadata[count]}
+
         fileBasename="${file%.*}" # test/file.fasta -> test/file
         fileOutname="${fileBasename##*/}" # test/file -> file
-        checkfiles=(`ls -1 ${fileBasename}_p*.igblast.airr.tsv 2>/dev/null`)
 
-        if [ ${#checkfiles[@]} -ne 0 ]; then
-            # merge files
-            apptainer exec -e ${repcalc_image} bash do_merge.sh ${fileBasename} ${fileOutname}
-            rm -f ${fileBasename}_p*.igblast.airr.tsv
-            rm -f ${fileBasename}_p*.igblast.makedb.airr.tsv
-            rm -f ${fileBasename}_p*.igblast.fail-makedb.airr.tsv
-        else
-            # no merging so rename to remove extension
-            mv ${file}.igblast.airr.tsv ${fileOutname}.igblast.airr.new.tsv
-            if [ "$species" != "macaque" ]; then
-                mv ${file}.igblast.makedb.airr.tsv ${fileOutname}.igblast.makedb.airr.tsv
-                mv ${file}.igblast.fail-makedb.airr.tsv ${fileOutname}.igblast.fail-makedb.airr.tsv
-            fi
-        fi
+        # no merging so rename to remove extension
+        mv ${file}.igblast.airr.tsv ${fileOutname}.igblast.airr.new.tsv
+        mv ${file}.igblast.makedb.airr.tsv ${fileOutname}.igblast.makedb.airr.tsv
 
-        if [ -f "${fileOutname}.igblast.fail-makedb.airr.tsv" ]; then
-            addOutputFile $group $APP_NAME airr-fail-makedb ${fileOutname}.igblast.fail-makedb.airr.tsv "${fileOutname} Change-O MakeDb Failed" "tsv" $mfile
+        if [ -f "${file}.igblast.fail-makedb.airr.tsv" ]; then
+            mv ${file}.igblast.fail-makedb.airr.tsv ${fileOutname}.igblast.fail-makedb.airr.tsv
+            wasDerivedFrom "${fileOutname}.igblast.fail-makedb.airr.tsv" "${file}" "airr-fail-makedb" "Change-O MakeDb Failed" tsv
+            #addOutputFile $group $APP_NAME airr-fail-makedb ${fileOutname}.igblast.fail-makedb.airr.tsv "${fileOutname} Change-O MakeDb Failed" "tsv" $mfile
         fi
 
         # process pRESTO annotations
+        # TODO: parallelize
         apptainer exec -e ${repcalc_image} bash do_annotations.sh ${fileOutname}
         rm -f ${fileOutname}.igblast.airr.new.tsv
 
         # assign repertoire IDs
+        # If multiple sample files have same repertoire ID, write in separate file, and merge later
         mv ${fileOutname}.igblast.airr.tsv ${fileOutname}.igblast.orig.airr.tsv
         target_file="${mfile}.igblast.airr.tsv"
         if [ -f "$target_file" ]; then
@@ -330,49 +303,62 @@ function run_igblast_workflow() {
 
         # add to process metadata
         # they will be compressed later
-        group="group${count}"
-        addOutputFile $group $APP_NAME airr ${mfile}.igblast.airr.tsv.gz "${fileOutname} AIRR TSV" "tsv" $mfile
+        # TODO: provenance
+        #group="group${count}"
+        #addOutputFile $group $APP_NAME airr ${mfile}.igblast.airr.tsv.gz "${fileOutname} AIRR TSV" "tsv" $mfile
         gzipFile ${mfile}.igblast.airr.tsv
         if [ "$species" != "macaque" ]; then
-            addOutputFile $group $APP_NAME airr-makedb ${mfile}.igblast.makedb.airr.tsv.gz "${fileOutname} Change-O MakeDb AIRR TSV" "tsv" $mfile
+            #addOutputFile $group $APP_NAME airr-makedb ${mfile}.igblast.makedb.airr.tsv.gz "${fileOutname} Change-O MakeDb AIRR TSV" "tsv" $mfile
             gzipFile ${mfile}.igblast.makedb.airr.tsv
         fi
         count=$(( $count + 1 ))
     done
 
+    #add provenance here.
+    count=0
+    for file in ${filelist[@]}; do
+        mfile=${seqMetadata[count]}
+
+        wasDerivedFrom "${mfile}.igblast.airr.tsv.gz" "${file}" "vdj_sequence_annotation" "IgBlast AIRR TSV" tsv
+        wasDerivedFrom "${mfile}.igblast.makedb.airr.tsv.gz" "${file}" "vdj_sequence_annotation" "Change-O MakeDb AIRR TSV" tsv
+
+        count=$(( $count + 1 ))
+    done
 
     # ----------------------------------------------------------------------------
     # generate count statistics
     echo Generating count statistics
     $PYTHON count_statistics.py *.igblast.airr.tsv
     mv count_statistics.csv igblast_count_statistics.csv
-    addLogFile $APP_NAME log igblast_count_statistics igblast_count_statistics.csv "IgBlast AIRR TSV Count Statistics" "csv" null
-    addArchiveFile igblast_count_statistics.csv
+    wasGeneratedBy "igblast_count_statistics.csv" "${ACTIVITY_NAME}" igblast_count_statistics "IgBlast AIRR TSV Count Statistics" csv
+    #addLogFile $APP_NAME log igblast_count_statistics igblast_count_statistics.csv "IgBlast AIRR TSV Count Statistics" "csv" null
+    #addArchiveFile igblast_count_statistics.csv
     $PYTHON count_statistics.py *.makedb.airr.tsv
     mv count_statistics.csv makedb_count_statistics.csv
-    addLogFile $APP_NAME log makedb_count_statistics makedb_count_statistics.csv "Change-O MakeDb AIRR TSV Count Statistics" "csv" null
-    addArchiveFile makedb_count_statistics.csv
-    $PYTHON count_statistics.py *.fail-makedb.airr.tsv
-    mv count_statistics.csv fail-makedb_count_statistics.csv
-    addLogFile $APP_NAME log fail-makedb_count_statistics fail-makedb_count_statistics.csv "Change-O MakeDb Failed Count Statistics" "csv" null
-    addArchiveFile fail-makedb_count_statistics.csv
+    wasGeneratedBy "makedb_count_statistics.csv" "${ACTIVITY_NAME}" makedb_count_statistics "Change-O MakeDb AIRR TSV Count Statistics" csv
+    #addLogFile $APP_NAME log makedb_count_statistics makedb_count_statistics.csv "Change-O MakeDb AIRR TSV Count Statistics" "csv" null
+    #addArchiveFile makedb_count_statistics.csv
+    has_fail_makedb=0
+    if ls *.fail-makedb.airr.tsv 1> /dev/null 2>&1; then
+        has_fail_makedb=1
+    fi
+    if [[ $has_fail_makedb -eq 1 ]]; then
+        $PYTHON count_statistics.py *.fail-makedb.airr.tsv
+        mv count_statistics.csv fail-makedb_count_statistics.csv
+        wasGeneratedBy "fail-makedb_count_statistics.csv" "${ACTIVITY_NAME}" fail-makedb_count_statistics "Change-O MakeDb Failed Count Statistics" csv
+    fi
+    #addLogFile $APP_NAME log fail-makedb_count_statistics fail-makedb_count_statistics.csv "Change-O MakeDb Failed Count Statistics" "csv" null
+    #addArchiveFile fail-makedb_count_statistics.csv
 }
 
 function run_assign_clones() {
-    addCalculation clonal_assignment
+    addCalculation "${ACTIVITY_NAME}" clonal_assignment
 
     # launcher job file
     if [ -f joblist-clones ]; then
         echo "Warning: removing file 'joblist-clones'.  That filename is reserved." 1>&2
         rm joblist-clones
         touch joblist-clones
-    fi
-    #noArchive "joblist-clones"
-
-    # create AIRR metadata
-    if [[ "x$AIRRMetadata" == "x" ]]; then
-        AIRRMetadata="study_metadata.airr.json"
-        $PYTHON create_airr_metadata.py $AIRRMetadata ${_tapisJobUUID} $repertoires
     fi
 
     # Assign Clones
@@ -403,9 +389,11 @@ function run_assign_clones() {
             cloneFileList[${#cloneFileList[@]}]=$geneFile
 
             # will get compressed at end
-            group="group${count}"
-            addOutputFile $group $APP_NAME igblast-makedb-allele-clone ${alleleFile}.gz "${fileOutname} Change-O IG Allele Clones" "tsv" $mfile
-            addOutputFile $group $APP_NAME igblast-makedb-gene-clone ${geneFile}.gz "${fileOutname} Change-O IG Gene Clones" "tsv" $mfile
+            wasDerivedFrom "${alleleFile}.gz" "${file}.gz" "assigned_clones, allele_clones" "${fileOutname} Change-O IG Allele Clones" tsv
+            wasDerivedFrom "${geneFile}.gz" "${file}.gz" "assigned_clones, gene_clones" "${fileOutname} Change-O IG Gene Clones" tsv
+            #group="group${count}"
+            #addOutputFile $group $APP_NAME igblast-makedb-allele-clone ${alleleFile}.gz "${fileOutname} Change-O IG Allele Clones" "tsv" $mfile
+            #addOutputFile $group $APP_NAME igblast-makedb-gene-clone ${geneFile}.gz "${fileOutname} Change-O IG Gene Clones" "tsv" $mfile
             gzipFile ${alleleFile}
             gzipFile ${geneFile}
 
@@ -433,9 +421,11 @@ function run_assign_clones() {
             geneFile=${out_prefix}.gene.clone.airr.tsv
 
             # will get compressed at end
-            group="group${count}"
-            addOutputFile $group $APP_NAME igblast-allele-clone ${alleleFile}.gz "${rep_id} RepCalc TCR Allele Clones (${processing_stage})" "tsv" $mfile
-            addOutputFile $group $APP_NAME igblast-gene-clone ${geneFile}.gz "${rep_id} RepCalc TCR Gene Clones (${processing_stage})" "tsv" $mfile
+            wasDerivedFrom "${alleleFile}.gz" "${file}.gz" "assigned_clones, allele_clones" "${rep_id} RepCalc TCR Allele Clones (${processing_stage})" tsv
+            wasDerivedFrom "${geneFile}.gz" "${file}.gz" "assigned_clones, gene_clones" "${rep_id} RepCalc TCR Gene Clones (${processing_stage})" tsv
+            #group="group${count}"
+            #addOutputFile $group $APP_NAME igblast-allele-clone ${alleleFile}.gz "${rep_id} RepCalc TCR Allele Clones (${processing_stage})" "tsv" $mfile
+            #addOutputFile $group $APP_NAME igblast-gene-clone ${geneFile}.gz "${rep_id} RepCalc TCR Gene Clones (${processing_stage})" "tsv" $mfile
             gzipFile ${alleleFile}
             gzipFile ${geneFile}
 
@@ -449,9 +439,11 @@ function run_assign_clones() {
             geneFile=${out_prefix}.gene.clone.airr.tsv
 
             # will get compressed at end
-            group="group${count}"
-            addOutputFile $group $APP_NAME igblast-makedb-allele-clone ${alleleFile}.gz "${rep_id} RepCalc TCR Allele Clones (${processing_stage})" "tsv" $mfile
-            addOutputFile $group $APP_NAME igblast-makedb-gene-clone ${geneFile}.gz "${rep_id} RepCalc TCR Gene Clones (${processing_stage})" "tsv" $mfile
+            wasDerivedFrom "${alleleFile}.gz" "${file}.gz" "assigned_clones, allele_clones" "${rep_id} RepCalc TCR Allele Clones (${processing_stage})" tsv
+            wasDerivedFrom "${geneFile}.gz" "${file}.gz" "assigned_clones, gene_clones" "${rep_id} RepCalc TCR Gene Clones (${processing_stage})" tsv
+            #group="group${count}"
+            #addOutputFile $group $APP_NAME igblast-makedb-allele-clone ${alleleFile}.gz "${rep_id} RepCalc TCR Allele Clones (${processing_stage})" "tsv" $mfile
+            #addOutputFile $group $APP_NAME igblast-makedb-gene-clone ${geneFile}.gz "${rep_id} RepCalc TCR Gene Clones (${processing_stage})" "tsv" $mfile
             gzipFile ${alleleFile}
             gzipFile ${geneFile}
 
@@ -473,13 +465,16 @@ function run_assign_clones() {
     # generate clone report
     if [[ "$ClonalTool" == "changeo" ]] ; then
         $PYTHON clone_report.py *.makedb.airr.tsv
-        addLogFile $APP_NAME log clone_report clone_report.csv "Clonal Assignment Summary Report" "csv" null
-        addArchiveFile clone_report.csv
+        wasGeneratedBy "clone_report.csv" "${ACTIVITY_NAME}" clone_report "Clonal Assignment Summary Report" csv
+        #addLogFile $APP_NAME log clone_report clone_report.csv "Clonal Assignment Summary Report" "csv" null
+        #addArchiveFile clone_report.csv
     fi
 }
 
 function compress_and_archive() {
-    # ----------------------------------------------------------------------------
+    # Provenance file
+    wasGeneratedBy "provenance_output.json" "${ACTIVITY_NAME}" prov "Analysis Provenance" json
+
     # gzip any files
     for file in $GZIP_FILE_LIST; do
         if [ -f $file ]; then
@@ -495,6 +490,7 @@ function compress_and_archive() {
         fi
     done
     zip ${_tapisJobUUID}.zip ${_tapisJobUUID}/*
-    addLogFile $APP_NAME log output_archive ${_tapisJobUUID}.zip "Archive of Output Files" "zip" null
+    wasGeneratedBy ${_tapisJobUUID}.zip "${ACTIVITY_NAME}" job_archive "Archive of Output Files" zip
+    #addLogFile $APP_NAME log output_archive ${_tapisJobUUID}.zip "Archive of Output Files" "zip" null
     cp ${_tapisJobUUID}.zip output
 }

@@ -1,27 +1,28 @@
 {
     "id":"presto-ls6",
-    "version":"0.2",
+    "version":"0.3",
     "description":"pRESTO on Lonestar6",
     "runtime":"ZIP",
     "runtimeOptions": ["NONE"],
-    "containerImage":"tapis://data-storage.vdjserver.org/apps/presto-ls6-0.2.tgz",
+    "containerImage":"tapis://data-storage.vdjserver.org/apps/presto-ls6-0.3.tgz",
     "jobType":"BATCH",
     "jobAttributes": {
         "description": "default job description",
         "execSystemId": "test-ls6.tacc.utexas.edu",
         "fileInputs":[
-          { "name":"singularity_image", "inputMode": "FIXED", "envKey":"singularity_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/repcalc-v2.1-imm4.4.sif", "targetPath":"repcalc-v2.1-imm4.4.sif" },
-          { "name":"vdj_pipe_image", "inputMode": "FIXED", "envKey":"vdj_pipe_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/vdj_pipe-v0.1.7.sif", "targetPath":"vdj_pipe-v0.1.7.sif" },
-          { "name":"StudyMetadata", "inputMode": "OPTIONAL", "envKey":"StudyMetadata", "targetPath":"." },
-          { "name":"ForwardPrimerFile", "inputMode": "OPTIONAL", "envKey":"ForwardPrimerFile", "targetPath":"." },
-          { "name":"ReversePrimerFile", "inputMode": "OPTIONAL", "envKey":"ReversePrimerFile", "targetPath":"." },
-          { "name":"BarcodeFile", "inputMode": "OPTIONAL", "envKey":"BarcodeFile", "targetPath":"." }
+            { "name":"singularity_image", "inputMode": "FIXED", "envKey":"singularity_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/repcalc-v2.1-imm4.4.sif", "targetPath":"repcalc-v2.1-imm4.4.sif" },
+            { "name":"vdj_pipe_image", "inputMode": "FIXED", "envKey":"vdj_pipe_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/vdj_pipe-v0.1.7.sif", "targetPath":"vdj_pipe-v0.1.7.sif" },
+            { "name":"analysis_provenance", "inputMode": "REQUIRED", "envKey":"analysis_provenance", "targetPath":"." },
+            { "name":"StudyMetadata", "inputMode": "OPTIONAL", "envKey":"StudyMetadata", "targetPath":"." },
+            { "name":"ForwardPrimerFile", "inputMode": "OPTIONAL", "envKey":"ForwardPrimerFile", "targetPath":"." },
+            { "name":"ReversePrimerFile", "inputMode": "OPTIONAL", "envKey":"ReversePrimerFile", "targetPath":"." },
+            { "name":"BarcodeFile", "inputMode": "OPTIONAL", "envKey":"BarcodeFile", "targetPath":"." }
         ],
         "fileInputArrays":[
-          { "name":"JobFiles", "inputMode": "OPTIONAL", "envKey":"JobFiles", "targetDir":"." },
-          { "name":"SequenceFiles", "inputMode": "OPTIONAL", "targetDir":"." },
-          { "name":"SequenceForwardPairedFiles", "inputMode": "OPTIONAL", "targetDir":"." },
-          { "name":"SequenceReversePairedFiles", "inputMode": "OPTIONAL", "targetDir":"." }
+            { "name":"JobFiles", "inputMode": "OPTIONAL", "envKey":"JobFiles", "targetDir":"." },
+            { "name":"SequenceFiles", "inputMode": "OPTIONAL", "targetDir":"." },
+            { "name":"SequenceForwardPairedFiles", "inputMode": "OPTIONAL", "targetDir":"." },
+            { "name":"SequenceReversePairedFiles", "inputMode": "OPTIONAL", "targetDir":"." }
         ],
         "parameterSet": {
             "logConfig": {

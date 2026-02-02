@@ -1,13 +1,14 @@
 {
     "name": "vdjpipe_roche_test",
     "appId": "vdjpipe-ls6",
-    "appVersion": "0.1",
-    "maxMinutes":60,
+    "appVersion": "0.3",
+    "maxMinutes":30,
     "nodeCount": 1,
     "fileInputs":[
+      { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_vdjpipe_roche.json", "targetPath":"analysis_document_vdjpipe_roche.json" },
       { "name":"BarcodeFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/SRR765688_MIDs.fasta", "targetPath":"SRR765688_MIDs.fasta" },
       { "name":"ForwardPrimerFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/SRX190717_VPrimers.fasta", "targetPath":"SRX190717_VPrimers.fasta" },
-      { "name":"ReversePrimerFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/SRX190717_VPrimers.fasta", "targetPath":"SRX190717_VPrimers.fasta" }
+      { "name":"ReversePrimerFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/SRX190717_CPrimers_rev.fasta", "targetPath":"SRX190717_CPrimers_rev.fasta" }
     ],
     "fileInputArrays":[
       { "name":"SequenceFASTQ", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/SRR765688.fastq" ]}
@@ -23,10 +24,6 @@
         "envVariables": [
             {"key": "Workflow", "value": "single" },
             {"key": "SequenceFASTQ", "value": "SRR765688.fastq" },
-            {"key": "SequenceFASTQMetadata", "value": "4567" },
-            {"key": "ForwardPrimerFileMetadata", "value": "6789" },
-            {"key": "ReversePrimerFileMetadata", "value": "8901" },
-            {"key": "BarcodeFileMetadata", "value": "8901" },
             {"key": "PreFilterStatisticsFlag", "value": "1" },
             {"key": "FilterFlag", "value": "1" },
             {"key": "MinimumAverageQuality", "value": "35" },
