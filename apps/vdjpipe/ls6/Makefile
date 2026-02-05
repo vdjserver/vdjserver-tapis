@@ -1,7 +1,7 @@
 # helper commands for tapis v3 apps
 
 APP_NAME=vdjpipe
-APP_VERSION=0.3
+APP_VERSION=0.4
 APP_SYSTEM=ls6
 
 APP_ID=${APP_NAME}-${APP_SYSTEM}
@@ -45,6 +45,8 @@ update:
 
 clean:
 	rm -rf ${BUILD_DIR} ${APP_ARCHIVE}
+	rm -rf build-${APP_NAME}-*
+	rm -f ${APP_NAME}-*.tgz
 
 common-scripts:
 	mkdir ${BUILD_DIR}

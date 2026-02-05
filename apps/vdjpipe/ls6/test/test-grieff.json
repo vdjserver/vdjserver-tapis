@@ -1,7 +1,7 @@
 {
     "name": "vdjpipe_grieff_test",
     "appId": "vdjpipe-ls6",
-    "appVersion": "0.3",
+    "appVersion": "0.4",
     "maxMinutes":60,
     "nodeCount": 1,
     "fileInputs":[
