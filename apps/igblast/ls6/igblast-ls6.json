@@ -1,16 +1,16 @@
 {
     "id":"igblast-ls6",
-    "version":"0.7",
+    "version":"0.8",
     "description":"IgBLAST on Lonestar6",
     "runtime":"ZIP",
     "runtimeOptions": ["NONE"],
-    "containerImage":"tapis://data-storage.vdjserver.org/apps/igblast-ls6-0.7.tgz",
+    "containerImage":"tapis://data-storage.vdjserver.org/apps/igblast-ls6-0.8.tgz",
     "jobType":"BATCH",
     "jobAttributes": {
         "description": "default job description",
         "execSystemId": "test-ls6.tacc.utexas.edu",
         "fileInputs":[
-          { "name":"repcalc_image", "inputMode": "FIXED", "envKey":"repcalc_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/repcalc-v2.2-imm4.4.sif", "targetPath":"repcalc-v2.2-imm4.4.sif" },
+          { "name":"repcalc_image", "inputMode": "FIXED", "envKey":"repcalc_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/repcalc-v2.3-imm4.4.sif", "targetPath":"repcalc-v2.2-imm4.4.sif" },
           { "name":"analysis_provenance", "inputMode": "REQUIRED", "envKey":"analysis_provenance", "targetPath":"." },
           { "name":"AIRRMetadata", "inputMode": "REQUIRED", "envKey":"AIRRMetadata", "targetPath":"." }
         ],

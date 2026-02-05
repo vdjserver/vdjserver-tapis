@@ -1,7 +1,7 @@
 {
     "name": "repcalc_bcr_test",
     "appId": "repcalc2-ls6",
-    "appVersion": "0.6",
+    "appVersion": "0.7",
     "maxMinutes": 90,
     "fileInputs":[
       { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_repcalc_bcr.json", "targetPath":"analysis_document_repcalc_bcr.json" },
