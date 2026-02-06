@@ -10,7 +10,7 @@
         "description": "default job description",
         "execSystemId": "test-ls6.tacc.utexas.edu",
         "fileInputs":[
-          { "name":"repcalc_image", "inputMode": "FIXED", "envKey":"repcalc_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/repcalc-v2.3-imm4.4.sif", "targetPath":"repcalc-2.0-imm4.4.sif" },
+          { "name":"repcalc_image", "inputMode": "FIXED", "envKey":"repcalc_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/repcalc-v2.3-imm4.4.sif", "targetPath":"repcalc-v2.3-imm4.4.sif" },
           { "name":"vdj_pipe_image", "inputMode": "FIXED", "envKey":"vdj_pipe_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/vdj_pipe-v0.1.7.sif", "targetPath":"vdj_pipe-v0.1.7.sif" },
           { "name":"analysis_provenance", "inputMode": "REQUIRED", "envKey":"analysis_provenance", "targetPath":"." },
           { "name":"StudyMetadata", "inputMode": "OPTIONAL", "envKey":"StudyMetadata", "targetPath":"." },
