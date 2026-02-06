@@ -46,9 +46,11 @@ function expandfile () {
 # setup local germline db
 # ----------------------------------------------------------------------------
 function setup_germline () {
-    echo "Setting up germline database"
     export VDJ_DB_VERSION=$1
-    tar zxf $germline_archive
+    echo "Setting up germline database: ${VDJ_DB_VERSION}"
+    tar zxf ${VDJ_DB_VERSION}.tgz
+    #tar zxf $germline_archive
+    #tar zxf $airr_germline
 
     # IgBlast germline database and extra files
     export IGDATA="./$VDJ_DB_VERSION"

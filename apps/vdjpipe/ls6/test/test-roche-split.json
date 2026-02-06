@@ -1,0 +1,52 @@
+{
+    "name": "vdjpipe_roche_test",
+    "appId": "vdjpipe-ls6",
+    "appVersion": "0.4",
+    "maxMinutes":30,
+    "nodeCount": 1,
+    "fileInputs":[
+      { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_vdjpipe_roche.json", "targetPath":"analysis_document_vdjpipe_roche.json" },
+      { "name":"BarcodeFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/SRR765688_MIDs.fasta", "targetPath":"SRR765688_MIDs.fasta" },
+      { "name":"ForwardPrimerFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/SRX190717_VPrimers.fasta", "targetPath":"SRX190717_VPrimers.fasta" },
+      { "name":"ReversePrimerFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/SRX190717_CPrimers_rev.fasta", "targetPath":"SRX190717_CPrimers_rev.fasta" }
+    ],
+    "fileInputArrays":[
+      { "name":"SequenceFASTQ", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/SRR765688.fastq" ]}
+    ],
+    "parameterSet": {
+        "schedulerOptions": [
+            { "name":"allocation", "arg":"-A MCB23006" }
+        ],
+        "containerArgs": [
+        ],
+        "appArgs": [
+        ],
+        "envVariables": [
+            {"key": "Workflow", "value": "single" },
+            {"key": "SequenceFASTQ", "value": "SRR765688.fastq" },
+            {"key": "PreFilterStatisticsFlag", "value": "1" },
+            {"key": "FilterFlag", "value": "1" },
+            {"key": "MinimumAverageQuality", "value": "35" },
+            {"key": "MinimumLength", "value": "300" },
+            {"key": "MaximumHomopolymer", "value": "20" },
+            {"key": "PostFilterStatisticsFlag", "value": "1" },
+            {"key": "Barcode", "value": "1" },
+            {"key": "BarcodeLocation", "value": "forward" },
+            {"key": "BarcodeDiscard", "value": "1" },
+            {"key": "BarcodeGenerateHistogram", "value": "1" },
+            {"key": "BarcodeMaximumMismatches", "value": "1" },
+            {"key": "BarcodeTrim", "value": "1" },
+            {"key": "BarcodeSearchWindow", "value": "15" },
+            {"key": "BarcodeSplitFlag", "value": "1" },
+            {"key": "ForwardPrimer", "value": "1" },
+            {"key": "ForwardPrimerMaximumMismatches", "value": "1" },
+            {"key": "ForwardPrimerTrim", "value": "1" },
+            {"key": "ForwardPrimerSearchWindow", "value": "50" },
+            {"key": "ReversePrimer", "value": "1" },
+            {"key": "ReversePrimerMaximumMismatches", "value": "1" },
+            {"key": "ReversePrimerTrim", "value": "1" },
+            {"key": "ReversePrimerSearchWindow", "value": "50" },
+            {"key": "FindUniqueFlag", "value": "1" }
+        ]
+    }
+}

@@ -1,0 +1,143 @@
+{
+    "_id": {
+        "$oid": "6883d0a837c99e582c94cce2"
+    },
+    "uuid": "91deb605-e6de-493a-90e1-88e6794a8b03",
+    "associationIds": [
+        "d57ccb61-f8c0-45f9-a5d3-9712d3c99c28"
+    ],
+    "owner": "vdj",
+    "created": "2025-07-25T18:44:56.266Z",
+    "lastUpdated": "2025-10-24T17:53:59.152Z",
+    "name": "analysis_document",
+    "value": {
+        "entity": {
+            "airr:Repertoire:1fea9299-a371-4c03-9dcc-26c88a884e2c": {
+                "airr:type": "Repertoire",
+                "vdjserver:type": "app:inputs",
+                "vdjserver:uuid": "1fea9299-a371-4c03-9dcc-26c88a884e2c"
+            },
+            "vdjserver:app:parameters:vdjpipe": {
+                "vdjserver:type": "app:parameters",
+                "Workflow": "paired",
+                "SecondaryInputsFlag": false,
+                "MergeMinimumScore": 10,
+                "PreFilterStatisticsFlag": true,
+                "FilterFlag": true,
+                "MinimumAverageQuality": 35,
+                "MinimumLength": 200,
+                "MaximumHomopolymer": 10,
+                "PostFilterStatisticsFlag": true,
+                "Barcode": false,
+                "BarcodeFile": "",
+                "BarcodeLocation": "forward",
+                "BarcodeDiscard": true,
+                "BarcodeGenerateHistogram": false,
+                "BarcodeMaximumMismatches": 0,
+                "BarcodeTrim": true,
+                "BarcodeSearchWindow": 30,
+                "BarcodeSplitFlag": true,
+                "ForwardPrimer": false,
+                "ForwardPrimerFile": "",
+                "ForwardPrimerMaximumMismatches": 0,
+                "ForwardPrimerTrim": true,
+                "ForwardPrimerSearchWindow": 30,
+                "ReversePrimer": false,
+                "ReversePrimerFile": "",
+                "ReversePrimerMaximumMismatches": 0,
+                "ReversePrimerTrim": true,
+                "ReversePrimerSearchWindow": 30,
+                "FindUniqueFlag": true
+            },
+            "vdjserver:app:outputs:vdjpipe": {
+                "vdjserver:type": "app:outputs"
+            },
+            "vdjserver:project_file:healthy-171-19-117_S1_L004_R1_001.fastq.gz": {
+                "vdjserver:type": "app:inputs",
+                "SequenceForwardPairedFiles": "healthy-171-19-117_S1_L004_R1_001.fastq.gz",
+                "vdjserver:uuid": "d0f2e206-560a-494c-832f-5762890c974b",
+                "SequenceReversePairedFiles": "healthy-171-19-117_S1_L004_R2_001.fastq.gz"
+            },
+            "vdjserver:project_file:healthy-171-19-117_S1_L003_R1_001.fastq.gz": {
+                "vdjserver:type": "app:inputs",
+                "SequenceForwardPairedFiles": "healthy-171-19-117_S1_L003_R1_001.fastq.gz",
+                "vdjserver:uuid": "0203fef3-8a3d-4a8a-9ca3-d259f20c3482",
+                "SequenceReversePairedFiles": "healthy-171-19-117_S1_L003_R2_001.fastq.gz"
+            },
+            "vdjserver:project_file:healthy-171-19-117_S1_L002_R1_001.fastq.gz": {
+                "vdjserver:type": "app:inputs",
+                "SequenceForwardPairedFiles": "healthy-171-19-117_S1_L002_R1_001.fastq.gz",
+                "vdjserver:uuid": "ee6e8648-2c7d-4737-aed2-1e674e144c78",
+                "SequenceReversePairedFiles": "healthy-171-19-117_S1_L002_R2_001.fastq.gz"
+            },
+            "vdjserver:project_file:healthy-171-19-117_S1_L001_R1_001.fastq.gz": {
+                "vdjserver:type": "app:inputs",
+                "SequenceForwardPairedFiles": "healthy-171-19-117_S1_L001_R1_001.fastq.gz",
+                "vdjserver:uuid": "7be8bcba-6889-4a55-9e71-f1b7324fabd7",
+                "SequenceReversePairedFiles": "healthy-171-19-117_S1_L001_R2_001.fastq.gz"
+            }
+        },
+        "agent": {},
+        "activity": {
+            "vdjserver:activity:vdjpipe": {
+                "vdjserver:app:name": "vdjpipe-ls6",
+                "vdjserver:app:version": "0.2",
+                "vdjserver:app:default": true,
+                "prov:startTime": "2025-07-25T20:20:57.688Z",
+                "vdjserver:job": "5242e5d8-caaa-4e4c-b7e8-7756c4b1efde-007",
+                "prov:endTime": "2025-07-26T04:36:36.621483Z"
+            }
+        },
+        "used": {},
+        "wasAttributedTo": {},
+        "wasAssociatedWith": {},
+        "wasDerivedFrom": {},
+        "wasGeneratedBy": {},
+        "uses": {
+            "airr:Repertoire:1fea9299-a371-4c03-9dcc-26c88a884e2c": {
+                "prov:activity": "vdjserver:activity:vdjpipe",
+                "prov:entity": "airr:Repertoire:1fea9299-a371-4c03-9dcc-26c88a884e2c"
+            },
+            "vdjserver:app:parameters:vdjpipe": {
+                "prov:activity": "vdjserver:activity:vdjpipe",
+                "prov:entity": "vdjserver:app:parameters:vdjpipe"
+            },
+            "vdjserver:app:inputs:vdjpipe:healthy-171-19-117_S1_L004_R1_001.fastq.gz": {
+                "prov:activity": "vdjserver:activity:vdjpipe",
+                "prov:entity": "vdjserver:project_file:healthy-171-19-117_S1_L004_R1_001.fastq.gz"
+            },
+            "vdjserver:app:inputs:vdjpipe:healthy-171-19-117_S1_L003_R1_001.fastq.gz": {
+                "prov:activity": "vdjserver:activity:vdjpipe",
+                "prov:entity": "vdjserver:project_file:healthy-171-19-117_S1_L003_R1_001.fastq.gz"
+            },
+            "vdjserver:app:inputs:vdjpipe:healthy-171-19-117_S1_L002_R1_001.fastq.gz": {
+                "prov:activity": "vdjserver:activity:vdjpipe",
+                "prov:entity": "vdjserver:project_file:healthy-171-19-117_S1_L002_R1_001.fastq.gz"
+            },
+            "vdjserver:app:inputs:vdjpipe:healthy-171-19-117_S1_L001_R1_001.fastq.gz": {
+                "prov:activity": "vdjserver:activity:vdjpipe",
+                "prov:entity": "vdjserver:project_file:healthy-171-19-117_S1_L001_R1_001.fastq.gz"
+            }
+        },
+        "isAttributedTo": {},
+        "isAssociatedWith": {},
+        "isDerivedFrom": {},
+        "isGeneratedBy": {
+            "vdjserver:app:outputs:vdjpipe": {
+                "prov:activity": "vdjserver:activity:vdjpipe",
+                "prov:entity": "vdjserver:app:outputs:vdjpipe"
+            }
+        },
+        "workflow_name": "VDJPipe",
+        "workflow_mode": "vdjpipe",
+        "status": "FINISHED",
+        "status_message": "",
+        "prefix": {
+            "airr": "https://airr-community.org/",
+            "vdjserver": "https://vdjserver.org/"
+        }
+    },
+    "_etag": {
+        "$oid": "68fbbd373907c402fb21cddd"
+    }
+}

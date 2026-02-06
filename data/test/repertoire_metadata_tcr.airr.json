@@ -1,0 +1,490 @@
+{
+  "Info": {
+    "title": "AIRR Schema",
+    "description": "Schema definitions for AIRR standards objects",
+    "version": 1.5,
+    "contact": {
+      "name": "AIRR Community",
+      "url": "https://github.com/airr-community"
+    },
+    "license": {
+      "name": "Creative Commons Attribution 4.0 International",
+      "url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  },
+  "Repertoire": [
+    {
+      "repertoire_id": "1234",
+      "study": {
+        "study_id": "test",
+        "study_title": "Test data",
+        "study_type": {
+          "id": null,
+          "label": null
+        },
+        "study_description": "",
+        "inclusion_exclusion_criteria": "",
+        "grants": "",
+        "study_contact": null,
+        "collected_by": "",
+        "lab_name": "",
+        "lab_address": "",
+        "submitted_by": "",
+        "pub_ids": "",
+        "keywords_study": [],
+        "adc_publish_date": null,
+        "adc_update_date": null
+      },
+      "subject": {
+        "subject_id": "3193",
+        "synthetic": false,
+        "species": {
+          "id": "NCBITAXON:9606",
+          "label": "Homo sapiens"
+        },
+        "sex": "male",
+        "age_min": 67,
+        "age_max": 67,
+        "age_unit": {
+          "id": "UO:0000036",
+          "label": "year"
+        },
+        "age_event": null,
+        "ancestry_population": null,
+        "ethnicity": "Non-Hispanic/Latino",
+        "race": "White",
+        "strain_name": null,
+        "linked_subjects": null,
+        "link_type": null,
+        "diagnosis": [
+          {
+            "study_group_description": "group1",
+            "disease_diagnosis": {
+              "id": null,
+              "label": null
+            },
+            "disease_length": null,
+            "disease_stage": null,
+            "prior_therapies": null,
+            "immunogen": null,
+            "intervention": null,
+            "medical_history": null
+          }
+        ]
+      },
+      "sample": [
+        {
+          "sample_processing_id": null,
+          "sample_id": "4492",
+          "sample_type": null,
+          "tissue": {
+            "id": null,
+            "label": null
+          },
+          "anatomic_site": null,
+          "disease_state_sample": "low",
+          "collection_time_point_relative": -1,
+          "collection_time_point_relative_unit": {
+            "id": null,
+            "label": null
+          },
+          "collection_time_point_reference": "1, 0-4 Weeks Before Vaccination",
+          "biomaterial_provider": null,
+          "tissue_processing": null,
+          "cell_subset": {
+            "id": null,
+            "label": null
+          },
+          "cell_phenotype": null,
+          "cell_species": {
+            "id": null,
+            "label": null
+          },
+          "single_cell": null,
+          "cell_number": null,
+          "cells_per_reaction": null,
+          "cell_storage": null,
+          "cell_quality": null,
+          "cell_isolation": null,
+          "cell_processing_protocol": null,
+          "template_class": "DNA",
+          "template_quality": null,
+          "template_amount": null,
+          "template_amount_unit": {
+            "id": null,
+            "label": null
+          },
+          "library_generation_method": "PCR",
+          "library_generation_protocol": null,
+          "library_generation_kit_version": null,
+          "library_generation_method": "PCR",
+          "pcr_target": [
+            {
+              "pcr_target_locus": "TRB",
+              "forward_pcr_primer_target_location": null,
+              "reverse_pcr_primer_target_location": null
+            }
+          ],
+          "complete_sequences": "partial",
+          "physical_linkage": "none",
+          "sequencing_run_id": "18",
+          "total_reads_passing_qc_filter": null,
+          "sequencing_platform": null,
+          "sequencing_facility": null,
+          "sequencing_run_date": null,
+          "sequencing_kit": null,
+          "sequencing_files": {
+            "sequencing_data_id": null,
+            "file_type": "fastq",
+            "filename": "4492_S1_L001_R1_001.fastq.gz",
+            "read_direction": "forward",
+            "read_length": null,
+            "paired_filename": "4492_S1_L001_R2_001.fastq.gz",
+            "paired_read_direction": "reverse",
+            "paired_read_length": null,
+            "index_filename": null,
+            "index_length": null
+          }
+        }
+      ],
+      "data_processing": [
+        {
+          "data_processing_id": null,
+          "primary_annotation": false,
+          "software_versions": null,
+          "paired_reads_assembly": null,
+          "quality_thresholds": null,
+          "primer_match_cutoffs": null,
+          "collapsing_method": null,
+          "data_processing_protocols": null,
+          "data_processing_files": null,
+          "germline_database": null,
+          "germline_set_ref": null,
+          "analysis_provenance_id": null
+        }
+      ]
+    },
+    {
+      "repertoire_id": "3456",
+      "repertoire_name": null,
+      "repertoire_description": null,
+      "study": {
+        "study_id": "test",
+        "study_title": "Test data",
+        "study_type": {
+          "id": null,
+          "label": null
+        },
+        "study_description": "",
+        "inclusion_exclusion_criteria": "",
+        "grants": "",
+        "study_contact": null,
+        "collected_by": "",
+        "lab_name": "",
+        "lab_address": "",
+        "submitted_by": "",
+        "pub_ids": "",
+        "keywords_study": [],
+        "adc_publish_date": null,
+        "adc_update_date": null
+      },
+      "subject": {
+        "subject_id": "3196",
+        "synthetic": false,
+        "species": {
+          "id": "NCBITAXON:9606",
+          "label": "Homo sapiens"
+        },
+        "sex": "female",
+        "age_min": 30,
+        "age_max": 30,
+        "age_unit": {
+          "id": "UO:0000036",
+          "label": "year"
+        },
+        "age_event": null,
+        "ancestry_population": null,
+        "ethnicity": "Non-Hispanic/latino",
+        "race": "White",
+        "strain_name": null,
+        "linked_subjects": null,
+        "link_type": null,
+        "diagnosis": [
+          {
+            "study_group_description": "group2",
+            "disease_diagnosis": {
+              "id": null,
+              "label": null
+            },
+            "disease_length": null,
+            "disease_stage": null,
+            "prior_therapies": null,
+            "immunogen": null,
+            "intervention": null,
+            "medical_history": null
+          }
+        ],
+        "genotype": null,
+        "vdjserver": {
+          "vdjserver_uuid": "fdf9c270-dafe-42db-80ab-434637c7ca60",
+          "version": "2.0"
+        }
+      },
+      "sample": [
+        {
+          "sample_processing_id": null,
+          "sample_id": "4505",
+          "sample_type": null,
+          "tissue": {
+            "id": null,
+            "label": null
+          },
+          "anatomic_site": null,
+          "disease_state_sample": "low",
+          "collection_time_point_relative": -1,
+          "collection_time_point_relative_unit": {
+            "id": null,
+            "label": null
+          },
+          "collection_time_point_reference": "1, 0-4 Weeks Before Vaccination",
+          "biomaterial_provider": null,
+          "tissue_processing": null,
+          "cell_subset": {
+            "id": null,
+            "label": null
+          },
+          "cell_phenotype": null,
+          "cell_species": {
+            "id": null,
+            "label": null
+          },
+          "single_cell": null,
+          "cell_number": null,
+          "cells_per_reaction": null,
+          "cell_storage": null,
+          "cell_quality": null,
+          "cell_isolation": null,
+          "cell_processing_protocol": null,
+          "template_class": "DNA",
+          "template_quality": null,
+          "template_amount": null,
+          "template_amount_unit": {
+            "id": null,
+            "label": null
+          },
+          "library_generation_method": "PCR",
+          "library_generation_protocol": null,
+          "library_generation_kit_version": null,
+          "pcr_target": [
+            {
+              "pcr_target_locus": "TRB",
+              "forward_pcr_primer_target_location": null,
+              "reverse_pcr_primer_target_location": null
+            }
+          ],
+          "complete_sequences": "partial",
+          "physical_linkage": "none",
+          "sequencing_run_id": "20",
+          "total_reads_passing_qc_filter": null,
+          "sequencing_platform": null,
+          "sequencing_facility": null,
+          "sequencing_run_date": null,
+          "sequencing_kit": null,
+          "sequencing_files": {
+            "sequencing_data_id": null,
+            "file_type": "fastq",
+            "filename": "4505_S48_R1_001.fastq.gz",
+            "read_direction": "forward",
+            "read_length": null,
+            "paired_filename": "4505_S48_R2_001.fastq.gz",
+            "paired_read_direction": "reverse",
+            "paired_read_length": null,
+            "index_filename": null,
+            "index_length": null
+          },
+          "vdjserver": {
+            "vdjserver_uuid": "55a4551f-b437-4f92-98f0-c2df6f613867",
+            "version": "2.0"
+          }
+        }
+      ],
+      "data_processing": [
+        {
+          "data_processing_id": null,
+          "primary_annotation": false,
+          "software_versions": null,
+          "paired_reads_assembly": null,
+          "quality_thresholds": null,
+          "primer_match_cutoffs": null,
+          "collapsing_method": null,
+          "data_processing_protocols": null,
+          "data_processing_files": null,
+          "germline_database": null,
+          "germline_set_ref": null,
+          "analysis_provenance_id": null
+        }
+      ]
+    },
+    {
+      "repertoire_id": "5678",
+      "repertoire_name": null,
+      "repertoire_description": null,
+      "study": {
+        "study_id": "test",
+        "study_title": "Test data",
+        "study_type": {
+          "id": null,
+          "label": null
+        },
+        "study_description": "",
+        "inclusion_exclusion_criteria": "",
+        "grants": "",
+        "study_contact": null,
+        "collected_by": "",
+        "lab_name": "",
+        "lab_address": "",
+        "submitted_by": "",
+        "pub_ids": "",
+        "keywords_study": [],
+        "adc_publish_date": null,
+        "adc_update_date": null
+      },
+      "subject": {
+        "subject_id": "5196",
+        "synthetic": false,
+        "species": {
+          "id": "NCBITAXON:9606",
+          "label": "Homo sapiens"
+        },
+        "sex": "female",
+        "age_min": 30,
+        "age_max": 30,
+        "age_unit": {
+          "id": "UO:0000036",
+          "label": "year"
+        },
+        "age_event": null,
+        "ancestry_population": null,
+        "ethnicity": "Non-Hispanic/latino",
+        "race": "White",
+        "strain_name": null,
+        "linked_subjects": null,
+        "link_type": null,
+        "diagnosis": [
+          {
+            "study_group_description": "group2",
+            "disease_diagnosis": {
+              "id": null,
+              "label": null
+            },
+            "disease_length": null,
+            "disease_stage": null,
+            "prior_therapies": null,
+            "immunogen": null,
+            "intervention": null,
+            "medical_history": null
+          }
+        ],
+        "genotype": null,
+        "vdjserver": {
+          "vdjserver_uuid": "fdf9c270-dafe-42db-80ab-434637c7ca60",
+          "version": "2.0"
+        }
+      },
+      "sample": [
+        {
+          "sample_processing_id": null,
+          "sample_id": "7705",
+          "sample_type": null,
+          "tissue": {
+            "id": null,
+            "label": null
+          },
+          "anatomic_site": null,
+          "disease_state_sample": "low",
+          "collection_time_point_relative": -1,
+          "collection_time_point_relative_unit": {
+            "id": null,
+            "label": null
+          },
+          "collection_time_point_reference": "1, 0-4 Weeks Before Vaccination",
+          "biomaterial_provider": null,
+          "tissue_processing": null,
+          "cell_subset": {
+            "id": null,
+            "label": null
+          },
+          "cell_phenotype": null,
+          "cell_species": {
+            "id": null,
+            "label": null
+          },
+          "single_cell": null,
+          "cell_number": null,
+          "cells_per_reaction": null,
+          "cell_storage": null,
+          "cell_quality": null,
+          "cell_isolation": null,
+          "cell_processing_protocol": null,
+          "template_class": "DNA",
+          "template_quality": null,
+          "template_amount": null,
+          "template_amount_unit": {
+            "id": null,
+            "label": null
+          },
+          "library_generation_method": "PCR",
+          "library_generation_protocol": null,
+          "library_generation_kit_version": null,
+          "pcr_target": [
+            {
+              "pcr_target_locus": "TRB",
+              "forward_pcr_primer_target_location": null,
+              "reverse_pcr_primer_target_location": null
+            }
+          ],
+          "complete_sequences": "partial",
+          "physical_linkage": "none",
+          "sequencing_run_id": "20",
+          "total_reads_passing_qc_filter": null,
+          "sequencing_platform": null,
+          "sequencing_facility": null,
+          "sequencing_run_date": null,
+          "sequencing_kit": null,
+          "sequencing_files": {
+            "sequencing_data_id": null,
+            "file_type": "fastq",
+            "filename": "4505_S48_R1_001.fastq.gz",
+            "read_direction": "forward",
+            "read_length": null,
+            "paired_filename": "4505_S48_R2_001.fastq.gz",
+            "paired_read_direction": "reverse",
+            "paired_read_length": null,
+            "index_filename": null,
+            "index_length": null
+          },
+          "vdjserver": {
+            "vdjserver_uuid": "55a4551f-b437-4f92-98f0-c2df6f613867",
+            "version": "2.0"
+          }
+        }
+      ],
+      "data_processing": [
+        {
+          "data_processing_id": null,
+          "primary_annotation": false,
+          "software_versions": null,
+          "paired_reads_assembly": null,
+          "quality_thresholds": null,
+          "primer_match_cutoffs": null,
+          "collapsing_method": null,
+          "data_processing_protocols": null,
+          "data_processing_files": null,
+          "germline_database": null,
+          "germline_set_ref": null,
+          "analysis_provenance_id": null
+        }
+      ]
+    }
+  ]
+}

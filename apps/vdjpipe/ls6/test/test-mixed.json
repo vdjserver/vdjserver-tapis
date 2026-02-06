@@ -1,15 +1,18 @@
 {
     "name": "vdjpipe_mixed_test",
     "appId": "vdjpipe-ls6",
-    "appVersion": "0.1",
+    "appVersion": "0.4",
     "maxMinutes":60,
     "nodeCount": 1,
+    "fileInputs":[
+        { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_vdjpipe_mixed.json", "targetPath":"analysis_document_vdjpipe_mixed.json" }
+    ],
     "fileInputArrays":[
-      { "name":"SequenceFASTQ", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/Merged_2000.fastq" ]},
-      { "name":"SequenceFASTA", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/Sample00013.fna" ]},
-      { "name":"SequenceQualityFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/Sample00013.qual" ]},
-      { "name":"SequenceForwardPairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/test_r1.fastq" ]},
-      { "name":"SequenceReversePairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/test_r2.fastq" ]}
+        { "name":"SequenceFASTQ", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/Merged_2000.fastq" ]},
+        { "name":"SequenceFASTA", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/Sample00013.fna" ]},
+        { "name":"SequenceQualityFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/Sample00013.qual" ]},
+        { "name":"SequenceForwardPairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/test_r1.fastq" ]},
+        { "name":"SequenceReversePairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/test_r2.fastq" ]}
     ],
     "parameterSet": {
         "schedulerOptions": [
@@ -22,15 +25,10 @@
         "envVariables": [
             {"key": "Workflow", "value": "paired" },
             {"key": "SequenceFASTQ", "value": "Merged_2000.fastq" },
-            {"key": "SequenceFASTQMetadata", "value": "12345" },
             {"key": "SequenceFASTA", "value": "Sample00013.fna" },
-            {"key": "SequenceFASTAMetadata", "value": "12346" },
             {"key": "SequenceQualityFiles", "value": "Sample00013.qual" },
-            {"key": "SequenceQualityFilesMetadata", "value": "12347" },
             {"key": "SequenceForwardPairedFiles", "value": "test_r1.fastq" },
-            {"key": "SequenceForwardPairedFilesMetadata", "value": "12348" },
             {"key": "SequenceReversePairedFiles", "value": "test_r2.fastq" },
-            {"key": "SequenceReversePairedFilesMetadata", "value": "4567" },
             {"key": "MergeMinimumScore", "value": "10" },
             {"key": "PreFilterStatisticsFlag", "value": "1" },
             {"key": "FilterFlag", "value": "1" },

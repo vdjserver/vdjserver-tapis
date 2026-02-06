@@ -66,7 +66,9 @@ acloneFail="${out_prefix}.allele.clone-fail.airr.tsv"
 echo DefineClones.py -d $filteredFile --mode allele --act set --model ham --norm len --dist $threshold --failed --nproc ${nproc}
 DefineClones.py -d $filteredFile --mode allele --act set --model ham --norm len --dist $threshold --failed --nproc ${nproc} | tee ${out_prefix}.allele.clone.log
 mv $fileName $acloneName
-mv $failName $acloneFail
+if [ -f $failName ]; then
+    mv $failName $acloneFail
+fi
 summaryName="${out_prefix}.summary.allele.clone.airr.json"
 python3 parse_changeo.py ${out_prefix}.allele.clone.log $summaryName
 
@@ -80,6 +82,8 @@ gcloneFail="${out_prefix}.gene.clone-fail.airr.tsv"
 echo DefineClones.py -d $filteredFile --mode gene --act set --model ham --norm len --dist $threshold --failed --nproc ${nproc}
 DefineClones.py -d $filteredFile --mode gene --act set --model ham --norm len --dist $threshold --failed --nproc ${nproc} | tee ${out_prefix}.gene.clone.log
 mv $fileName $gcloneName
-mv $failName $gcloneFail
+if [ -f $failName ]; then
+    mv $failName $gcloneFail
+fi
 summaryName="${out_prefix}.summary.gene.clone.airr.json"
 python3 parse_changeo.py ${out_prefix}.gene.clone.log $summaryName

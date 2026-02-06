@@ -1,10 +1,12 @@
 {
-    "name": "igblast_tcr_test",
+    "name": "igblast_test_tcr",
     "appId": "igblast-ls6",
-    "appVersion": "0.5",
-    "maxMinutes": 120,
+    "appVersion": "0.8",
+    "maxMinutes": 30,
     "nodeCount": 1,
     "fileInputs":[
+      { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_igblast_tcr.json", "targetPath":"analysis_document_igblast_tcr.json" },
+      { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/repertoire_metadata_tcr.airr.json", "targetPath":"repertoire_metadata_tcr.airr.json" }
     ],
     "fileInputArrays":[
       { "name":"query", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/special_seqs.fasta",
@@ -20,10 +22,8 @@
         ],
         "envVariables": [
             {"key": "query", "value": "special_seqs.fasta funky_ids.fasta" },
-            {"key": "repertoires", "value": "1234 3456" },
             {"key": "species", "value": "human" },
-            {"key": "locus", "value": "TR" },
-            {"key": "ClonalTool", "value": "repcalc" }
+            {"key": "locus", "value": "TR" }
         ]
     }
 }

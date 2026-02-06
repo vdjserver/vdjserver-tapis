@@ -1,10 +1,11 @@
 {
     "name": "presto_stern_test",
     "appId": "presto-ls6",
-    "appVersion": "0.1",
-    "maxMinutes":60,
+    "appVersion": "0.3",
+    "maxMinutes":30,
     "nodeCount": 1,
     "fileInputs":[
+      { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_presto_stern.json", "targetPath":"analysis_document_presto_stern.json" },
       { "name":"ForwardPrimerFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/Stern2014_VPrimers.fasta", "targetPath":"Stern2014_VPrimers.fasta" },
       { "name":"ReversePrimerFile", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/Stern2014_CPrimers.fasta", "targetPath":"Stern2014_CPrimers.fasta" }
     ],

@@ -1,9 +1,12 @@
 {
     "name": "vdjpipe_paired_test",
     "appId": "vdjpipe-ls6",
-    "appVersion": "0.1",
+    "appVersion": "0.4",
     "maxMinutes":60,
     "nodeCount": 1,
+    "fileInputs":[
+      { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_vdjpipe_paired.json", "targetPath":"analysis_document_vdjpipe_paired.json" }
+    ],
     "fileInputArrays":[
       { "name":"SequenceForwardPairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/test_r1.fastq" ]},
       { "name":"SequenceReversePairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/test_r2.fastq" ]}
@@ -19,9 +22,7 @@
         "envVariables": [
             {"key": "Workflow", "value": "paired" },
             {"key": "SequenceForwardPairedFiles", "value": "test_r1.fastq" },
-            {"key": "SequenceForwardPairedFilesMetadata", "value": "12348" },
             {"key": "SequenceReversePairedFiles", "value": "test_r2.fastq" },
-            {"key": "SequenceReversePairedFilesMetadata", "value": "4567" },
             {"key": "MergeMinimumScore", "value": "10" },
             {"key": "FilterFlag", "value": "1" },
             {"key": "MinimumAverageQuality", "value": "35" },

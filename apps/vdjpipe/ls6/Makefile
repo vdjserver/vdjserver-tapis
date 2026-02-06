@@ -1,7 +1,7 @@
 # helper commands for tapis v3 apps
 
 APP_NAME=vdjpipe
-APP_VERSION=0.2
+APP_VERSION=0.4
 APP_SYSTEM=ls6
 
 APP_ID=${APP_NAME}-${APP_SYSTEM}
@@ -20,6 +20,7 @@ help:
 	@echo "Assumes you are running in docker with tapis functions."
 	@echo ""
 	@echo "JSON app description:"
+	@echo "make list      -- List tapis apps"
 	@echo "make create    -- Create tapis app, only once"
 	@echo "make update    -- Update tapis app description"
 	@echo ""
@@ -33,6 +34,9 @@ help:
 	@echo "make test-all  -- Submit all test jobs"
 	@echo ""
 
+list:
+	vdjserver-tools apps list
+
 create:
 	tapis_apps_create ${APP_JSON}
 
@@ -41,13 +45,15 @@ update:
 
 clean:
 	rm -rf ${BUILD_DIR} ${APP_ARCHIVE}
+	rm -rf build-${APP_NAME}-*
+	rm -f ${APP_NAME}-*.tgz
 
 common-scripts:
 	mkdir ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/common_functions.sh ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/provenance_functions.sh ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/airr_metadata.py ${BUILD_DIR}
-	cp ${SCRIPTS_DIR}/process_metadata.py ${BUILD_DIR}
+	cp ${SCRIPTS_DIR}/prov_metadata.py ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/vdjpipe_report.py ${BUILD_DIR}
 
 build: clean common-scripts
@@ -65,9 +71,9 @@ test-job:
 	tapis_jobs_submit test/test-cli.json
 
 test-all:
-	echo tapis_jobs_submit test/test-cli.json
+	tapis_jobs_submit test/test-cli.json
 	tapis_jobs_submit test/test-grieff.json
 	tapis_jobs_submit test/test-mixed.json
 	tapis_jobs_submit test/test-paired.json
 	tapis_jobs_submit test/test-roche.json
-	tapis_jobs_submit test/test-secondary.json
+	tapis_jobs_submit test/test-roche-split.json

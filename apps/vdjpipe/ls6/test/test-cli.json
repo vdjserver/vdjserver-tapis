@@ -1,9 +1,12 @@
 {
     "name": "vdjpipe_test",
     "appId": "vdjpipe-ls6",
-    "appVersion": "0.1",
+    "appVersion": "0.4",
     "maxMinutes":60,
     "nodeCount": 1,
+    "fileInputs":[
+      { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_vdjpipe.json", "targetPath":"analysis_document_vdjpipe.json" }
+    ],
     "fileInputArrays":[
       { "name":"SequenceFASTQ", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/Merged_2000.fastq" ]}
     ],
@@ -18,7 +21,6 @@
         "envVariables": [
             {"key": "Workflow", "value": "single" },
             {"key": "SequenceFASTQ", "value": "Merged_2000.fastq" },
-            {"key": "SequenceFASTQMetadata", "value": "1234567890" },
             {"key": "PreFilterStatisticsFlag", "value": "1" },
             {"key": "FilterFlag", "value": "1" },
             {"key": "MinimumAverageQuality", "value": "35" },

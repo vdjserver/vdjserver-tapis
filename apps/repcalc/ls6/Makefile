@@ -1,7 +1,7 @@
 # helper commands for tapis v3 apps
 
 APP_NAME=repcalc2
-APP_VERSION=0.4
+APP_VERSION=0.7
 APP_SYSTEM=ls6
 
 APP_ID=${APP_NAME}-${APP_SYSTEM}
@@ -46,13 +46,15 @@ update:
 
 clean:
 	rm -rf ${BUILD_DIR} ${APP_ARCHIVE}
+	rm -rf build-${APP_NAME}-*
+	rm -f ${APP_NAME}-*.tgz
 
 common-scripts:
 	mkdir ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/common_functions.sh ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/provenance_functions.sh ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/airr_metadata.py ${BUILD_DIR}
-	cp ${SCRIPTS_DIR}/process_metadata.py ${BUILD_DIR}
+	cp ${SCRIPTS_DIR}/prov_metadata.py ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/repcalc_create_config.py ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/parse_changeo.py ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/gene_usage_template.json ${BUILD_DIR}
@@ -75,7 +77,6 @@ build: clean common-scripts
 	cp ${APP_JSON} ${BUILD_DIR}
 	cp tapisjob_app.sh ${BUILD_DIR}
 	cp repcalc_common.sh ${BUILD_DIR}
-	cp get_parameter.py ${BUILD_DIR}
 	tar zcf ${APP_ARCHIVE} -C ${BUILD_DIR} .
 
 deploy: build

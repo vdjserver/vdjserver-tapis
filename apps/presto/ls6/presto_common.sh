@@ -13,7 +13,9 @@
 # Date: August 11, 2016
 # 
 
-APP_NAME=presto
+export APP_NAME=presto
+# TODO: this is not generic enough
+export ACTIVITY_NAME="vdjserver:activity:presto"
 
 # bring in common functions
 source ./common_functions.sh
@@ -225,8 +227,8 @@ function takara_bio_umi_workflow() {
     # Identify primers and UMI in -2 reads
     printf "  %2d: %-*s $(date +'%H:%M %D')\n" $((++STEP)) 24 "MaskPrimers extract"
     $MASK_PRIMERS_PY extract -s ${MPR2_FILE} --nproc ${NPROC} \
-         --start 12 --len 7 --barcode --bf BARCODE --mode cut \
-         --log "${LOGDIR}/primers-2.log" \
+        --start 12 --len 7 --barcode --bf BARCODE --mode cut \
+        --log "${LOGDIR}/primers-2.log" \
         --outname "${OUTNAME}-R2" --outdir .  >> $PIPELINE_LOG 2> $ERROR_LOG
     check_presto_error
     if [ $? -ne 0 ]; then
@@ -266,15 +268,15 @@ function takara_bio_umi_workflow() {
     # UMI consensus
     printf "  %2d: %-*s $(date +'%H:%M %D')\n" $((++STEP)) 24 "BuildConsensus"
     $BUILD_CONSENSUS_PY -s ${BCR1_FILE} \
-       --bf BARCODE --pf ${C_FIELD} --prcons ${BC_PRCONS} \
-       -n ${BC_MINCOUNT} -q ${BC_QUAL} --maxerror ${BC_MAXERR} --maxgap ${BC_MAXGAP}  \
-       --nproc ${NPROC} --log "${LOGDIR}/consensus-1.log"  \
-       --outdir . --outname "${OUTNAME}-R1" >> $PIPELINE_LOG 2> $ERROR_LOG
+        --bf BARCODE --pf ${C_FIELD} --prcons ${BC_PRCONS} \
+        -n ${BC_MINCOUNT} -q ${BC_QUAL} --maxerror ${BC_MAXERR} --maxgap ${BC_MAXGAP}  \
+        --nproc ${NPROC} --log "${LOGDIR}/consensus-1.log"  \
+        --outdir . --outname "${OUTNAME}-R1" >> $PIPELINE_LOG 2> $ERROR_LOG
     $BUILD_CONSENSUS_PY -s ${BCR2_FILE} \
-       --bf BARCODE --pf ${C_FIELD} --prcons ${BC_PRCONS} \
-       -n ${BC_MINCOUNT} -q ${BC_QUAL} --maxerror ${BC_MAXERR} --maxgap ${BC_MAXGAP}  \
-       --nproc ${NPROC} --log "${LOGDIR}/consensus-2.log" \
-       --outdir . --outname "${OUTNAME}-R2" >> $PIPELINE_LOG 2> $ERROR_LOG
+        --bf BARCODE --pf ${C_FIELD} --prcons ${BC_PRCONS} \
+        -n ${BC_MINCOUNT} -q ${BC_QUAL} --maxerror ${BC_MAXERR} --maxgap ${BC_MAXGAP}  \
+        --nproc ${NPROC} --log "${LOGDIR}/consensus-2.log" \
+        --outdir . --outname "${OUTNAME}-R2" >> $PIPELINE_LOG 2> $ERROR_LOG
     check_presto_error
     if [ $? -ne 0 ]; then
         return 1
@@ -322,7 +324,9 @@ function takara_bio_umi_workflow() {
     if [ $? -ne 0 ]; then
         return 1
     fi
-    addOutputFile $group $APP_NAME processed_sequence "${OUTNAME}-final_total.fastq" "Total Post-Filter Sequences (${OUTNAME})" "fastq" null
+    # addOutputFile $group $APP_NAME processed_sequence "${OUTNAME}-final_total.fastq" "Total Post-Filter Sequences (${OUTNAME})" "fastq" null
+    wasDerivedFrom "${OUTNAME}-final_total.fastq" "${R1_READS}" "sequence_reads,sequence_quality" "Total Post-Filter Sequences (${OUTNAME})" "fastq"
+    wasDerivedFrom "${OUTNAME}-final_total.fastq" "${R2_READS}" "sequence_reads,sequence_quality" "Total Post-Filter Sequences (${OUTNAME})" "fastq"
     
     # Remove duplicate sequences
     printf "  %2d: %-*s $(date +'%H:%M %D')\n" $((++STEP)) 24 "CollapseSeq"
@@ -333,8 +337,9 @@ function takara_bio_umi_workflow() {
     if [ $? -ne 0 ]; then
         return 1
     fi
-    addOutputFile $group $APP_NAME sequence "${OUTNAME}-final_collapse-unique.fastq" "Unique Post-Filter Sequences (${OUTNAME})" "fastq" null
-    
+    # addOutputFile $group $APP_NAME sequence "${OUTNAME}-final_collapse-unique.fastq" "Unique Post-Filter Sequences (${OUTNAME})" "fastq" null
+    wasDerivedFrom "${OUTNAME}-final_collapse-unique.fastq" "${OUTNAME}-final_total.fastq" "Unique Post-Filter Sequences (${OUTNAME})" "fastq" 
+
     # Subset to sequences seen at least twice
     printf "  %2d: %-*s $(date +'%H:%M %D')\n" $((++STEP)) 24 "SplitSeq"
     $SPLIT_SEQ_PY group -s "${OUTNAME}-final_collapse-unique.fastq" \
@@ -343,8 +348,8 @@ function takara_bio_umi_workflow() {
     if [ $? -ne 0 ]; then
         return 1
     fi
-    addOutputFile $group $APP_NAME sequence_ge2 "${OUTNAME}-final_collapse-unique_atleast-2.fastq" "Unique At Least 2 Post-Filter Sequences (${OUTNAME})" "fastq" null
-    
+    # addOutputFile $group $APP_NAME sequence_ge2 "${OUTNAME}-final_collapse-unique_atleast-2.fastq" "Unique At Least 2 Post-Filter Sequences (${OUTNAME})" "fastq" null
+    wasDerivedFrom "${OUTNAME}-final_collapse-unique_atleast-2.fastq" "${OUTNAME}-final_collapse-unique.fastq" "Unique At Least 2 Post-Filter Sequences (${OUTNAME})" "fastq" 
     # Create table of final repertoire
     printf "  %2d: %-*s $(date +'%H:%M %D')\n" $((++STEP)) 24 "ParseHeaders table"
     $PARSE_HEADERS_PY table -s "${OUTNAME}-final_total.fastq" -f ID ${C_FIELD} CONSCOUNT \
@@ -403,15 +408,25 @@ function single_presto_workflow() {
         echo "Generate pre-filter statistics"
 
         $PYTHON3 ./statistics.py statistics-template.json $file "pre-filter_" "pre-statistics.json"
-        addStatisticsFile $group pre composition "pre-filter_${file}.composition.csv" "Nucleotide Composition" "tsv" null
-        addStatisticsFile $group pre gc_hist "pre-filter_${file}.gc_hist.csv" "GC% Histogram" "tsv" null
-        addStatisticsFile $group pre heat_map "pre-filter_${file}.heat_map.csv" "Heatmap" "tsv" null
-        addStatisticsFile $group pre len_hist "pre-filter_${file}.len_hist.csv" "Sequence Length Histogram" "tsv" null
-        addStatisticsFile $group pre mean_q_hist "pre-filter_${file}.mean_q_hist.csv" "Mean Quality Histogram" "tsv" null
-        addStatisticsFile $group pre qstats "pre-filter_${file}.qstats.csv" "Quality Scores" "tsv" null
+        
+
+        
+        # addStatisticsFile $group pre composition "pre-filter_${file}.composition.csv" "Nucleotide Composition" "tsv" null
+        # addStatisticsFile $group pre gc_hist "pre-filter_${file}.gc_hist.csv" "GC% Histogram" "tsv" null
+        # addStatisticsFile $group pre heat_map "pre-filter_${file}.heat_map.csv" "Heatmap" "tsv" null
+        # addStatisticsFile $group pre len_hist "pre-filter_${file}.len_hist.csv" "Sequence Length Histogram" "tsv" null
+        # addStatisticsFile $group pre mean_q_hist "pre-filter_${file}.mean_q_hist.csv" "Mean Quality Histogram" "tsv" null
+        # addStatisticsFile $group pre qstats "pre-filter_${file}.qstats.csv" "Quality Scores" "tsv" null
+
+        wasGeneratedBy "pre-filter_${file}.composition.csv" "${ACTIVITY_NAME}" "quality_statistics,composition" "Nucleotide Composition" "tsv"
+        wasGeneratedBy "pre-filter_${file}.gc_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,gc_histogram" "GC% Histogram" tsv
+        wasGeneratedBy "pre-filter_${file}.heat_map.csv" "${ACTIVITY_NAME}" "quality_statistics,heatmap" "Heatmap" tsv
+        wasGeneratedBy "pre-filter_${file}.len_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,length_histogram" "Sequence Length Histogram" tsv
+        wasGeneratedBy "pre-filter_${file}.mean_q_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,mean_quality_histogram" "Mean Quality Histogram" tsv
+        wasGeneratedBy "pre-filter_${file}.qstats.csv" "${ACTIVITY_NAME}" "quality_statistics" "Quality Scores" tsv
 
         $VDJ_PIPE --config pre-statistics.json
-        addCalculation "pre-filter_statistics"
+        addCalculation "${ACTIVITY_NAME}" "pre-filter_statistics"
     fi
 
     prevPassFile=$file
@@ -426,7 +441,7 @@ function single_presto_workflow() {
         ARGS="${ARGS} -s $prevPassFile"
         echo FilterSeq.py $ARGS
         $FILTER_SEQ_PY $ARGS
-        addCalculation length_filtering
+        addCalculation "${ACTIVITY_NAME}" "length_filtering"
 
         intermediateFiles[${#intermediateFiles[@]}]=$prevPassFile
         prevPassFile="${OutputName}_length-pass.${fileExtension}"
@@ -439,7 +454,7 @@ function single_presto_workflow() {
         ARGS="${ARGS} -s $prevPassFile"
         echo FilterSeq.py $ARGS
         $FILTER_SEQ_PY $ARGS
-        addCalculation quality_filtering
+        addCalculation "${ACTIVITY_NAME}" "quality_filtering"
 
         intermediateFiles[${#intermediateFiles[@]}]=$prevPassFile
         prevPassFile="${OutputName}_quality-pass.${fileExtension}"
@@ -450,15 +465,22 @@ function single_presto_workflow() {
         echo "Generate post-filter statistics"
 
         $PYTHON3 ./statistics.py statistics-template.json $prevPassFile "post-filter_" "post-statistics.json"
-        addStatisticsFile $group post composition "post-filter_${prevPassFile}.composition.csv" "Nucleotide Composition" "tsv" null
-        addStatisticsFile $group post gc_hist "post-filter_${prevPassFile}.gc_hist.csv" "GC% Histogram" "tsv" null
-        addStatisticsFile $group post heat_map "post-filter_${prevPassFile}.heat_map.csv" "Heatmap" "tsv" null
-        addStatisticsFile $group post len_hist "post-filter_${prevPassFile}.len_hist.csv" "Sequence Length Histogram" "tsv" null
-        addStatisticsFile $group post mean_q_hist "post-filter_${prevPassFile}.mean_q_hist.csv" "Mean Quality Histogram" "tsv" null
-        addStatisticsFile $group post qstats "post-filter_${prevPassFile}.qstats.csv" "Quality Scores" "tsv" null
+        # addStatisticsFile $group post composition "post-filter_${prevPassFile}.composition.csv" "Nucleotide Composition" "tsv" null
+        # addStatisticsFile $group post gc_hist "post-filter_${prevPassFile}.gc_hist.csv" "GC% Histogram" "tsv" null
+        # addStatisticsFile $group post heat_map "post-filter_${prevPassFile}.heat_map.csv" "Heatmap" "tsv" null
+        # addStatisticsFile $group post len_hist "post-filter_${prevPassFile}.len_hist.csv" "Sequence Length Histogram" "tsv" null
+        # addStatisticsFile $group post mean_q_hist "post-filter_${prevPassFile}.mean_q_hist.csv" "Mean Quality Histogram" "tsv" null
+        # addStatisticsFile $group post qstats "post-filter_${prevPassFile}.qstats.csv" "Quality Scores" "tsv" null
+
+        wasGeneratedBy "post-filter_${prevPassFile}.composition.csv" "${ACTIVITY_NAME}" "quality_statistics,composition" "Nucleotide Composition" tsv
+        wasGeneratedBy "post-filter_${prevPassFile}.gc_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,gc_histogram" "GC% Histogram" tsv
+        wasGeneratedBy "post-filter_${prevPassFile}.heat_map.csv" "${ACTIVITY_NAME}" "quality_statistics,heatmap" "Heatmap" tsv
+        wasGeneratedBy "post-filter_${prevPassFile}.len_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,length_histogram" "Sequence Length Histogram" tsv
+        wasGeneratedBy "post-filter_${prevPassFile}.mean_q_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,mean_quality_histogram" "Mean Quality Histogram" tsv
+        wasGeneratedBy "post-filter_${prevPassFile}.qstats.csv" "${ACTIVITY_NAME}" "quality_statistics" "Quality Scores" tsv
 
         $VDJ_PIPE --config post-statistics.json
-        addCalculation "post-filter_statistics"
+        addCalculation "${ACTIVITY_NAME}" "post-filter_statistics"
     fi
 
     EXPAND_PRIMER=
@@ -489,7 +511,7 @@ function single_presto_workflow() {
         ARGS="${ARGS} --outname ${OutputPrefix}-barcode --mode cut"
         echo MaskPrimers.py $ARGS
         $MASK_PRIMERS_PY $ARGS
-        addCalculation barcode_demultiplexing
+        addCalculation "${ACTIVITY_NAME}" "barcode_demultiplexing"
 
         intermediateFiles[${#intermediateFiles[@]}]=$prevPassFile
         prevPassFile="${OutputName}-barcode_primers-pass.${fileExtension}"
@@ -536,7 +558,7 @@ function single_presto_workflow() {
             ARGS="${ARGS} --outname ${OutputPrefix}-V --mode mask"
             echo MaskPrimers.py $ARGS
             $MASK_PRIMERS_PY $ARGS
-            addCalculation forward_primer
+            addCalculation "${ACTIVITY_NAME}" "forward_primer"
 
             intermediateFiles[${#intermediateFiles[@]}]=$prevPassFile
             prevPassFile="${OutputName}-V_primers-pass.${fileExtension}"
@@ -552,7 +574,7 @@ function single_presto_workflow() {
             ARGS="${ARGS} --outname ${OutputPrefix}-V --mode cut"
             echo MaskPrimers.py $ARGS
             $MASK_PRIMERS_PY $ARGS
-            addCalculation forward_umi
+            addCalculation "${ACTIVITY_NAME}" "forward_umi"
 
             intermediateFiles[${#intermediateFiles[@]}]=$prevPassFile
             prevPassFile="${OutputName}-V_primers-pass.${fileExtension}"
@@ -603,7 +625,7 @@ function single_presto_workflow() {
             ARGS="${ARGS} --outname ${OutputPrefix}-J"
             echo MaskPrimers.py $ARGS
             $MASK_PRIMERS_PY $ARGS
-            addCalculation reverse_primer
+            addCalculation "${ACTIVITY_NAME}" "reverse_primer"
 
             intermediateFiles[${#intermediateFiles[@]}]=$prevPassFile
             prevPassFile="${OutputName}-J_primers-pass.${fileExtension}"
@@ -627,7 +649,7 @@ function single_presto_workflow() {
 
         echo BuildConsensus.py $ARGS
         $BUILD_CONSENSUS_PY $ARGS
-        addCalculation umi_consensus
+        addCalculation "${ACTIVITY_NAME}" "umi_consensus"
 
         intermediateFiles[${#intermediateFiles[@]}]=$prevPassFile
         prevPassFile="${OutputName}-UMI_consensus-pass.${fileExtension}"
@@ -679,7 +701,9 @@ function single_presto_workflow() {
     intermediateFiles[${#intermediateFiles[@]}]=$prevPassFile
     cp $prevPassFile ${OutputPrefix}-final.${fileExtension}
     prevPassFile="${OutputPrefix}-final.${fileExtension}"
-    addOutputFile $group $APP_NAME processed_sequence "$prevPassFile" "Total Post-Filter Sequences (${OutputPrefix})" "read" null
+    #addOutputFile $group $APP_NAME processed_sequence "$prevPassFile" "Total Post-Filter Sequences (${OutputPrefix})" "read" null
+    ## the source_entity is file as we are not sure of the intermediary files.
+    wasDerivedFrom "$prevPassFile" "${file}" "Total Post-Filter Sequences (${OutputPrefix})" "read"
 
     # Split by barcode
     if [[ $Barcode -eq 1 ]]; then
@@ -721,10 +745,12 @@ function single_presto_workflow() {
         ARGS="${ARGS} --outname ${OutputPrefix}"
         echo CollapseSeq.py $ARGS
         $COLLAPSE_SEQ_PY $ARGS
-        addCalculation find_unique_sequences
+        addCalculation "${ACTIVITY_NAME}" "find_unique_sequences"
 
         prevPassFile="${OutputPrefix}_collapse-unique.${fileExtension}"
-        addOutputFile $group $APP_NAME sequence "$prevPassFile" "Unique Post-Filter Sequences (${OutputPrefix})" "read" null
+        # addOutputFile $group $APP_NAME sequence "$prevPassFile" "Unique Post-Filter Sequences (${OutputPrefix})" "read" null
+        # Not sure of the source entity for was derived here either.
+        wasDerivedFrom "$prevPassFile" "${file}" "Unique Post-Filter Sequences (${OutputPrefix})" "read"
 
         # don't exclude DUPCOUNT=1 sequences
         #noArchive "$prevPassFile"
@@ -847,14 +873,15 @@ function run_presto_workflow() {
                     ARGS="${ARGS} --outname $OutputPrefix"
                     echo AssemblePairs.py $ARGS
                     $ASSEMBLE_PAIRS_PY $ARGS
-                    addCalculation merge_paired_reads
+                    addCalculation "${ACTIVITY_NAME}" "merge_paired_reads"
 
                     # after merge, do the single workflow
                     DO_SINGLE=1
                     SequenceFiles="$SequenceFiles ${OutputName}_assemble-pass.${fileExtension}"
                     cp ${OutputName}_assemble-pass.${fileExtension} ${OutputPrefix}_assemble.${fileExtension}
-                    addOutputFile $group $APP_NAME merged_sequence "${OutputPrefix}_assemble.${fileExtension}" "Merged Pre-Filter Sequences (${OutputPrefix})" "read" null
-
+                    # addOutputFile $group $APP_NAME merged_sequence "${OutputPrefix}_assemble.${fileExtension}" "Merged Pre-Filter Sequences (${OutputPrefix})" "read" null
+                    wasDerivedFrom "${OutputPrefix}_assemble.${fileExtension}" "${file}" "Merged Pre-Filter Sequences (${OutputPrefix})" "read"
+                    wasDerivedFrom "${OutputPrefix}_assemble.${fileExtension}" "${rfile}" "Merged Pre-Filter Sequences (${OutputPrefix})" "read"
                 else
                     takara_bio_umi_workflow $file $rfile $count
                 fi
