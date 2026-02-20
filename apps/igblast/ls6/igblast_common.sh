@@ -49,7 +49,7 @@ function print_parameters() {
     echo "species=$species"
     echo "strain=$strain"
     echo "locus=$locus"
-    echo "germline_db=${germline_db}"
+    echo "germline_db_file=${germline_db_file}"
     echo "germline_fasta=${germline_fasta}"
     echo "domain_system=$domain_system"
     echo "ClonalTool=$ClonalTool"
@@ -416,7 +416,7 @@ function run_assign_clones() {
             #addProcessingStaqe $processing_stage
             out_prefix=${rep_id}.${processing_stage}
             file=${out_prefix}.airr.tsv
-            echo "apptainer exec -e ${repcalc_image} bash repcalc_clones.sh ${AIRRMetadata} ${germline_db} ${file} ${rep_id} ${processing_stage}" >> joblist-clones
+            echo "apptainer exec -e ${repcalc_image} bash repcalc_clones.sh ${AIRRMetadata} ${germline_db_file} ${file} ${rep_id} ${processing_stage}" >> joblist-clones
             alleleFile=${out_prefix}.allele.clone.airr.tsv
             geneFile=${out_prefix}.gene.clone.airr.tsv
 
@@ -434,7 +434,7 @@ function run_assign_clones() {
             #addProcessingStaqe $processing_stage
             out_prefix=${rep_id}.${processing_stage}
             file=${out_prefix}.airr.tsv
-            echo "apptainer exec -e ${repcalc_image} bash repcalc_clones.sh ${AIRRMetadata} ${germline_db} ${file} ${rep_id} ${processing_stage}" >> joblist-clones
+            echo "apptainer exec -e ${repcalc_image} bash repcalc_clones.sh ${AIRRMetadata} ${germline_db_file} ${file} ${rep_id} ${processing_stage}" >> joblist-clones
             alleleFile=${out_prefix}.allele.clone.airr.tsv
             geneFile=${out_prefix}.gene.clone.airr.tsv
 
