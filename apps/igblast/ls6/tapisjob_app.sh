@@ -41,16 +41,15 @@ printf "START at $(date)\n\n"
 
 # TODO: how to tell Tapis that the job failed?
 export JOB_ERROR=0
+
+setup_germline "${germline_db}"
 if [ "$locus" == "TR" ]; then
-    setup_germline "db.2019.01.23"
     export ClonalTool=repcalc
 fi
 if [ "$locus" == "IG" ]; then
-    # setup_germline "db.2026.01.09"
-    # setup_germline "db.2025.10.31"
-    setup_germline "db.2026.01.12"
     export ClonalTool=changeo
 fi
+
 
 initProvenance
 print_parameters

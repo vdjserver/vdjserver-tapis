@@ -1,10 +1,10 @@
 {
     "id":"igblast-ls6",
-    "version":"0.8",
+    "version":"0.9",
     "description":"IgBLAST on Lonestar6",
     "runtime":"ZIP",
     "runtimeOptions": ["NONE"],
-    "containerImage":"tapis://data-storage.vdjserver.org/apps/igblast-ls6-0.8.tgz",
+    "containerImage":"tapis://data-storage.vdjserver.org/apps/igblast-ls6-0.9.tgz",
     "jobType":"BATCH",
     "jobAttributes": {
         "description": "default job description",
@@ -38,6 +38,7 @@
                 {"key": "species", "inputMode": "REQUIRED" },
                 {"key": "strain", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "locus", "inputMode": "REQUIRED" },
+                {"key": "germline_db", "inputMode": "REQUIRED" },
                 {"key": "ClonalTool", "inputMode": "INCLUDE_BY_DEFAULT" }
             ]
         }
