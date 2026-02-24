@@ -17,7 +17,7 @@ module load launcher/3.10
 module load tacc-apptainer
 
 # IGBLASTN_EXE="apptainer exec ${igblast_image} igblastn -num_threads 1"
-IGBLASTN_EXE="apptainer exec ${repcalc_image} igblastn -num_threads 1"
+IGBLASTN_EXE="apptainer exec ${repcalc_image} igblastn -num_threads 64"
 PYTHON="apptainer exec -e ${repcalc_image} python3"
 AIRR_TOOLS="apptainer exec -e ${repcalc_image} airr-tools"
 export domain_system=imgt
