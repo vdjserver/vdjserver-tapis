@@ -140,12 +140,12 @@ function run_igblast_workflow() {
             ARGS="$ARGS -germline_db_D $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_D.fna"
             ARGS="$ARGS -germline_db_J $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_J.fna"
             # If locus is TR then use old auxilary data file.
-            if [ "$locus" == "TR" ]; then
+            if [ "$germline_db" == "db.2019.01.23" ]; then
                 ARGS="$ARGS -auxiliary_data $IGDATA/optional_file/${germline_set}_gl.aux"
             fi
 
             # for newer version of igblast we need an extra argument
-            if [ "$locus" == "IG" ]; then
+            if [ "$germline_db" == "db.2026.01.12" ]; then
                 ARGS="$ARGS -c_region_db  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_C.fna"
                 ARGS="$ARGS -auxiliary_data  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}.aux"
                 ARGS="$ARGS -custom_internal_data $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}.ndm"
