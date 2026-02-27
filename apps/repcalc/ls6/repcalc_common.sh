@@ -1000,18 +1000,6 @@ function run_repcalc_workflow() {
 
             if [[ $has_gene_clone -eq 1 ]]; then
                 processing_stage=igblast.makedb.gene.clone
-                # addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-mutations ${rep_id}.${processing_stage}.mutations.airr.tsv.gz "${rep_id} Mutations AIRR TSV (${processing_stage})" "tsv" null
-                # gzipFile ${rep_id}.${processing_stage}.mutations.airr.tsv
-                # addArchiveFile ${rep_id}.${processing_stage}.mutations.airr.tsv.gz
-                # addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-selection ${rep_id}.${processing_stage}.selection.tsv "${rep_id} Selection Pressure TSV (${processing_stage})" "tsv" null
-                # addArchiveFile ${rep_id}.${processing_stage}.selection.tsv
-                # addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-create_germlines "${rep_id}.${processing_stage}.germ.json" "${rep_id} Create Germlines Log (${processing_stage})" "json" null
-                # addArchiveFile ${rep_id}.${processing_stage}.germ.json
-                # if [ -e "${rep_id}.${processing_stage}.germ-fail.airr.tsv" ]; then
-                #     addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-germ_fail ${rep_id}.${processing_stage}.germ-fail.airr.tsv "${rep_id} Create Germlines Failed AIRR TSV (${processing_stage})" "tsv" null
-                #     addArchiveFile ${rep_id}.${processing_stage}.germ-fail.airr.tsv
-                # fi
-
                 addEntryToFile mutation_entries.csv output ${rep_id}.${processing_stage}.mutations.airr.tsv.gz ${rep_id}.${processing_stage}.airr.tsv.gz mutations "${rep_id} Mutations AIRR TSV (${processing_stage})" "tsv"
                 gzipFile ${rep_id}.${processing_stage}.mutations.airr.tsv
                 addArchiveFile ${rep_id}.${processing_stage}.mutations.airr.tsv.gz
@@ -1169,8 +1157,10 @@ function run_repcalc_workflow() {
     fi
     cp -f ${germline_db_file} ${_tapisJobUUID}
     zip ${_tapisJobUUID}.zip ${_tapisJobUUID}/*
-    wasGeneratedBy ${_tapisJobUUID}.zip ${ACTIVITY_NAME} output_archive "Archive of Output Files" "zip"
+    wasGeneratedBy ${_tapisJobUUID}.zip ${ACTIVITY_NAME} archive "Archive of Output Files" "zip"
     cp ${_tapisJobUUID}.zip output
+    wasGeneratedBy "tapisjob.out" "${ACTIVITY_NAME}" output_log "Output logs" txt
+    wasGeneratedBy "tapisjob.err" "${ACTIVITY_NAME}" output_error_log "Output logs (Error)" txt
 
     # HACK: manually archive the output as it is too many files for Tapis
     archive_dir=${_tapisArchiveSystemDir#/}
