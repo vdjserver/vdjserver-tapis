@@ -1134,6 +1134,9 @@ function run_repcalc_workflow() {
 
     # Provenance file
     wasGeneratedBy "provenance_output.json" "${ACTIVITY_NAME}" prov "Analysis Provenance" json
+    wasGeneratedBy ${_tapisJobUUID}.zip ${ACTIVITY_NAME} archive "Archive of Output Files" "zip"
+    wasGeneratedBy "tapisjob.out" "${ACTIVITY_NAME}" output_log "Output logs" txt
+    wasGeneratedBy "tapisjob.err" "${ACTIVITY_NAME}" output_error_log "Output logs (Error)" txt
 
     # gzip any files
     for file in $GZIP_FILE_LIST; do
@@ -1157,10 +1160,9 @@ function run_repcalc_workflow() {
     fi
     cp -f ${germline_db_file} ${_tapisJobUUID}
     zip ${_tapisJobUUID}.zip ${_tapisJobUUID}/*
-    wasGeneratedBy ${_tapisJobUUID}.zip ${ACTIVITY_NAME} archive "Archive of Output Files" "zip"
+    
     cp ${_tapisJobUUID}.zip output
-    wasGeneratedBy "tapisjob.out" "${ACTIVITY_NAME}" output_log "Output logs" txt
-    wasGeneratedBy "tapisjob.err" "${ACTIVITY_NAME}" output_error_log "Output logs (Error)" txt
+    
 
     # HACK: manually archive the output as it is too many files for Tapis
     archive_dir=${_tapisArchiveSystemDir#/}

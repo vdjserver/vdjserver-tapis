@@ -1,10 +1,10 @@
 {
     "id":"igblast-ls6",
-    "version":"0.9",
+    "version":"0.10",
     "description":"IgBLAST on Lonestar6",
     "runtime":"ZIP",
     "runtimeOptions": ["NONE"],
-    "containerImage":"tapis://data-storage.vdjserver.org/apps/igblast-ls6-0.9.tgz",
+    "containerImage":"tapis://data-storage.vdjserver.org/apps/igblast-ls6-0.10.tgz",
     "jobType":"BATCH",
     "jobAttributes": {
         "description": "default job description",

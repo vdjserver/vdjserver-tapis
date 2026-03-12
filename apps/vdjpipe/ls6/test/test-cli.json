@@ -1,7 +1,7 @@
 {
     "name": "vdjpipe_test",
     "appId": "vdjpipe-ls6",
-    "appVersion": "0.4",
+    "appVersion": "0.5",
     "maxMinutes":30,
     "nodeCount": 1,
     "fileInputs":[
