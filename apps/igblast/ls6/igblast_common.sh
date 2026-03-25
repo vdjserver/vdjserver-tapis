@@ -320,7 +320,7 @@ function run_igblast_workflow() {
         mfile=${seqMetadata[count]}
 
         wasDerivedFrom "${mfile}.igblast.airr.tsv.gz" "${file}" "vdj_sequence_annotation" "IgBlast AIRR TSV" tsv
-        wasDerivedFrom "${mfile}.igblast.makedb.airr.tsv.gz" "${file}" "vdj_sequence_annotation" "Change-O MakeDb AIRR TSV" tsv
+        wasDerivedFrom "${mfile}.igblast.makedb.airr.tsv.gz" "${file}" "makedb_parse,vdj_sequence_annotation" "Change-O MakeDb AIRR TSV" tsv
 
         count=$(( $count + 1 ))
     done
