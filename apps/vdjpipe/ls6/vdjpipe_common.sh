@@ -393,7 +393,7 @@ function run_vdjpipe_workflow() {
         SummaryFile=${OutputPrefix}.summary.txt
         $PYTHON ./vdjpipe_create_config.py --init ${SummaryFile} ${ConfigFile}
         wasGeneratedBy "${ConfigFile}" "${ACTIVITY_NAME}" config "VDJPipe Input Configuration (${fileBasename})" json
-        wasGeneratedBy "${SummaryFile}" "${ACTIVITY_NAME}" summary "VDJPipe Output Summary (${fileBasename})" txt
+        wasGeneratedBy "${SummaryFile}" "${ACTIVITY_NAME}" preprocessing_summary "VDJPipe Output Summary (${fileBasename})" txt
 
         $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --fasta $file --quals $qfile
 
@@ -420,7 +420,7 @@ function run_vdjpipe_workflow() {
         SummaryFile=${OutputPrefix}.summary.txt
         $PYTHON ./vdjpipe_create_config.py --init ${SummaryFile} ${ConfigFile}
         wasGeneratedBy "${ConfigFile}" "${ACTIVITY_NAME}" config "VDJPipe Input Configuration (${fileBasename})" json
-        wasGeneratedBy "${SummaryFile}" "${ACTIVITY_NAME}" summary "VDJPipe Output Summary (${fileBasename})" txt
+        wasGeneratedBy "${SummaryFile}" "${ACTIVITY_NAME}" preprocessing_summary "VDJPipe Output Summary (${fileBasename})" txt
 
         $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --fastq $file
 
