@@ -1,0 +1,39 @@
+{
+    "id":"tilde-ls6",
+    "version":"0.1",
+    "description":"TILDE on Lonestar6",
+    "runtime":"ZIP",
+    "runtimeOptions": ["NONE"],
+    "containerImage":"tapis://data-storage.vdjserver.org/apps/tilde-ls6-0.1.tgz",
+    "jobType":"BATCH",
+    "jobAttributes": {
+        "description": "default job description",
+        "execSystemId": "test-ls6.tacc.utexas.edu",
+        "fileInputs":[
+          { "name":"ak_graph_image", "inputMode": "FIXED", "envKey":"ak_graph_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/ak-graph-v0.1.0.sif", "targetPath":"ak-graph-v0.1.0.sif" },
+          { "name":"analysis_provenance", "inputMode": "REQUIRED", "envKey":"analysis_provenance", "targetPath":"." },
+          { "name":"AIRRMetadata", "inputMode": "REQUIRED", "envKey":"AIRRMetadata", "targetPath":"." }
+        ],
+        "fileInputArrays":[
+          { "name":"JobFiles", "inputMode": "OPTIONAL", "targetDir":"." },
+          { "name":"AIRRFiles", "inputMode": "OPTIONAL", "targetDir":"." }
+        ],
+        "parameterSet": {
+            "logConfig": {
+                "stdoutFilename": "tapisjob.out",
+                "stderrFilename": "tapisjob.err"
+            },
+            "containerArgs": [
+            ],
+            "appArgs": [
+            ],
+            "envVariables": [
+                {"key": "JobFiles", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "AIRRFiles", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "ReceptorMatchFlag", "inputMode": "REQUIRED", "value": "0" },
+                {"key": "EpitopeMatchFlag", "inputMode": "REQUIRED", "value": "0" }
+            ]
+        }
+    }
+}
+

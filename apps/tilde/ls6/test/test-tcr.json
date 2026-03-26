@@ -1,0 +1,30 @@
+{
+    "name": "igblast_test_tcr",
+    "appId": "igblast-ls6",
+    "appVersion": "0.10",
+    "maxMinutes": 30,
+    "nodeCount": 1,
+    "fileInputs":[
+      { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_igblast_tcr.json", "targetPath":"analysis_document_igblast_tcr.json" },
+      { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/repertoire_metadata_tcr.airr.json", "targetPath":"repertoire_metadata_tcr.airr.json" }
+    ],
+    "fileInputArrays":[
+      { "name":"query", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/special_seqs.fasta",
+                                        "tapis://data-storage.vdjserver.org/apps/data/test/funky_ids.fasta" ]}
+    ],
+    "parameterSet": {
+        "schedulerOptions": [
+            { "name":"allocation", "arg":"-A MCB23006" }
+        ],
+        "containerArgs": [
+        ],
+        "appArgs": [
+        ],
+        "envVariables": [
+            {"key": "query", "value": "special_seqs.fasta funky_ids.fasta" },
+            {"key": "species", "value": "human" },
+            {"key": "locus", "value": "TR" },
+            {"key": "germline_db", "value": "db.2019.01.23" }
+        ]
+    }
+}
