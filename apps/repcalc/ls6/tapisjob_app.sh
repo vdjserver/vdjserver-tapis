@@ -42,12 +42,13 @@ export JOB_ERROR=0
 
 #gather_secondary_inputs
 
-if [ "$locus" == "TR" ]; then
-    setup_germline "db.2019.01.23"
-fi
-if [ "$locus" == "IG" ]; then
-    setup_germline "db.2026.01.12"
-fi
+# if [ "$locus" == "TR" ]; then
+#     setup_germline "db.2019.01.23"
+# fi
+# if [ "$locus" == "IG" ]; then
+#     setup_germline "db.2026.01.12"
+# fi
+setup_germline "$germline_db"
 
 initProvenance
 print_parameters

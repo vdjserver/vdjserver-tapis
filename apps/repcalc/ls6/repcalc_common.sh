@@ -53,7 +53,7 @@ function print_parameters() {
     echo "species=${species}"
     echo "strain=${strain}"
     echo "locus=${locus}"
-    echo "germline_db=${germline_db}"
+    echo "germline_db_file=${germline_db_file}"
     echo "germline_fasta=${germline_fasta}"
     echo "GeneSegmentFlag=${GeneSegmentFlag}"
     echo "CDR3Flag=${CDR3Flag}"
@@ -132,80 +132,80 @@ function run_repcalc_workflow() {
         if [[ $has_igblast -eq 1 ]]; then
             processing_stage=igblast
             if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
             else
-                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
             fi
             echo "$REPCALC_EXE gene_usage_config.${processing_stage}.json" >> joblist-gene
 
             if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
             else
-                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
             fi
             echo "$REPCALC_EXE gene_combo_config.${processing_stage}.json" >> joblist-gene
         fi
         if [[ $has_makedb -eq 1 ]]; then
             processing_stage=igblast.makedb
             if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
             else
-                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
             fi
             echo "$REPCALC_EXE gene_usage_config.${processing_stage}.json" >> joblist-gene
 
             if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
             else
-                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
             fi
             echo "$REPCALC_EXE gene_combo_config.${processing_stage}.json" >> joblist-gene
         fi
         if [[ $has_igblast_clone -eq 1 ]]; then
             processing_stage=igblast.allele.clone
             if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
             else
-                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
             fi
             echo "$REPCALC_EXE gene_usage_config.${processing_stage}.json" >> joblist-gene
 
             if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
             else
-                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
             fi
             echo "$REPCALC_EXE gene_combo_config.${processing_stage}.json" >> joblist-gene
         fi
         if [[ $has_makedb_clone -eq 1 ]]; then
             processing_stage=igblast.makedb.allele.clone
             if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
             else
-                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
             fi
             echo "$REPCALC_EXE gene_usage_config.${processing_stage}.json" >> joblist-gene
 
             if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
             else
-                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
             fi
             echo "$REPCALC_EXE gene_combo_config.${processing_stage}.json" >> joblist-gene
         fi
         if [[ $has_gene_clone -eq 1 ]]; then
             processing_stage=igblast.makedb.gene.clone
             if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
             else
-                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
             fi
             echo "$REPCALC_EXE gene_usage_config.${processing_stage}.json" >> joblist-gene
 
             if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
             else
-                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
             fi
             echo "$REPCALC_EXE gene_combo_config.${processing_stage}.json" >> joblist-gene
         fi
@@ -395,38 +395,38 @@ function run_repcalc_workflow() {
         if [[ $has_igblast -eq 1 ]]; then
             processing_stage=igblast
             if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
             else
-                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
             fi
             echo "$REPCALC_EXE junction_length_config.${processing_stage}.json" >> joblist-cdr3
         fi
         if [[ $has_makedb -eq 1 ]]; then
             processing_stage=igblast.makedb
             if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
             else
-                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
             fi
             echo "$REPCALC_EXE junction_length_config.${processing_stage}.json" >> joblist-cdr3
         fi
         if [[ $has_igblast_clone -eq 1 ]]; then
             processing_stage=igblast.allele.clone
             if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
             else
-                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
             fi
             echo "$REPCALC_EXE junction_length_config.${processing_stage}.json" >> joblist-cdr3
 
             if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
             else
-                python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --germline ${germline_db} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
             fi
             echo "$REPCALC_EXE junction_distribution_config.${processing_stage}.json" >> joblist-cdr3
 
-            python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --germline ${germline_db} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
+            python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
             echo "$REPCALC_EXE junction_shared_config.${processing_stage}.json" >> joblist-cdr3
 
             count=0
@@ -440,23 +440,23 @@ function run_repcalc_workflow() {
         if [[ $has_makedb_clone -eq 1 ]]; then
             processing_stage=igblast.makedb.allele.clone
             if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
             else
-                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
             fi
             echo "$REPCALC_EXE junction_length_config.${processing_stage}.json" >> joblist-cdr3
 
             if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
             else
-                python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --germline ${germline_db} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
             fi
             echo "$REPCALC_EXE junction_distribution_config.${processing_stage}.json" >> joblist-cdr3
 
             if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
             else
-                python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --germline ${germline_db} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
             fi
             echo "$REPCALC_EXE junction_shared_config.${processing_stage}.json" >> joblist-cdr3
 
@@ -471,23 +471,23 @@ function run_repcalc_workflow() {
         if [[ $has_gene_clone -eq 1 ]]; then
             processing_stage=igblast.makedb.gene.clone
             if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
             else
-                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
             fi
             echo "$REPCALC_EXE junction_length_config.${processing_stage}.json" >> joblist-cdr3
 
             if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
             else
-                python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --germline ${germline_db} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
             fi
             echo "$REPCALC_EXE junction_distribution_config.${processing_stage}.json" >> joblist-cdr3
 
             if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
             else
-                python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --germline ${germline_db} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
             fi
             echo "$REPCALC_EXE junction_shared_config.${processing_stage}.json" >> joblist-cdr3
 
@@ -672,7 +672,7 @@ function run_repcalc_workflow() {
         if [[ $has_makedb_clone -eq 1 ]]; then
             processing_stage=igblast.makedb.allele.clone
             if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init junction_compare_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db} --stage ${processing_stage} junction_compare_config.${processing_stage}.json
+                python3 repcalc_create_config.py --init junction_compare_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_compare_config.${processing_stage}.json
                 $REPCALC_EXE junction_compare_config.${processing_stage}.json
             fi
         fi
@@ -1000,18 +1000,6 @@ function run_repcalc_workflow() {
 
             if [[ $has_gene_clone -eq 1 ]]; then
                 processing_stage=igblast.makedb.gene.clone
-                # addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-mutations ${rep_id}.${processing_stage}.mutations.airr.tsv.gz "${rep_id} Mutations AIRR TSV (${processing_stage})" "tsv" null
-                # gzipFile ${rep_id}.${processing_stage}.mutations.airr.tsv
-                # addArchiveFile ${rep_id}.${processing_stage}.mutations.airr.tsv.gz
-                # addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-selection ${rep_id}.${processing_stage}.selection.tsv "${rep_id} Selection Pressure TSV (${processing_stage})" "tsv" null
-                # addArchiveFile ${rep_id}.${processing_stage}.selection.tsv
-                # addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-create_germlines "${rep_id}.${processing_stage}.germ.json" "${rep_id} Create Germlines Log (${processing_stage})" "json" null
-                # addArchiveFile ${rep_id}.${processing_stage}.germ.json
-                # if [ -e "${rep_id}.${processing_stage}.germ-fail.airr.tsv" ]; then
-                #     addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-germ_fail ${rep_id}.${processing_stage}.germ-fail.airr.tsv "${rep_id} Create Germlines Failed AIRR TSV (${processing_stage})" "tsv" null
-                #     addArchiveFile ${rep_id}.${processing_stage}.germ-fail.airr.tsv
-                # fi
-
                 addEntryToFile mutation_entries.csv output ${rep_id}.${processing_stage}.mutations.airr.tsv.gz ${rep_id}.${processing_stage}.airr.tsv.gz mutations "${rep_id} Mutations AIRR TSV (${processing_stage})" "tsv"
                 gzipFile ${rep_id}.${processing_stage}.mutations.airr.tsv
                 addArchiveFile ${rep_id}.${processing_stage}.mutations.airr.tsv.gz
@@ -1146,6 +1134,9 @@ function run_repcalc_workflow() {
 
     # Provenance file
     wasGeneratedBy "provenance_output.json" "${ACTIVITY_NAME}" prov "Analysis Provenance" json
+    wasGeneratedBy ${_tapisJobUUID}.zip ${ACTIVITY_NAME} archive "Archive of Output Files" "zip"
+    wasGeneratedBy "tapisjob.out" "${ACTIVITY_NAME}" output_log "Output logs" txt
+    wasGeneratedBy "tapisjob.err" "${ACTIVITY_NAME}" output_error_log "Output logs (Error)" txt
 
     # gzip any files
     for file in $GZIP_FILE_LIST; do
@@ -1167,10 +1158,11 @@ function run_repcalc_workflow() {
     if [ "x${RepertoireGroupMetadata}" != "x" ]; then
         cp -f ${RepertoireGroupMetadata} ${_tapisJobUUID}
     fi
-    cp -f ${germline_db} ${_tapisJobUUID}
+    cp -f ${germline_db_file} ${_tapisJobUUID}
     zip ${_tapisJobUUID}.zip ${_tapisJobUUID}/*
-    wasGeneratedBy ${_tapisJobUUID}.zip ${ACTIVITY_NAME} output_archive "Archive of Output Files" "zip"
+    
     cp ${_tapisJobUUID}.zip output
+    
 
     # HACK: manually archive the output as it is too many files for Tapis
     archive_dir=${_tapisArchiveSystemDir#/}

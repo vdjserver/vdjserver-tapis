@@ -93,21 +93,37 @@ function run_vdjpipe() {
     if [[ $PreFilterStatisticsFlag -eq 1 ]]; then
         PreFilterStatisticsFilename="${OutPrefix}.pre-filter_"
         if [[ $PostFilterStatisticsFlag -eq 1 ]]; then
-            wasGeneratedBy "${OutPrefix}.pre-filter_composition.csv" "${ACTIVITY_NAME}" "quality_statistics,composition" "Nucleotide Composition" tsv
-            wasGeneratedBy "${OutPrefix}.pre-filter_gc_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,gc_histogram" "GC% Histogram" tsv
-            wasGeneratedBy "${OutPrefix}.pre-filter_heat_map.csv" "${ACTIVITY_NAME}" "quality_statistics,heatmap" "Heatmap" tsv
-            wasGeneratedBy "${OutPrefix}.pre-filter_len_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,length_histogram" "Sequence Length Histogram" tsv
-            wasGeneratedBy "${OutPrefix}.pre-filter_mean_q_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,mean_quality_histogram" "Mean Quality Histogram" tsv
-            wasGeneratedBy "${OutPrefix}.pre-filter_qstats.csv" "${ACTIVITY_NAME}" "quality_statistics" "Quality Scores" tsv
+            # wasGeneratedBy "${OutPrefix}.pre-filter_composition.csv" "${ACTIVITY_NAME}" "quality_statistics,composition" "Nucleotide Composition" tsv
+            # wasGeneratedBy "${OutPrefix}.pre-filter_gc_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,gc_histogram" "GC% Histogram" tsv
+            # wasGeneratedBy "${OutPrefix}.pre-filter_heat_map.csv" "${ACTIVITY_NAME}" "quality_statistics,heatmap" "Heatmap" tsv
+            # wasGeneratedBy "${OutPrefix}.pre-filter_len_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,length_histogram" "Sequence Length Histogram" tsv
+            # wasGeneratedBy "${OutPrefix}.pre-filter_mean_q_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,mean_quality_histogram" "Mean Quality Histogram" tsv
+            # wasGeneratedBy "${OutPrefix}.pre-filter_qstats.csv" "${ACTIVITY_NAME}" "quality_statistics" "Quality Scores" tsv
+
+            wasDerivedFrom "${OutPrefix}.pre-filter_composition.csv" "${SourceEntity}" "quality_statistics,composition" "Nucleotide Composition" tsv
+            wasDerivedFrom "${OutPrefix}.pre-filter_gc_hist.csv" "${SourceEntity}" "quality_statistics,gc_histogram" "GC% Histogram" tsv
+            wasDerivedFrom "${OutPrefix}.pre-filter_heat_map.csv" "${SourceEntity}" "quality_statistics,heatmap" "Heatmap" tsv
+            wasDerivedFrom "${OutPrefix}.pre-filter_len_hist.csv" "${SourceEntity}" "quality_statistics,length_histogram" "Sequence Length Histogram" tsv
+            wasDerivedFrom "${OutPrefix}.pre-filter_mean_q_hist.csv" "${SourceEntity}" "quality_statistics,mean_quality_histogram" "Mean Quality Histogram" tsv
+            wasDerivedFrom "${OutPrefix}.pre-filter_qstats.csv" "${SourceEntity}" "quality_statistics" "Quality Scores" tsv
         else
             # if no post then must be just a single statistics run
             PreFilterStatisticsFilename="${OutPrefix}.stats_"
-            wasGeneratedBy "${OutPrefix}.stats_composition.csv" "${ACTIVITY_NAME}" "quality_statistics,composition" "Nucleotide Composition" tsv
-            wasGeneratedBy "${OutPrefix}.stats_gc_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,gc_histogram" "GC% Histogram" tsv
-            wasGeneratedBy "${OutPrefix}.stats_heat_map.csv" "${ACTIVITY_NAME}" "quality_statistics,heatmap" "Heatmap" tsv
-            wasGeneratedBy "${OutPrefix}.stats_len_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,length_histogram" "Sequence Length Histogram" tsv
-            wasGeneratedBy "${OutPrefix}.stats_mean_q_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,mean_quality_histogram" "Mean Quality Histogram" tsv
-            wasGeneratedBy "${OutPrefix}.stats_qstats.csv" "${ACTIVITY_NAME}" "quality_statistics" "Quality Scores" tsv
+            # wasGeneratedBy "${OutPrefix}.stats_composition.csv" "${ACTIVITY_NAME}" "quality_statistics,composition" "Nucleotide Composition" tsv
+            # wasGeneratedBy "${OutPrefix}.stats_gc_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,gc_histogram" "GC% Histogram" tsv
+            # wasGeneratedBy "${OutPrefix}.stats_heat_map.csv" "${ACTIVITY_NAME}" "quality_statistics,heatmap" "Heatmap" tsv
+            # wasGeneratedBy "${OutPrefix}.stats_len_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,length_histogram" "Sequence Length Histogram" tsv
+            # wasGeneratedBy "${OutPrefix}.stats_mean_q_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,mean_quality_histogram" "Mean Quality Histogram" tsv
+            # wasGeneratedBy "${OutPrefix}.stats_qstats.csv" "${ACTIVITY_NAME}" "quality_statistics" "Quality Scores" tsv
+            # addCalculation "${ACTIVITY_NAME}"  "statistics"
+
+
+            wasDerivedFrom "${OutPrefix}.stats_composition.csv" "${SourceEntity}" "quality_statistics,composition" "Nucleotide Composition" tsv
+            wasDerivedFrom "${OutPrefix}.stats_gc_hist.csv" "${SourceEntity}" "quality_statistics,gc_histogram" "GC% Histogram" tsv
+            wasDerivedFrom "${OutPrefix}.stats_heat_map.csv" "${SourceEntity}" "quality_statistics,heatmap" "Heatmap" tsv
+            wasDerivedFrom "${OutPrefix}.stats_len_hist.csv" "${SourceEntity}" "quality_statistics,length_histogram" "Sequence Length Histogram" tsv
+            wasDerivedFrom "${OutPrefix}.stats_mean_q_hist.csv" "${SourceEntity}" "quality_statistics,mean_quality_histogram" "Mean Quality Histogram" tsv
+            wasDerivedFrom "${OutPrefix}.stats_qstats.csv" "${SourceEntity}" "quality_statistics" "Quality Scores" tsv
             addCalculation "${ACTIVITY_NAME}"  "statistics"
         fi
         $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --statistics $PreFilterStatisticsFilename
@@ -127,12 +143,21 @@ function run_vdjpipe() {
     if [[ $PostFilterStatisticsFlag -eq 1 ]]; then
         PostFilterStatisticsFilename="${OutPrefix}.post-filter_"
         $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --statistics $PostFilterStatisticsFilename
-        wasGeneratedBy "${OutPrefix}.post-filter_composition.csv" "${ACTIVITY_NAME}" "quality_statistics,composition" "Nucleotide Composition" tsv
-        wasGeneratedBy "${OutPrefix}.post-filter_gc_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,gc_histogram" "GC% Histogram" tsv
-        wasGeneratedBy "${OutPrefix}.post-filter_heat_map.csv" "${ACTIVITY_NAME}" "quality_statistics,heatmap" "Heatmap" tsv
-        wasGeneratedBy "${OutPrefix}.post-filter_len_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,length_histogram" "Sequence Length Histogram" tsv
-        wasGeneratedBy "${OutPrefix}.post-filter_mean_q_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,mean_quality_histogram" "Mean Quality Histogram" tsv
-        wasGeneratedBy "${OutPrefix}.post-filter_qstats.csv" "${ACTIVITY_NAME}" "quality_statistics" "Quality Scores" tsv
+        # wasGeneratedBy "${OutPrefix}.post-filter_composition.csv" "${ACTIVITY_NAME}" "quality_statistics,composition" "Nucleotide Composition" tsv
+        # wasGeneratedBy "${OutPrefix}.post-filter_gc_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,gc_histogram" "GC% Histogram" tsv
+        # wasGeneratedBy "${OutPrefix}.post-filter_heat_map.csv" "${ACTIVITY_NAME}" "quality_statistics,heatmap" "Heatmap" tsv
+        # wasGeneratedBy "${OutPrefix}.post-filter_len_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,length_histogram" "Sequence Length Histogram" tsv
+        # wasGeneratedBy "${OutPrefix}.post-filter_mean_q_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,mean_quality_histogram" "Mean Quality Histogram" tsv
+        # wasGeneratedBy "${OutPrefix}.post-filter_qstats.csv" "${ACTIVITY_NAME}" "quality_statistics" "Quality Scores" tsv
+        # addCalculation "${ACTIVITY_NAME}" "post-filter_statistics"
+
+
+        wasDerivedFrom "${OutPrefix}.post-filter_composition.csv" "${SourceEntity}" "quality_statistics,composition" "Nucleotide Composition" tsv
+        wasDerivedFrom "${OutPrefix}.post-filter_gc_hist.csv" "${SourceEntity}" "quality_statistics,gc_histogram" "GC% Histogram" tsv
+        wasDerivedFrom "${OutPrefix}.post-filter_heat_map.csv" "${SourceEntity}" "quality_statistics,heatmap" "Heatmap" tsv
+        wasDerivedFrom "${OutPrefix}.post-filter_len_hist.csv" "${SourceEntity}" "quality_statistics,length_histogram" "Sequence Length Histogram" tsv
+        wasDerivedFrom "${OutPrefix}.post-filter_mean_q_hist.csv" "${SourceEntity}" "quality_statistics,mean_quality_histogram" "Mean Quality Histogram" tsv
+        wasDerivedFrom "${OutPrefix}.post-filter_qstats.csv" "${SourceEntity}" "quality_statistics" "Quality Scores" tsv
         addCalculation "${ACTIVITY_NAME}" "post-filter_statistics"
     fi
 
@@ -236,7 +261,7 @@ function run_vdjpipe() {
 
         if [[ $Barcode -eq 1 ]]; then
             $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --uniqueGroup "${FindUniqueOutput}-{MID}.fasta" "${FindUniqueDuplicates}-{MID}.tsv"
-            wasGeneratedBy "sharing_summary.csv" "${ACTIVITY_NAME}" sharing_summary "Sharing Summary Log (${fileBasename})" log
+            wasGeneratedBy "sharing_summary.csv" "${ACTIVITY_NAME}" sharing_summary "Sharing Summary Log (${fileBasename})" tsv
         else
             $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --unique "${FindUniqueOutput}.fasta" "${FindUniqueDuplicates}.tsv"
             wasDerivedFrom "${FindUniqueOutput}.fasta" "${SourceEntity}" sequence "Unique Post-Filter Sequences (${fileBasename})" "fasta"
@@ -248,8 +273,8 @@ function run_vdjpipe() {
     # Barcode histogram
     if [[ $BarcodeGenerateHistogram -eq 1 ]]; then
         $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --barcodeHistogram MID
-        wasGeneratedBy "${OutPrefix}.MID.tsv" "${ACTIVITY_NAME}" barcode_histogram "Barcode Histogram (${fileBasename})" log
-        wasGeneratedBy "${OutPrefix}.MID-score.tsv" "${ACTIVITY_NAME}" barcode_score_histogram "Barcode Score Histogram (${fileBasename})" log
+        wasGeneratedBy "${OutPrefix}.MID.tsv" "${ACTIVITY_NAME}" barcode_histogram "Barcode Histogram (${fileBasename})" tsv
+        wasGeneratedBy "${OutPrefix}.MID-score.tsv" "${ACTIVITY_NAME}" barcode_score_histogram "Barcode Score Histogram (${fileBasename})" tsv
         addCalculation "${ACTIVITY_NAME}" "barcode_histogram"
     fi
 
@@ -335,7 +360,7 @@ function run_vdjpipe_workflow() {
             $PYTHON ./vdjpipe_create_config.py --init ${SummaryFile} ${ConfigFile}
             $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --merge $MergeMinimumScore $MergeFile --forwardReads $file --reverseReads $rfile
             wasGeneratedBy "${ConfigFile}" "${ACTIVITY_NAME}" config "VDJPipe Read Merging Configuration (${fileBasename})" json
-            wasGeneratedBy "${SummaryFile}" "${ACTIVITY_NAME}" summary "VDJPipe Read Merging Output Summary (${fileBasename})" log
+            wasGeneratedBy "${SummaryFile}" "${ACTIVITY_NAME}" merge_summary "VDJPipe Read Merging Output Summary (${fileBasename})" txt
 
             # run the paired merging
             $VDJ_PIPE --config ${ConfigFile}
@@ -368,7 +393,7 @@ function run_vdjpipe_workflow() {
         SummaryFile=${OutputPrefix}.summary.txt
         $PYTHON ./vdjpipe_create_config.py --init ${SummaryFile} ${ConfigFile}
         wasGeneratedBy "${ConfigFile}" "${ACTIVITY_NAME}" config "VDJPipe Input Configuration (${fileBasename})" json
-        wasGeneratedBy "${SummaryFile}" "${ACTIVITY_NAME}" summary "VDJPipe Output Summary (${fileBasename})" log
+        wasGeneratedBy "${SummaryFile}" "${ACTIVITY_NAME}" preprocessing_summary "VDJPipe Output Summary (${fileBasename})" txt
 
         $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --fasta $file --quals $qfile
 
@@ -395,7 +420,7 @@ function run_vdjpipe_workflow() {
         SummaryFile=${OutputPrefix}.summary.txt
         $PYTHON ./vdjpipe_create_config.py --init ${SummaryFile} ${ConfigFile}
         wasGeneratedBy "${ConfigFile}" "${ACTIVITY_NAME}" config "VDJPipe Input Configuration (${fileBasename})" json
-        wasGeneratedBy "${SummaryFile}" "${ACTIVITY_NAME}" summary "VDJPipe Output Summary (${fileBasename})" log
+        wasGeneratedBy "${SummaryFile}" "${ACTIVITY_NAME}" preprocessing_summary "VDJPipe Output Summary (${fileBasename})" txt
 
         $PYTHON ./vdjpipe_create_config.py ${ConfigFile} --fastq $file
 
@@ -410,6 +435,10 @@ function run_vdjpipe_workflow() {
 
     # Provenance file
     wasGeneratedBy "provenance_output.json" "${ACTIVITY_NAME}" prov "Analysis Provenance" json
+    wasGeneratedBy ${_tapisJobUUID}.zip "${ACTIVITY_NAME}" archive "Archive of Output Files" zip
+    wasGeneratedBy "tapisjob.out" "${ACTIVITY_NAME}" output_log "Output logs" txt
+    wasGeneratedBy "tapisjob.err" "${ACTIVITY_NAME}" output_error_log "Output logs (Error)" txt
+    
 
     # zip archive of all output files
     for file in $ARCHIVE_FILE_LIST; do
@@ -419,6 +448,8 @@ function run_vdjpipe_workflow() {
         fi
     done
     zip ${_tapisJobUUID}.zip ${_tapisJobUUID}/*
-    wasGeneratedBy ${_tapisJobUUID}.zip "${ACTIVITY_NAME}" job_archive "Archive of Output Files" zip
+    
     cp ${_tapisJobUUID}.zip output
+    # Tapis job output files
+    
 }

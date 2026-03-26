@@ -49,7 +49,7 @@ function print_parameters() {
     echo "species=$species"
     echo "strain=$strain"
     echo "locus=$locus"
-    echo "germline_db=${germline_db}"
+    echo "germline_db_file=${germline_db_file}"
     echo "germline_fasta=${germline_fasta}"
     echo "domain_system=$domain_system"
     echo "ClonalTool=$ClonalTool"
@@ -140,12 +140,12 @@ function run_igblast_workflow() {
             ARGS="$ARGS -germline_db_D $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_D.fna"
             ARGS="$ARGS -germline_db_J $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_J.fna"
             # If locus is TR then use old auxilary data file.
-            if [ "$locus" == "TR" ]; then
+            if [ "$germline_db" == "db.2019.01.23" ]; then
                 ARGS="$ARGS -auxiliary_data $IGDATA/optional_file/${germline_set}_gl.aux"
             fi
 
             # for newer version of igblast we need an extra argument
-            if [ "$locus" == "IG" ]; then
+            if [ "$germline_db" == "db.2026.01.12" ]; then
                 ARGS="$ARGS -c_region_db  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_C.fna"
                 ARGS="$ARGS -auxiliary_data  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}.aux"
                 ARGS="$ARGS -custom_internal_data $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}.ndm"
@@ -320,7 +320,7 @@ function run_igblast_workflow() {
         mfile=${seqMetadata[count]}
 
         wasDerivedFrom "${mfile}.igblast.airr.tsv.gz" "${file}" "vdj_sequence_annotation" "IgBlast AIRR TSV" tsv
-        wasDerivedFrom "${mfile}.igblast.makedb.airr.tsv.gz" "${file}" "vdj_sequence_annotation" "Change-O MakeDb AIRR TSV" tsv
+        wasDerivedFrom "${mfile}.igblast.makedb.airr.tsv.gz" "${file}" "makedb_parse,vdj_sequence_annotation" "Change-O MakeDb AIRR TSV" tsv
 
         count=$(( $count + 1 ))
     done
@@ -416,7 +416,7 @@ function run_assign_clones() {
             #addProcessingStaqe $processing_stage
             out_prefix=${rep_id}.${processing_stage}
             file=${out_prefix}.airr.tsv
-            echo "apptainer exec -e ${repcalc_image} bash repcalc_clones.sh ${AIRRMetadata} ${germline_db} ${file} ${rep_id} ${processing_stage}" >> joblist-clones
+            echo "apptainer exec -e ${repcalc_image} bash repcalc_clones.sh ${AIRRMetadata} ${germline_db_file} ${file} ${rep_id} ${processing_stage}" >> joblist-clones
             alleleFile=${out_prefix}.allele.clone.airr.tsv
             geneFile=${out_prefix}.gene.clone.airr.tsv
 
@@ -434,7 +434,7 @@ function run_assign_clones() {
             #addProcessingStaqe $processing_stage
             out_prefix=${rep_id}.${processing_stage}
             file=${out_prefix}.airr.tsv
-            echo "apptainer exec -e ${repcalc_image} bash repcalc_clones.sh ${AIRRMetadata} ${germline_db} ${file} ${rep_id} ${processing_stage}" >> joblist-clones
+            echo "apptainer exec -e ${repcalc_image} bash repcalc_clones.sh ${AIRRMetadata} ${germline_db_file} ${file} ${rep_id} ${processing_stage}" >> joblist-clones
             alleleFile=${out_prefix}.allele.clone.airr.tsv
             geneFile=${out_prefix}.gene.clone.airr.tsv
 
@@ -474,6 +474,9 @@ function run_assign_clones() {
 function compress_and_archive() {
     # Provenance file
     wasGeneratedBy "provenance_output.json" "${ACTIVITY_NAME}" prov "Analysis Provenance" json
+    wasGeneratedBy ${_tapisJobUUID}.zip "${ACTIVITY_NAME}" archive "Archive of Output Files" zip
+    wasGeneratedBy "tapisjob.out" "${ACTIVITY_NAME}" output_log "Output logs" txt
+    wasGeneratedBy "tapisjob.err" "${ACTIVITY_NAME}" output_error_log "Output logs (Error)" txt
 
     # gzip any files
     for file in $GZIP_FILE_LIST; do
@@ -489,8 +492,10 @@ function compress_and_archive() {
             cp -f $file output
         fi
     done
+    cp -f ${germline_db_file} ${_tapisJobUUID}
     zip ${_tapisJobUUID}.zip ${_tapisJobUUID}/*
-    wasGeneratedBy ${_tapisJobUUID}.zip "${ACTIVITY_NAME}" job_archive "Archive of Output Files" zip
+    
     #addLogFile $APP_NAME log output_archive ${_tapisJobUUID}.zip "Archive of Output Files" "zip" null
     cp ${_tapisJobUUID}.zip output
+    
 }
