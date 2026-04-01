@@ -34,9 +34,6 @@ export LAUNCHER_SCHED=interleaved
 # Start
 printf "START at $(date)\n\n"
 
-# TODO: how to tell Tapis that the job failed?
-export JOB_ERROR=0
-
 print_parameters
 print_versions
 run_compairr_workflow

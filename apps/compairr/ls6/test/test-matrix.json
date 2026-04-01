@@ -1,5 +1,5 @@
 {
-    "name": "compairr_test_matrix_v1",
+    "name": "compairr_test_matrix",
     "appId": "compairr-ls6",
     "appVersion": "0.2",
     "maxMinutes":60,
@@ -24,8 +24,7 @@
             ],
             "envVariables": [
                 {"key":"airr_tsv_files", "value": "test_repertoire_1.airr.tsv.gz test_repertoire_2.airr.tsv.gz test_repertoire_3.airr.tsv.gz"},
-                {"key": "analysis_type", "value": "matrix" },
-                {"key": "distance", "value":"1"}
+                {"key": "analysis_type", "value": "matrix" }
             ]
     }
 }
