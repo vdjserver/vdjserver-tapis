@@ -9,8 +9,8 @@
       { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/repertoire_metadata_tcr.airr.json", "targetPath":"repertoire_metadata_tcr.airr.json" }
     ],
     "fileInputArrays":[
-      { "name":"query", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/special_seqs.fasta",
-                                        "tapis://data-storage.vdjserver.org/apps/data/test/funky_ids.fasta" ]}
+      { "name":"query", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/test_input_tilde1.airr.tsv.gz",
+                                        "tapis://data-storage.vdjserver.org/apps/data/test/test_input_tilde2.airr.tsv.gz" ]}
     ],
     "parameterSet": {
         "schedulerOptions": [
@@ -21,7 +21,7 @@
         "appArgs": [
         ],
         "envVariables": [
-            {"key": "query", "value": "special_seqs.fasta funky_ids.fasta" },
+            {"key": "query", "value": "1234.airr.tsv.gz 3456.airr.tsv.gz" },
             {"key": "species", "value": "human" },
             {"key": "locus", "value": "TR" },
             {"key": "germline_db", "value": "db.2019.01.23" }

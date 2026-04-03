@@ -11,6 +11,7 @@
 # 
 
 APP_NAME=tilde
+#  TILDE: TCR/Ig Linkage via CDR3 similarity for Discovery of Epitopes
 # TODO: this is not generic enough
 export ACTIVITY_NAME="vdjserver:activity:tilde"
 
@@ -92,7 +93,8 @@ function run_tilde_workflow() {
         species=human
 
         # command to run TILDE
-        echo "export $PYTHON --version" >> joblist
+        # $PYTHON tilde_analysis_SQLite.py $file "$fileBasename"
+        echo "$PYTHON tilde_analysis_SQLite.py $file $fileBasename" >> joblist
 
         count=$(( $count + 1 ))
     done
@@ -117,6 +119,7 @@ function run_tilde_workflow() {
         wasDerivedFrom "${fileBasename}.tilde.detail.tsv.gz" "${file}" "match_detail" "TILDE match detail" tsv
         wasDerivedFrom "${fileBasename}.tilde.summary.tsv.gz" "${file}" "match_summary" "TILDE match summary" tsv
         wasDerivedFrom "${fileBasename}.tilde.assay.json" "${file}" "assay_match" "TILDE assay dictionary for matches" json
+        wasDerivedFrom "${fileBasename}_summary_distribution_figure.png" "${file}" "summary_figure" "TILDE summary figure " png
 
         count=$(( $count + 1 ))
     done
