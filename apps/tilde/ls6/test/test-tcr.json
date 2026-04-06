@@ -1,16 +1,16 @@
 {
-    "name": "igblast_test_tcr",
-    "appId": "igblast-ls6",
-    "appVersion": "0.10",
+    "name": "tilde_test_tcr",
+    "appId": "tilde-ls6",
+    "appVersion": "0.1",
     "maxMinutes": 30,
     "nodeCount": 1,
     "fileInputs":[
-      { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_igblast_tcr.json", "targetPath":"analysis_document_igblast_tcr.json" },
+      { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_tilde_tcr.json", "targetPath":"analysis_document_tilde_tcr.json" },
       { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/repertoire_metadata_tcr.airr.json", "targetPath":"repertoire_metadata_tcr.airr.json" }
     ],
     "fileInputArrays":[
-      { "name":"query", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/test_input_tilde1.airr.tsv.gz",
-                                        "tapis://data-storage.vdjserver.org/apps/data/test/test_input_tilde2.airr.tsv.gz" ]}
+      { "name":"query", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/1234.airr.tsv.gz",
+                                        "tapis://data-storage.vdjserver.org/apps/data/test/3456.airr.tsv.gz" ]}
     ],
     "parameterSet": {
         "schedulerOptions": [
@@ -21,10 +21,9 @@
         "appArgs": [
         ],
         "envVariables": [
-            {"key": "query", "value": "1234.airr.tsv.gz 3456.airr.tsv.gz" },
-            {"key": "species", "value": "human" },
-            {"key": "locus", "value": "TR" },
-            {"key": "germline_db", "value": "db.2019.01.23" }
+            {"key": "AIRRFiles", "value": "1234.airr.tsv.gz 3456.airr.tsv.gz" },
+            {"key": "ReceptorMatchFlag", "value": "0" },
+            {"key": "EpitopeMatchFlag", "value": "0" }
         ]
     }
 }

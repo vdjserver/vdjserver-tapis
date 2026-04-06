@@ -88,6 +88,17 @@ def get_query_for_assay_object(chunk_size):
     """
     return query
 
+def get_query_for_chain(chunk_size):
+    placeholders = ",".join(["?"] * chunk_size)
+    query = f"""
+    SELECT 
+        junction_aa
+    FROM "Chain" ch
+    WHERE ch.junction_aa IN ({placeholders})
+    """
+    return query
+
+
 def chunk_list(data, chunk_size):
     """Helper function to chunk the data into smaller chunks."""
     for i in range(0, len(data), chunk_size):
@@ -95,6 +106,8 @@ def chunk_list(data, chunk_size):
 
 def query_database_stream(parameter, query_type, locus=None, chunk_size=999):
     conn = sqlite3.connect(SQLITE_DB_PATH)
+    conn.execute("PRAGMA journal_mode = OFF;")   # No rollback journal = faster reads
+    conn.execute("PRAGMA synchronous = OFF;")    # Don't wait for disk confirmation
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
 
@@ -112,6 +125,13 @@ def query_database_stream(parameter, query_type, locus=None, chunk_size=999):
         elif query_type == "assay":
             for chunk in chunk_list(parameter, chunk_size):
                 query = get_query_for_assay_object(len(chunk))
+                cur.execute(query, tuple(chunk))
+                for row in cur:
+                    yield dict(row)
+                    
+        elif query_type == "chain":
+            for chunk in chunk_list(parameter, chunk_size):
+                query = get_query_for_chain(len(chunk))
                 cur.execute(query, tuple(chunk))
                 for row in cur:
                     yield dict(row)
@@ -233,16 +253,26 @@ def main():
     print("Extracting junction_aa sequences...")
     
     junction_aa_list = airr_df["junction_aa"].dropna().tolist()
-    unique_junction_aa = list(set(junction_aa_list))
+    
+    all_unique_junction_aa = list(set(junction_aa_list))
+    
+    print("Pre-filtering junction_aa that are not in AKC DB...")
+    # get available junction_aa in the database
+    unique_junction_aa = set()
+    for row in query_database_stream(all_unique_junction_aa, "chain"):
+        j_aa = row['junction_aa']
+        unique_junction_aa.add(j_aa)
+        
+    unique_junction_aa = list(unique_junction_aa) # Convert to list before queriying
+
+    print(f"Total productive sequences: {len(airr_df)}")
+    print(f"Total Unique junction_aa in the airr file: {len(all_unique_junction_aa)}")
+    print(f"Total Unique junction_aa in AKC being queried: {len(unique_junction_aa)}")
     
     print("Pre-calculating duplicate counts...")
-
     dup_counts = airr_df.groupby("junction_aa")["duplicate_count"].sum().to_dict()
 
     j_aa_freqs = airr_df["junction_aa"].value_counts().to_dict()
-    
-    print(f"Total productive sequences: {len(airr_df)}")
-    print(f"Total Unique junction_aa being queried: {len(unique_junction_aa)}")
     
     print("=======================================================================================")
     
