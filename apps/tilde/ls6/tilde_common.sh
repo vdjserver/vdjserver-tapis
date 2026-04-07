@@ -38,7 +38,6 @@ function print_parameters() {
     echo "AIRRMetadata=${AIRRMetadata}"
     echo "JobFiles=${JobFiles}"
     echo "AIRRFiles=${AIRRFiles}"
-    echo "query=$query"
     echo ""
     echo "Application parameters:"
     echo "ReceptorMatchFlag=${ReceptorMatchFlag}"

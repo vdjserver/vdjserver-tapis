@@ -29,7 +29,6 @@
             ],
             "envVariables": [
                 {"key": "JobFiles", "inputMode": "INCLUDE_BY_DEFAULT" },
-                {"key": "query", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "AIRRFiles", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "ReceptorMatchFlag", "inputMode": "REQUIRED", "value": "0" },
                 {"key": "EpitopeMatchFlag", "inputMode": "REQUIRED", "value": "0" }
