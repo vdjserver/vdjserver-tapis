@@ -9,11 +9,14 @@ import seaborn as sns
 import json
 import sqlite3
 import csv
+import time
+
 matplotlib.use("Agg")
 #  TILDE: TCR/Ig Linkage via CDR3 similarity for Discovery of Epitopes
 
 # SQLITE_DB_PATH = "/ak_graph_data/airrkb_v2_optimized.db"
-SQLITE_DB_PATH = '/corral-repl/projects/vdjZ/akc/tilda-db/airrkb_v2_optimized.db'
+# SQLITE_DB_PATH = '/corral-repl/projects/vdjZ/akc/tilda-db/airrkb_v2_optimized.db'
+SQLITE_DB_PATH = '/scratch/01114/vdj/airrkb_v2_optimized.db'
 
 def load_airr_file(filepath):
     """Load AIRR TSV and extract junction_aa."""
@@ -81,20 +84,14 @@ def get_query_for_locus(locus, chunk_size):
 def get_query_for_assay_object(chunk_size):
     placeholders = ",".join(["?"] * chunk_size)
     query = f"""
-    SELECT 
-        *
-    FROM "QueryAssay" qa
-    WHERE qa.akc_id IN ({placeholders})
+    SELECT * FROM "QueryAssay" qa WHERE qa.akc_id IN ({placeholders})
     """
     return query
 
 def get_query_for_chain(chunk_size):
     placeholders = ",".join(["?"] * chunk_size)
     query = f"""
-    SELECT 
-        junction_aa
-    FROM "Chain" ch
-    WHERE ch.junction_aa IN ({placeholders})
+    SELECT junction_aa FROM "Chain" ch WHERE ch.junction_aa IN ({placeholders})
     """
     return query
 
@@ -103,12 +100,39 @@ def chunk_list(data, chunk_size):
     """Helper function to chunk the data into smaller chunks."""
     for i in range(0, len(data), chunk_size):
         yield data[i:i + chunk_size]
+        
+# def get_connection():
+#     conn = sqlite3.connect(SQLITE_DB_PATH)
+    
+#     # TACC optimizations
+#     conn.execute("PRAGMA journal_mode = OFF;")
+#     conn.execute("PRAGMA synchronous = OFF;")
+#     conn.execute("PRAGMA temp_store = 2;")
+#     conn.execute("PRAGMA cache_size = -2000000;")  # ~2GB cache
+    
+#     conn.row_factory = sqlite3.Row
+#     return conn
 
-def query_database_stream(parameter, query_type, locus=None, chunk_size=999):
-    conn = sqlite3.connect(SQLITE_DB_PATH)
-    conn.execute("PRAGMA journal_mode = OFF;")   # No rollback journal = faster reads
-    conn.execute("PRAGMA synchronous = OFF;")    # Don't wait for disk confirmation
+
+def get_connection():
+    
+    db_path = f"file:{SQLITE_DB_PATH}?mode=ro&immutable=1&nolock=1"
+    conn = sqlite3.connect(db_path, uri=True)
+    # conn = sqlite3.connect(SQLITE_DB_PATH)
+    
+    # TACC optimizations
+    cur = conn.cursor()
+    conn.execute("PRAGMA journal_mode = OFF;")
+    conn.execute("PRAGMA synchronous = OFF;")
+    conn.execute("PRAGMA temp_store = MEMORY;")
+    conn.execute("PRAGMA mmap_size = 0;")
+    conn.execute("PRAGMA cache_size = -2000000;")  # ~2GB cache
+    
     conn.row_factory = sqlite3.Row
+    return conn
+
+def query_database_stream(parameter, query_type, conn, locus=None, chunk_size=100):
+
     cur = conn.cursor()
 
     try:
@@ -120,23 +144,27 @@ def query_database_stream(parameter, query_type, locus=None, chunk_size=999):
                 cur.execute(query, tuple(chunk))
                 # Yield rows one by one to keep memory low
                 for row in cur:
-                    yield dict(row)
+                    # yield dict(row)
+                    yield row
         
         elif query_type == "assay":
             for chunk in chunk_list(parameter, chunk_size):
                 query = get_query_for_assay_object(len(chunk))
                 cur.execute(query, tuple(chunk))
                 for row in cur:
-                    yield dict(row)
+                    # yield dict(row)
+                    yield row
                     
         elif query_type == "chain":
             for chunk in chunk_list(parameter, chunk_size):
                 query = get_query_for_chain(len(chunk))
                 cur.execute(query, tuple(chunk))
                 for row in cur:
-                    yield dict(row)
+                    # yield dict(row)
+                    yield row
     finally:
-        conn.close()
+        # conn.close()
+        pass
 
 
 def process_query_results_stream(rows_generator):
@@ -150,11 +178,10 @@ def process_query_results_stream(rows_generator):
     # Iterate through the generator (one row at a time)
     for row in rows_generator:
         # Postgres might return 'assay_object' as a dict or a JSON string
-        assay_raw = row.get("assay_object")
+        assay_raw = row["assay_object"]
 
         if not assay_raw:
             continue
-
         # Handle JSON parsing only if necessary
         if isinstance(assay_raw, str):
             assay_dict = json.loads(assay_raw)
@@ -163,7 +190,7 @@ def process_query_results_stream(rows_generator):
         else:
             continue
 
-        assay_id = row.get('akc_id')
+        assay_id = row["akc_id"]
         # Store the original object for the final JSON output
         all_assay_dict[assay_id] = assay_dict
         
@@ -193,7 +220,7 @@ def process_query_results_stream(rows_generator):
 
 def plot_top_junction_aa(summary_df, OUTPUT_FILE_BASE, n = 15):
     temp = summary_df.head(n)
-    fig, axes = plt.subplots(1, 2, figsize = (10, 6), gridspec_kw={'width_ratios': [2, 3]})
+    fig, axes = plt.subplots(1, 2, figsize = (12, 6), gridspec_kw={'width_ratios': [2, 3]})
     sns.barplot(data = temp, y = 'query_cdr3', x = 'n_unique_epitope_seq', ax = axes[0])
     sns.scatterplot(data = summary_df, x = 'n_unique_epitope_id', y = 'n_unique_epitope_seq', ax = axes[1])
     sns.regplot(
@@ -253,17 +280,17 @@ def main():
     print("Extracting junction_aa sequences...")
     
     junction_aa_list = airr_df["junction_aa"].dropna().tolist()
-    
     all_unique_junction_aa = list(set(junction_aa_list))
     
     print("Pre-filtering junction_aa that are not in AKC DB...")
     # get available junction_aa in the database
     unique_junction_aa = set()
-    for row in query_database_stream(all_unique_junction_aa, "chain"):
+    conn = get_connection()
+    for row in query_database_stream(all_unique_junction_aa, "chain", conn):
         j_aa = row['junction_aa']
         unique_junction_aa.add(j_aa)
         
-    unique_junction_aa = list(unique_junction_aa) # Convert to list before queriying
+    unique_junction_aa = list(unique_junction_aa) # Convert to list before querying
 
     print(f"Total productive sequences: {len(airr_df)}")
     print(f"Total Unique junction_aa in the airr file: {len(all_unique_junction_aa)}")
@@ -271,9 +298,9 @@ def main():
     
     print("Pre-calculating duplicate counts...")
     dup_counts = airr_df.groupby("junction_aa")["duplicate_count"].sum().to_dict()
-
     j_aa_freqs = airr_df["junction_aa"].value_counts().to_dict()
     
+
     print("=======================================================================================")
     
     print("                   Querying Database for junction_aa and Epitope match...             \n")
@@ -286,14 +313,20 @@ def main():
     detailed_tsv = f"{OUTPUT_FILE_BASE}.tilde.detail.tsv"
     summary_data = {}
     unique_assay_ids = set()
-    
+    last_printed_progress = 0
     print(f"Writing detailed output to a tsv file")
     with open(detailed_tsv, 'w', newline='') as f_out:
-        writer = csv.DictWriter(f_out, fieldnames=matched_columns, delimiter='\t')
-        writer.writeheader()
+        # writer = csv.DictWriter(f_out, fieldnames=matched_columns, delimiter='\t')
+        # writer.writeheader()
+        writer = csv.writer(f_out, delimiter='\t')
+        writer.writerow(matched_columns)
 
+        total_junctions = len(unique_junction_aa)
+        print("Total rows: ", total_junctions)
+        # Counter for how many rows have been processed
+        start_time = time.time()
         # Iterate through the generator
-        for row in query_database_stream(unique_junction_aa, "junction_aa", LOCUS):
+        for row in query_database_stream(unique_junction_aa, "junction_aa", conn, LOCUS):
             # Write to detailed file immediately
             writer.writerow(row)
 
@@ -320,7 +353,18 @@ def main():
             if row['akc_epitope_seq_aa']:s["unique_epitope_seq"].add(row['akc_epitope_seq_aa'])
             if row['akc_source_organism']:s["unique_orgs"].add(row['akc_source_organism'])
             if row['akc_source_protein']:s["unique_proteins"].add(row['akc_source_protein'])
-    print(f"Done writing detailes to {detailed_tsv} file")
+            
+            processed_junctions = len(summary_data)
+            progress_percentage = (processed_junctions / total_junctions) * 100
+            if progress_percentage >= last_printed_progress + 10 or progress_percentage == 100.0:
+                elapsed = (time.time() - start_time) / 60
+                sys.stdout.write(
+                    f"\rProgress: {progress_percentage:.2f}% | "
+                    f"{processed_junctions}/{total_junctions} junctions | Elapsed: {elapsed:.2f} minutes"
+                )
+                sys.stdout.flush()
+                last_printed_progress = int(progress_percentage // 10) * 10
+    print(f"\nDone writing detailes to {detailed_tsv} file")
 
     # Finalize Summary Dataframe
     summary_rows = []
@@ -353,8 +397,7 @@ def main():
     print("=======================================================================================")
     
     # Query returns a generator
-    assay_rows_gen = query_database_stream(list(unique_assay_ids), "assay")
-
+    assay_rows_gen = query_database_stream(list(unique_assay_ids), "assay", conn)
     # Process the generator
     assay_df, all_assay_dict = process_query_results_stream(assay_rows_gen)
     
@@ -368,7 +411,7 @@ def main():
     with open(f'{json_filename}', 'w') as f:
         json.dump(all_assay_dict, f, indent=4)
     print("=======================================================================================")
-    
+    conn.close()
     print("=======================================================================================")
     print("                                     Analysis Complete!                                ")
     print("=======================================================================================")
