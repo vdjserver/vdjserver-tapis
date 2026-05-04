@@ -2,15 +2,14 @@
     "name": "tilde_test_tcr",
     "appId": "tilde-ls6",
     "appVersion": "0.1",
-    "maxMinutes": 60,
+    "maxMinutes": 30,
     "nodeCount": 1,
     "fileInputs":[
       { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_tilde_tcr.json", "targetPath":"analysis_document_tilde_tcr.json" },
       { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/repertoire_metadata_tcr.airr.json", "targetPath":"repertoire_metadata_tcr.airr.json" }
     ],
     "fileInputArrays":[
-      { "name":"AIRRFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/1234.airr.tsv.gz",
-                                        "tapis://data-storage.vdjserver.org/apps/data/test/3456.airr.tsv.gz" ]}
+      { "name":"AIRRFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/1234.airr.tsv.gz"]}
     ],
     "parameterSet": {
         "schedulerOptions": [
@@ -21,7 +20,7 @@
         "appArgs": [
         ],
         "envVariables": [
-            {"key": "AIRRFiles", "value": "1234.airr.tsv.gz 3456.airr.tsv.gz" },
+            {"key": "AIRRFiles", "value": "1234.airr.tsv.gz" },
             {"key": "ReceptorMatchFlag", "value": "0" },
             {"key": "EpitopeMatchFlag", "value": "0" }
         ]

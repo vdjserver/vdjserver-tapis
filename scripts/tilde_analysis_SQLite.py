@@ -16,7 +16,8 @@ matplotlib.use("Agg")
 
 # SQLITE_DB_PATH = "/ak_graph_data/airrkb_v2_optimized.db"
 # SQLITE_DB_PATH = '/corral-repl/projects/vdjZ/akc/tilda-db/airrkb_v2_optimized.db'
-SQLITE_DB_PATH = '/scratch/01114/vdj/airrkb_v2_optimized.db'
+# SQLITE_DB_PATH = '/scratch/01114/vdj/airrkb_v2_optimized.db'
+SQLITE_DB_PATH = '/scratch/01114/vdj/airrkb_v2_prejoined.db'
 
 def load_airr_file(filepath):
     """Load AIRR TSV and extract junction_aa."""
@@ -54,32 +55,32 @@ def find_index_on_a_table_sqlite(SQLITE_DB_PATH):
 # ---------------------------
 # Query Builders
 # ---------------------------   
+
 def get_query_for_locus(locus, chunk_size):
     placeholders = ', '.join(['?'] * chunk_size)
     
     return f"""
     SELECT
-        atc.assay_akc_id AS akc_assay_akc_id,
-        c.akc_id AS akc_complex_akc_id,
-        c.epitope AS akc_epitope_akc_id,
-        e.sequence_aa AS akc_epitope_seq_aa,
-        e.source_protein AS akc_source_protein,
-        e.source_organism AS akc_source_organism,
-        ch.junction_aa AS junction_aa,
-        ch.species AS akc_species,
-        ch.v_call AS akc_v_call,
-        ch.j_call AS akc_j_call
-    FROM "TCRpMHCComplex" c
-    JOIN "Assay_tcr_complexes" atc
-        ON c.akc_id = atc.tcr_complexes_akc_id
-    JOIN "TCellReceptor" t
-        ON c.tcr = t.akc_id
-    JOIN "Chain" ch
-        ON t.{locus}_chain = ch.akc_id
-    LEFT OUTER JOIN "Epitope" e
-        ON c.epitope = e.akc_id
-    WHERE ch.junction_aa IN ({placeholders})
+        akc_assay_akc_id,
+        akc_complex_akc_id,
+        akc_epitope_akc_id,
+        akc_epitope_seq_aa,
+        akc_source_protein,
+        akc_source_organism,
+        junction_aa,
+        akc_species,
+        akc_v_call,
+        akc_j_call
+    FROM "joined_tcr_data" jtd
+    WHERE jtd.junction_aa IN ({placeholders})
     """
+    
+def get_query_for_chain(chunk_size):
+    placeholders = ",".join(["?"] * chunk_size)
+    query = f"""
+    SELECT junction_aa FROM "joined_tcr_data" ch WHERE ch.junction_aa IN ({placeholders})
+    """
+    return query
     
 def get_query_for_assay_object(chunk_size):
     placeholders = ",".join(["?"] * chunk_size)
@@ -88,12 +89,6 @@ def get_query_for_assay_object(chunk_size):
     """
     return query
 
-def get_query_for_chain(chunk_size):
-    placeholders = ",".join(["?"] * chunk_size)
-    query = f"""
-    SELECT junction_aa FROM "Chain" ch WHERE ch.junction_aa IN ({placeholders})
-    """
-    return query
 
 
 def chunk_list(data, chunk_size):
@@ -101,37 +96,19 @@ def chunk_list(data, chunk_size):
     for i in range(0, len(data), chunk_size):
         yield data[i:i + chunk_size]
         
-# def get_connection():
-#     conn = sqlite3.connect(SQLITE_DB_PATH)
-    
-#     # TACC optimizations
-#     conn.execute("PRAGMA journal_mode = OFF;")
-#     conn.execute("PRAGMA synchronous = OFF;")
-#     conn.execute("PRAGMA temp_store = 2;")
-#     conn.execute("PRAGMA cache_size = -2000000;")  # ~2GB cache
-    
-#     conn.row_factory = sqlite3.Row
-#     return conn
-
 
 def get_connection():
     
     db_path = f"file:{SQLITE_DB_PATH}?mode=ro&immutable=1&nolock=1"
     conn = sqlite3.connect(db_path, uri=True)
-    # conn = sqlite3.connect(SQLITE_DB_PATH)
-    
-    # TACC optimizations
     cur = conn.cursor()
     conn.execute("PRAGMA journal_mode = OFF;")
     conn.execute("PRAGMA synchronous = OFF;")
-    conn.execute("PRAGMA temp_store = MEMORY;")
-    conn.execute("PRAGMA mmap_size = 0;")
-    conn.execute("PRAGMA cache_size = -2000000;")  # ~2GB cache
-    
     conn.row_factory = sqlite3.Row
     return conn
 
-def query_database_stream(parameter, query_type, conn, locus=None, chunk_size=100):
+
+def query_database_stream(parameter, query_type, conn, locus=None, chunk_size=1):
 
     cur = conn.cursor()
 
@@ -144,7 +121,6 @@ def query_database_stream(parameter, query_type, conn, locus=None, chunk_size=10
                 cur.execute(query, tuple(chunk))
                 # Yield rows one by one to keep memory low
                 for row in cur:
-                    # yield dict(row)
                     yield row
         
         elif query_type == "assay":
@@ -152,7 +128,6 @@ def query_database_stream(parameter, query_type, conn, locus=None, chunk_size=10
                 query = get_query_for_assay_object(len(chunk))
                 cur.execute(query, tuple(chunk))
                 for row in cur:
-                    # yield dict(row)
                     yield row
                     
         elif query_type == "chain":
@@ -160,7 +135,6 @@ def query_database_stream(parameter, query_type, conn, locus=None, chunk_size=10
                 query = get_query_for_chain(len(chunk))
                 cur.execute(query, tuple(chunk))
                 for row in cur:
-                    # yield dict(row)
                     yield row
     finally:
         # conn.close()
@@ -284,8 +258,11 @@ def main():
     
     print("Pre-filtering junction_aa that are not in AKC DB...")
     # get available junction_aa in the database
-    unique_junction_aa = set()
+    # set up the connection
     conn = get_connection()
+
+    unique_junction_aa = set()
+
     for row in query_database_stream(all_unique_junction_aa, "chain", conn):
         j_aa = row['junction_aa']
         unique_junction_aa.add(j_aa)
@@ -305,6 +282,7 @@ def main():
     
     print("                   Querying Database for junction_aa and Epitope match...             \n")
     print("=======================================================================================")
+    
     
     
     matched_columns = ['akc_assay_akc_id', 'akc_complex_akc_id', 'akc_epitope_akc_id', 'akc_epitope_seq_aa', 'akc_source_protein', \

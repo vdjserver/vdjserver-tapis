@@ -113,8 +113,14 @@ function run_tilde_workflow() {
 
     #add provenance here.
     count=0
-    for file in ${filelist[@]}; do
-        fileBasename="${file%.*}" # file.fastq -> file
+    for file in $AIRRFiles; do
+        fileBasename="${file%.gz}"
+        fileBasename="${fileBasename%.zip}"
+        fileBasename="${fileBasename%.*}"
+
+        #add files to GZIP_FILE_LIST
+        gzipFile ${fileBasename}.tilde.detail.tsv
+        gzipFile ${fileBasename}.tilde.summary.tsv
 
         wasDerivedFrom "${fileBasename}.tilde.detail.tsv.gz" "${file}" "match_detail" "TILDE match detail" tsv
         wasDerivedFrom "${fileBasename}.tilde.summary.tsv.gz" "${file}" "match_summary" "TILDE match summary" tsv
@@ -133,6 +139,8 @@ function compress_and_archive() {
     wasGeneratedBy "tapisjob.out" "${ACTIVITY_NAME}" output_log "Output logs" txt
     wasGeneratedBy "tapisjob.err" "${ACTIVITY_NAME}" output_error_log "Output logs (Error)" txt
 
+    echo " GZIP_FILE_LIST: $GZIP_FILE_LIST"
+
     # gzip any files
     for file in $GZIP_FILE_LIST; do
         if [ -f $file ]; then
@@ -140,6 +148,7 @@ function compress_and_archive() {
         fi
     done
 
+    echo " ARCHIVE_FILE_LIST: $ARCHIVE_FILE_LIST"
     # zip archive of all output files
     for file in $ARCHIVE_FILE_LIST; do
         if [ -f $file ]; then
