@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 matplotlib.use("Agg")
 import seaborn as sns
 import logomaker
+from matplotlib.ticker import MaxNLocator
 
 from collections import defaultdict
 from collections import Counter
@@ -193,10 +194,13 @@ def plot_cdr3_vs_epitope_stats(summary_df, output_file_base, n = 15):
     # ----------------------------------------------------------------------------
     #              plot top n junction_aa vs number of epitopes
     # ----------------------------------------------------------------------------
-    sns.set_theme(style="whitegrid")
+    sns.set_theme()
     temp = summary_df.head(15)
     fig, axes = plt.subplots(1, 1, figsize = (7, 6))
     sns.barplot(data = temp, y = 'query_cdr3', x = 'n_unique_epitope_seq', ax = axes)
+    axes.xaxis.set_major_locator(MaxNLocator(integer=True))
+    plt.xlabel("Number of Unique Epitope Sequence")
+    plt.ylabel("CDR3")
     plt.tight_layout()
     plt.savefig(f"{output_file_base}.tilde.top_n_cdr3_vs_epiope_distribution_figure.png", 
                 bbox_inches = 'tight', dpi=300)
@@ -223,9 +227,8 @@ def plot_cdr3_vs_epitope_stats(summary_df, output_file_base, n = 15):
     # ----------------------------------------------------------------------------
     #                  Cross Reactivity Histogram Plot 
     # ----------------------------------------------------------------------------
-    plt.figure(figsize=(10, 6))
-    plt.hist(x, bins=range(0, x.max() + 2), color='skyblue',
-             edgecolor='black', align='left')  # bins are integers
+    plt.figure(figsize=(8, 6))
+    plt.hist(x, bins=range(0, x.max() + 2), color='skyblue', edgecolor='black', align='left')  # bins are integers
     plt.xlabel("Number of unique epitopes per CDR3", fontsize=12)
     plt.yscale('log')
     plt.ylabel("Count of CDR3s(log)", fontsize=12)
@@ -457,7 +460,7 @@ def main():
     plot_cdr3_vs_epitope_stats(summary_df, output_file_base, n = top_n_epitopes)
     
     print("=======================================================================================")
-    print("                                   Querying assay objects.                           ")
+    print("                                 Querying assay objects.                               ")
     print("=======================================================================================")
     
     # Query returns a generator
@@ -474,7 +477,7 @@ def main():
         json.dump(all_assay_dict, f, indent=4)
     print("=======================================================================================")
     print("=======================================================================================")
-    print("                                     Analysis Complete!                                ")
+    print("                                 Analysis Complete!                                    ")
     print("=======================================================================================")
     
 if __name__ == "__main__":
