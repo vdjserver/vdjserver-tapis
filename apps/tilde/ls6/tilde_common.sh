@@ -11,6 +11,7 @@
 # 
 
 APP_NAME=tilde
+top_n_epitopes=5
 #  TILDE: TCR/Ig Linkage via CDR3 similarity for Discovery of Epitopes
 # TODO: this is not generic enough
 export ACTIVITY_NAME="vdjserver:activity:tilde"
@@ -38,6 +39,7 @@ function print_parameters() {
     echo "AIRRMetadata=${AIRRMetadata}"
     echo "JobFiles=${JobFiles}"
     echo "AIRRFiles=${AIRRFiles}"
+    echo "TopNEpitopes=${top_n_epitopes}"
     echo ""
     echo "Application parameters:"
     echo "ReceptorMatchFlag=${ReceptorMatchFlag}"
@@ -93,8 +95,8 @@ function run_tilde_workflow() {
         species=human
 
         # command to run TILDE
-        # $PYTHON tilde_analysis_SQLite.py $file "$fileBasename"
-        echo "$PYTHON tilde_analysis_SQLite.py $file $fileBasename" >> joblist
+        # $PYTHON tilde_analysis_SQLite.py "$file" "$fileBasename" $top_n_epitopes "$AIRRMetadata"
+        echo "$PYTHON tilde_analysis_SQLite.py $file $fileBasename $top_n_epitopes $AIRRMetadata" >> joblist
 
         count=$(( $count + 1 ))
     done
@@ -110,7 +112,6 @@ function run_tilde_workflow() {
     $LAUNCHER_DIR/paramrun
 
     # ----------------------------------------------------------------------------
-
     #add provenance here.
     count=0
     for file in $AIRRFiles; do
@@ -125,17 +126,25 @@ function run_tilde_workflow() {
         wasDerivedFrom "${fileBasename}.tilde.detail.tsv.gz" "${file}" "match_detail" "TILDE match detail" tsv
         wasDerivedFrom "${fileBasename}.tilde.summary.tsv.gz" "${file}" "match_summary" "TILDE match summary" tsv
         wasDerivedFrom "${fileBasename}.tilde.assay.json" "${file}" "assay_match" "TILDE assay dictionary for matches" json
-        wasDerivedFrom "${fileBasename}_summary_distribution_figure.png" "${file}" "summary_figure" "TILDE summary figure " png
-
-        count=$(( $count + 1 ))
+        wasDerivedFrom "${fileBasename}.tilde.summary_distribution_figure.png" "${file}" "summary_figure, top_cdr3" "Top 15 CDR3 with Number of Epitopes Associated" png
+        wasDerivedFrom "${fileBasename}.tilde.cross_reactivity_distribution_plot.png" "${file}" "summary_figure, cross_reactivity" "Cross reactivity/sparsity plot" png
+        for rank in $(seq 1 $top_n_epitopes); do
+            png_file="${fileBasename}.tilde.top_epitope_rank_${rank}.png"
+            if [ -f "$png_file" ]; then
+                wasDerivedFrom "$png_file" "${file}" "summary_figure, epitope_logo" "Top ${rank} Epitope/junction aa logo" png
+                count=$((count + 1))
+            fi
+        done
     done
+    echo "Total number of files ${count}"
 
 }
 
 function compress_and_archive() {
     # Provenance file
     wasGeneratedBy "provenance_output.json" "${ACTIVITY_NAME}" prov "Analysis Provenance" json
-    wasGeneratedBy ${_tapisJobUUID}.zip "${ACTIVITY_NAME}" archive "Archive of Output Files" zip
+    wasGeneratedBy "${_tapisJobUUID}.zip" "${ACTIVITY_NAME}" archive "Archive of all Output Files" zip
+    wasGeneratedBy "${_tapisJobUUID}_no_detail.zip" "${ACTIVITY_NAME}" archive "Archive of Output Files Excluding the  Detail file" zip
     wasGeneratedBy "tapisjob.out" "${ACTIVITY_NAME}" output_log "Output logs" txt
     wasGeneratedBy "tapisjob.err" "${ACTIVITY_NAME}" output_error_log "Output logs (Error)" txt
 
@@ -143,20 +152,31 @@ function compress_and_archive() {
 
     # gzip any files
     for file in $GZIP_FILE_LIST; do
-        if [ -f $file ]; then
-            gzip $file
+        if [ -f "$file" ]; then
+            gzip "$file"
         fi
     done
 
     echo " ARCHIVE_FILE_LIST: $ARCHIVE_FILE_LIST"
     # zip archive of all output files
     for file in $ARCHIVE_FILE_LIST; do
-        if [ -f $file ]; then
-            cp -f $file ${_tapisJobUUID}
-            cp -f $file output
+        if [ -f "$file" ]; then
+            cp -f "$file" ${_tapisJobUUID}
+            cp -f "$file" output
         fi
     done
+    # --- ZIP #1: Everything ---
     zip ${_tapisJobUUID}.zip ${_tapisJobUUID}/*
     cp ${_tapisJobUUID}.zip output
+
+    # --- ZIP #2: Excluding .tilde.detail.tsv.gz ---
+    zip_exclude="${_tapisJobUUID}_no_detail.zip"
+    # ---zip -r <zipfile> <files> -x <pattern> excludes files matching the pattern.---
+    zip -r "$zip_exclude" "${_tapisJobUUID}"/* -x "*.tilde.detail.tsv.gz"
+    cp "$zip_exclude" output/
+
+    echo "Created ZIPs:"
+    echo "  - ${_tapisJobUUID}.zip           (all files)"
+    echo "  - ${zip_exclude} (excluding .tilde.detail.tsv.gz)"
 
 }
