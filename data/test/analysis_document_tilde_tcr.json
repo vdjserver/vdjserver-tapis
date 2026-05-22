@@ -1,0 +1,102 @@
+{
+  "uuid": "01b98d1c-dfef-4690-b729-b3d6b0f310be",
+  "name": "analysis_document",
+  "value": {
+    "entity": {
+      "vdjserver:analysis:691fb59b-5271-4c47-9522-daa221d8ec4a": {
+        "vdjserver:activity": "vdjserver:activity:igblast",
+        "vdjserver:type": "app:inputs",
+        "vdjserver:uuid": "691fb59b-5271-4c47-9522-daa221d8ec4a"
+      },
+      "vdjserver:app:parameters:tilde": {
+        "vdjserver:type": "app:parameters",
+        "species": "human",
+        "strain": "",
+        "locus": "TR",
+        "germline_db": "",
+        "ReceptorMatchFlag": true,
+        "EpitopeMatchFlag": true
+      },
+      "vdjserver:app:outputs:tilde": {
+        "vdjserver:type": "app:outputs"
+      },
+      "vdjserver:project_job_file:1234.airr.tsv.gz": {
+        "vdjserver:type": "app:inputs",
+        "vdjserver:project_job_file": "1234.airr.tsv.gz",
+        "vdjserver:tags": "vdj_sequence_annotation",
+        "vdjserver:description": "IgBlast AIRR TSV",
+        "vdjserver:format": "tsv",
+        "airr:Repertoire": "1234",
+        "AIRRFiles": "1234.airr.tsv.gz"
+      },
+      "vdjserver:project_job_file:3456.airr.tsv.gz": {
+        "vdjserver:type": "app:inputs",
+        "vdjserver:project_job_file": "3456.airr.tsv.gz",
+        "vdjserver:tags": "makedb_parse,vdj_sequence_annotation",
+        "vdjserver:description": "Change-O MakeDb AIRR TSV",
+        "vdjserver:format": "tsv",
+        "airr:Repertoire": "3456",
+        "AIRRFiles": "3456.airr.tsv.gz"
+      },
+      "airr:RepertoireGroup:7178e65d-3631-4e17-a5a1-c541948e6f22": {
+        "airr:type": "RepertoireGroup",
+        "vdjserver:type": "app:inputs",
+        "vdjserver:uuid": "7178e65d-3631-4e17-a5a1-c541948e6f22"
+      }
+    },
+    "agent": {},
+    "activity": {
+      "vdjserver:activity:tilde": {
+        "vdjserver:app:name": "tilde-ls6",
+        "vdjserver:app:version": "0.1",
+        "vdjserver:app:default": true
+      }
+    },
+    "used": {},
+    "wasAttributedTo": {},
+    "wasAssociatedWith": {},
+    "wasDerivedFrom": {},
+    "wasGeneratedBy": {},
+    "uses": {
+      "vdjserver:analysis:691fb59b-5271-4c47-9522-daa221d8ec4a": {
+        "prov:activity": "vdjserver:activity:tilde",
+        "prov:entity": "vdjserver:analysis:691fb59b-5271-4c47-9522-daa221d8ec4a"
+      },
+      "vdjserver:app:parameters:tilde": {
+        "prov:activity": "vdjserver:activity:tilde",
+        "prov:entity": "vdjserver:app:parameters:tilde"
+      },
+      "vdjserver:app:inputs:tilde:1234.airr.tsv.gz": {
+        "prov:activity": "vdjserver:activity:tilde",
+        "prov:entity": "vdjserver:project_job_file:1234.airr.tsv.gz"
+      },
+      "vdjserver:app:inputs:tilde:3456.airr.tsv.gz": {
+        "prov:activity": "vdjserver:activity:tilde",
+        "prov:entity": "vdjserver:project_job_file:3456.airr.tsv.gz"
+      },
+      "airr:RepertoireGroup:7178e65d-3631-4e17-a5a1-c541948e6f22": {
+        "prov:activity": "vdjserver:activity:tilde",
+        "prov:entity": "airr:RepertoireGroup:7178e65d-3631-4e17-a5a1-c541948e6f22"
+      }
+    },
+    "isAttributedTo": {},
+    "isAssociatedWith": {},
+    "isDerivedFrom": {},
+    "isGeneratedBy": {
+      "vdjserver:app:outputs:tilde": {
+        "prov:activity": "vdjserver:activity:tilde",
+        "prov:entity": "vdjserver:app:outputs:tilde"
+      }
+    },
+    "workflow_name": "TILDE",
+    "workflow_mode": "tilde",
+    "workflow_description": "TILDE 5 small",
+    "status": "STARTED",
+    "status_message": "",
+    "primary": false,
+    "prefix": {
+      "airr": "https://airr-community.org/",
+      "vdjserver": "https://vdjserver.org/"
+    }
+  }
+}
