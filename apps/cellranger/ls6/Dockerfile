@@ -16,16 +16,6 @@ RUN apt-get update && apt-get install -y \
     unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python packages
-RUN pip3 install --no-cache-dir \
-    numpy \
-    pandas \
-    matplotlib \
-    scipy \
-    airr==v1.4.1 \
-    seaborn \
-    biopython
-
 WORKDIR /opt
 
 # Copy local Cell Ranger archive

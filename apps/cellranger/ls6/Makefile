@@ -19,6 +19,9 @@ help:
 	@echo "Helper commands for app: ${APP_FULL}"
 	@echo "Assumes you are running in docker with tapis functions."
 	@echo ""
+	@echo "CellRanger docker image:"
+	@echo "make docker    -- Build image vdjserver/${APP_NAME}:${APP_VERSION}"
+	@echo ""
 	@echo "JSON app description:"
 	@echo "make list      -- List tapis apps"
 	@echo "make create    -- Create tapis app, only once"
@@ -33,6 +36,9 @@ help:
 	@echo "make test-tcr  -- Submit test TCR job"
 	@echo "make test-bcr  -- Submit test BCR job"
 	@echo ""
+
+docker:
+	docker build -t vdjserver/${APP_NAME}:${APP_VERSION} .
 
 list:
 	vdjserver-tools apps list
