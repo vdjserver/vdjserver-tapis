@@ -60,6 +60,7 @@ common-scripts:
 	cp ${SCRIPTS_DIR}/provenance_functions.sh ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/airr_metadata.py ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/airr_extract_fasta.py ${BUILD_DIR}
+	cp ${SCRIPTS_DIR}/10x_merge_airr.py ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/prov_metadata.py ${BUILD_DIR}
 	
 
@@ -73,8 +74,6 @@ build: clean common-scripts
 deploy: build
 	vdjserver-tools files upload ${APP_ARCHIVE} /apps/${APP_ARCHIVE}
 
-test-bcr:
-	vdjserver-tools jobs submit test/test-bcr.json
 
-test-tcr:
-	vdjserver-tools jobs submit test/test-tcr.json
+test-cli:
+	vdjserver-tools jobs submit test/test-cli.json

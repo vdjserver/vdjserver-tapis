@@ -38,6 +38,19 @@ export CELLRANGER_MEM=50
 # bring in common functions
 source ./cellranger_common.sh
 
+#What bug?
+export WORK=/work/01114/vdj/common/cellranger
+
+mkdir cellranger
+cd cellranger
+#tar zxf $WORK/cellranger/cellranger-${CELLRANGER_VERSION}.tar.gz
+if [[ "$species" == "human" ]]; then
+    tar zxf $WORK/../common/${HUMAN_VDJ_REFDATA}.tar.gz
+fi
+if [[ "$species" == "mouse" ]]; then
+    tar zxf $WORK/../common/${MOUSE_VDJ_REFDATA}.tar.gz
+fi
+
 # ----------------------------------------------------------------------------
 # Launcher to use multicores on node
 export LAUNCHER_WORKDIR=$PWD
