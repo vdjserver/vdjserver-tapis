@@ -14,10 +14,10 @@ export ACTIVITY_NAME="vdjserver:activity:cellranger"
 
 
 # IgBlast germline database and extra files
-VDJ_DB_VERSION=db.2019.01.23
-IGDATA="$WORK/../common/igblast-db/$VDJ_DB_VERSION"
-export IGDATA
-export VDJ_DB_ROOT="$IGDATA/germline/"
+# VDJ_DB_VERSION=db.2019.01.23
+# IGDATA="$WORK/../common/igblast-db/$VDJ_DB_VERSION"
+# export IGDATA
+# export VDJ_DB_ROOT="$IGDATA/germline/"
 
 # bring in common functions
 source ./common_functions.sh
@@ -117,7 +117,10 @@ function run_cellranger_workflow() {
     # We want more annotations than cellranger gives, so run igblast on the output
     # scripts will separate TCR and IG
     cp ${repertoire_id}/outs/airr_rearrangement.tsv ./${repertoire_id}.airr_rearrangement.tsv
+    wasDerivedFrom ${repertoire_id}.airr_rearrangement.tsv "${repertoire_id}" "10_airr_rearrangement" "10x Airr Rearrangement TSV" tsv
+
     $PYTHON3_EXE airr_extract_fasta.py ${repertoire_id}.airr_rearrangement.tsv ${repertoire_id}
+
 
     AIRR_MERGE=""
     if [ -f ${repertoire_id}_TCR.fasta ]; then
@@ -139,17 +142,18 @@ function run_cellranger_workflow() {
             ARGS="$ARGS -germline_db_D $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}_D.fna"
             ARGS="$ARGS -germline_db_J $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}_J.fna"
 
-            # If locus is TR then use old auxilary data file.
-            if [ "$germline_db" == "db.2019.01.23" ]; then
+            # If locus is TR then use old auxilary data file. Later we might need to rethink when ORGDB has TCR data
+            if [ "$germline_db_TR" == "db.2019.01.23" ]; then
                 ARGS="$ARGS -auxiliary_data $IGDATA/optional_file/${germline_set}_gl.aux"
             fi
 
             # for newer version of igblast we need an extra argument
-            if [ "$germline_db" == "db.2026.01.12" ]; then
+            if [ "$germline_db_IG" == "db.2026.01.12" ]; then
                 ARGS="$ARGS -c_region_db  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_C.fna"
                 ARGS="$ARGS -auxiliary_data  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}.aux"
                 ARGS="$ARGS -custom_internal_data $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}.ndm"
             fi
+
         fi
         if [ -n $domain_system ]; then ARGS="$ARGS -domain_system $domain_system"; fi
         IGBLAST_PARAMS="$ARGS"
@@ -160,8 +164,8 @@ function run_cellranger_workflow() {
         $IGBLASTN_EXE $AIRR_ARGS > ${repertoire_id}.TCR.igblast.airr.tsv
 
         AIRR_MERGE="$AIRR_MERGE ${repertoire_id}.TCR.igblast.airr.tsv"
-        noArchive ${repertoire_id}_TCR.fasta
-        noArchive ${repertoire_id}.TCR.igblast.airr.tsv
+        # noArchive ${repertoire_id}_TCR.fasta
+        # noArchive ${repertoire_id}.TCR.igblast.airr.tsv
     fi
 
     if [ -f ${repertoire_id}_IG.fasta ]; then
@@ -184,12 +188,12 @@ function run_cellranger_workflow() {
             ARGS="$ARGS -germline_db_J $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}_J.fna"
 
             # If locus is TR then use old auxilary data file.
-            if [ "$germline_db" == "db.2019.01.23" ]; then
+            if [ "$germline_db_TR" == "db.2019.01.23" ]; then
                 ARGS="$ARGS -auxiliary_data $IGDATA/optional_file/${germline_set}_gl.aux"
             fi
 
             # for newer version of igblast we need an extra argument
-            if [ "$germline_db" == "db.2026.01.12" ]; then
+            if [ "$germline_db_IG" == "db.2026.01.12" ]; then
                 ARGS="$ARGS -c_region_db  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_C.fna"
                 ARGS="$ARGS -auxiliary_data  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}.aux"
                 ARGS="$ARGS -custom_internal_data $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}.ndm"
@@ -204,45 +208,54 @@ function run_cellranger_workflow() {
         $IGBLASTN_EXE $AIRR_ARGS > ${repertoire_id}.IG.igblast.airr.tsv
 
         AIRR_MERGE="$AIRR_MERGE ${repertoire_id}.IG.igblast.airr.tsv"
-        noArchive ${repertoire_id}_IG.fasta
-        noArchive ${repertoire_id}.IG.igblast.airr.tsv
+        # noArchive ${repertoire_id}_IG.fasta
+        # noArchive ${repertoire_id}.IG.igblast.airr.tsv
     fi
 
     # Merge with 10x annotations into one file
     $AIRR_TOOLS_EXE merge -a $AIRR_MERGE -o ${repertoire_id}.igblast.airr.tsv
     $PYTHON3_EXE 10x_merge_airr.py ${repertoire_id}.airr_rearrangement.tsv ${repertoire_id}.igblast.airr.tsv ${repertoire_id}.10x.igblast.airr.tsv
-    noArchive ${repertoire_id}.igblast.airr.tsv
+    # noArchive ${repertoire_id}.igblast.airr.tsv
     gzip ${repertoire_id}.10x.igblast.airr.tsv
     # addOutputFile group0 $APP_NAME airr ${repertoire_id}.10x.igblast.airr.tsv.gz "${repertoire_id} IgBlast AIRR TSV" "tsv" null
-
     wasDerivedFrom "${repertoire_id}.10x.igblast.airr.tsv.gz" "${repertoire_id}.airr_rearrangement.tsv" "vdj_sequence_annotation" "IgBlast AIRR TSV" tsv
 
     # Add all of the CellRanger output files to provenance
     mkdir ${_tapisJobUUID}/${repertoire_id}
     cp -rf ${repertoire_id}/outs ${_tapisJobUUID}/${repertoire_id}
     addOutputFile group0 $APP_NAME 10x_airr ${repertoire_id}.airr_rearrangement.tsv "${repertoire_id} 10X AIRR TSV" "tsv" null
+
     cp ${repertoire_id}/outs/web_summary.html ./${repertoire_id}.web_summary.html
-    addOutputFile group0 $APP_NAME 10x_web_summary ${repertoire_id}.web_summary.html "${repertoire_id} 10X Run Summary HTML" "html" null
+    # addOutputFile group0 $APP_NAME 10x_web_summary ${repertoire_id}.web_summary.html "${repertoire_id} 10X Run Summary HTML" "html" null
+    wasDerivedFrom ${repertoire_id}.web_summary.html ${repertoire_id}.airr_rearrangement.tsv "10x_web_summary" "${repertoire_id} 10X Run Summary HTML" "html"
+
     cp ${repertoire_id}/outs/metrics_summary.csv ./${repertoire_id}.metrics_summary.csv
-    addOutputFile group0 $APP_NAME 10x_metrics_summary ${repertoire_id}.metrics_summary.csv "${repertoire_id} 10X Run Summary CSV" "csv" null
+    # addOutputFile group0 $APP_NAME 10x_metrics_summary ${repertoire_id}.metrics_summary.csv "${repertoire_id} 10X Run Summary CSV" "csv" null
+    wasDerivedFrom ${repertoire_id}.metrics_summary.csv ${repertoire_id}.airr_rearrangement.tsv "10x_metrics_summary" "${repertoire_id} 10X Run Summary CSV" "csv"
+
     cp ${repertoire_id}/outs/clonotypes.csv ./${repertoire_id}.clonotypes.csv
-    addOutputFile group0 $APP_NAME 10x_clonotypes ${repertoire_id}_.lonotypes.csv "${repertoire_id} 10X Clonotypes" "csv" null
+    # addOutputFile group0 $APP_NAME 10x_clonotypes ${repertoire_id}_.lonotypes.csv "${repertoire_id} 10X Clonotypes" "csv" null
+    wasDerivedFrom ${repertoire_id}_.lonotypes.csv ${repertoire_id}.airr_rearrangement.tsv "10x_clonotypes" "${repertoire_id} 10X Clonotypes" "csv"
+
     cp ${repertoire_id}/outs/consensus_annotations.csv ./${repertoire_id}.consensus_annotations.csv
-    addOutputFile group0 $APP_NAME 10x_consensus_annotations ${repertoire_id}.consensus_annotations.csv "${repertoire_id} 10X Clonotypes Consensus Annotations" "csv" null
+    # addOutputFile group0 $APP_NAME 10x_consensus_annotations ${repertoire_id}.consensus_annotations.csv "${repertoire_id} 10X Clonotypes Consensus Annotations" "csv" null
+    wasDerivedFrom ${repertoire_id}.consensus_annotations.csv ${repertoire_id}.airr_rearrangement.tsv "10x_consensus_annotations" "${repertoire_id} 10X Clonotypes Consensus Annotations" "csv"
     cp ${repertoire_id}/outs/filtered_contig_annotations.csv ./${repertoire_id}.filtered_contig_annotations.csv
-    addOutputFile group0 $APP_NAME 10x_filtered_contigs ${repertoire_id}.filtered_contig_annotations.csv "${repertoire_id} 10X Filtered Contigs" "csv" null
+    # addOutputFile group0 $APP_NAME 10x_filtered_contigs ${repertoire_id}.filtered_contig_annotations.csv "${repertoire_id} 10X Filtered Contigs" "csv" null
+    wasDerivedFrom ${repertoire_id}.filtered_contig_annotations.csv ${repertoire_id}.airr_rearrangement.tsv "10x_filtered_contigs" "${repertoire_id} 10X Filtered Contigs" "csv"
 
     cp ${repertoire_id}/outs/vloupe.vloupe ./${repertoire_id}.vloupe.vloupe
-    addOutputFile group0 $APP_NAME 10x_vloupe ${repertoire_id}.vloupe.vloupe "${repertoire_id} 10X Loupe V(D)J Browser file" "vloupe" null
+    # addOutputFile group0 $APP_NAME 10x_vloupe ${repertoire_id}.vloupe.vloupe "${repertoire_id} 10X Loupe V(D)J Browser file" "vloupe" null
+    wasDerivedFrom ${repertoire_id}.vloupe.vloupe ${repertoire_id}.airr_rearrangement.tsv "10x_vloupe" "${repertoire_id} 10X Loupe V(D)J Browser file" "vloupe"
 
-    # zip archive of all output files
-    for file in $ARCHIVE_FILE_LIST; do
-        if [ -f $file ]; then
-            cp -f $file ${_tapisJobUUID}
-        fi
-    done
-    zip -r ${_tapisJobUUID}.zip ${_tapisJobUUID}/*
-    addLogFile $APP_NAME log output_archive ${_tapisJobUUID}.zip "Archive of Output Files" "zip" null
+    # # zip archive of all output files
+    # for file in $ARCHIVE_FILE_LIST; do
+    #     if [ -f $file ]; then
+    #         cp -f $file ${_tapisJobUUID}
+    #     fi
+    # done
+    # zip -r ${_tapisJobUUID}.zip ${_tapisJobUUID}/*
+    # addLogFile $APP_NAME log output_archive ${_tapisJobUUID}.zip "Archive of Output Files" "zip" null
 }
 
 function compress_and_archive() {
@@ -266,7 +279,8 @@ function compress_and_archive() {
             cp -f $file output
         fi
     done
-    cp -f ${germline_db_file} ${_tapisJobUUID}
+    cp -f ${germline_db_TR} ${_tapisJobUUID}
+    cp -f ${germline_db_IG} ${_tapisJobUUID}
     zip ${_tapisJobUUID}.zip ${_tapisJobUUID}/*
     
     #addLogFile $APP_NAME log output_archive ${_tapisJobUUID}.zip "Archive of Output Files" "zip" null
