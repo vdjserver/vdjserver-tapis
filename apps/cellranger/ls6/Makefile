@@ -33,8 +33,7 @@ help:
 	@echo "make deploy    -- Deploy app assets"
 	@echo ""
 	@echo "Testing:"
-	@echo "make test-tcr  -- Submit test TCR job"
-	@echo "make test-bcr  -- Submit test BCR job"
+	@echo "make test-cli  -- Submit test  job"
 	@echo ""
 
 docker:

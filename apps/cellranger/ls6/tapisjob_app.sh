@@ -38,9 +38,6 @@ export CELLRANGER_MEM=50
 # bring in common functions
 source ./cellranger_common.sh
 
-#What bug?
-export WORK=/work/01114/vdj/common/cellranger
-
 mkdir cellranger
 cd cellranger
 #tar zxf $WORK/cellranger/cellranger-${CELLRANGER_VERSION}.tar.gz

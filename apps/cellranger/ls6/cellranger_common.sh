@@ -117,7 +117,8 @@ function run_cellranger_workflow() {
     # We want more annotations than cellranger gives, so run igblast on the output
     # scripts will separate TCR and IG
     cp ${repertoire_id}/outs/airr_rearrangement.tsv ./${repertoire_id}.airr_rearrangement.tsv
-    wasDerivedFrom ${repertoire_id}.airr_rearrangement.tsv "${repertoire_id}" "10_airr_rearrangement" "10x Airr Rearrangement TSV" tsv
+
+    wasDerivedFrom ${repertoire_id}.airr_rearrangement.tsv "${ForwardPairedFile}" "10x_airr_rearrangement" "10x Airr Rearrangement TSV" tsv
 
     $PYTHON3_EXE airr_extract_fasta.py ${repertoire_id}.airr_rearrangement.tsv ${repertoire_id}
 

@@ -22,7 +22,7 @@
         ],
         "envVariables": [
             {"key": "species", "value": "human" },
-            {"key": "strain", "inputMode": "INCLUDE_BY_DEFAULT" },
+            {"key": "strain", "value": "" },
             {"key": "germline_db_TR", "value": "db.2019.01.23"},
             {"key": "germline_db_IG", "value": "db.2026.01.12"},
             {"key": "ForwardPairedFile", "value": "SRR12113363_2.fastq.gz" },
