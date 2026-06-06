@@ -6,11 +6,11 @@
     "nodeCount": 1,
     "fileInputs":[
         { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_cellranger.json", "targetPath":"analysis_document_cellranger.json" },
-        { "name":"AIRRMetadata", "sourceUrl":"tapis://data.vdjserver.org//projects/1cae5839-fdde-460d-a61d-5ecbd244efe7/files/repertoires.airr.json", "targetPath":"repertoires.airr.json" }
+        { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/1cae5839-fdde-460d-a61d-5ecbd244efe7/files/repertoires.airr.json", "targetPath":"repertoires.airr.json" }
     ],
     "fileInputArrays":[
-        { "name":"ForwardPairedFile", "sourceUrls": [ "tapis://data.vdjserver.org//projects/1cae5839-fdde-460d-a61d-5ecbd244efe7/files/SRR12113363_2.fastq.gz" ]},
-        { "name":"ReversePairedFile", "sourceUrls": [ "tapis://data.vdjserver.org//projects/1cae5839-fdde-460d-a61d-5ecbd244efe7/files/SRR12113363_3.fastq.gz" ]}
+        { "name":"ForwardPairedFile", "sourceUrls": [ "tapis://data-storage.vdjserver.org/projects/1cae5839-fdde-460d-a61d-5ecbd244efe7/files/SRR12113363_2.fastq.gz" ]},
+        { "name":"ReversePairedFile", "sourceUrls": [ "tapis://data-storage.vdjserver.org/projects/1cae5839-fdde-460d-a61d-5ecbd244efe7/files/SRR12113363_3.fastq.gz" ]}
     ],
     "parameterSet": {
         "schedulerOptions": [
