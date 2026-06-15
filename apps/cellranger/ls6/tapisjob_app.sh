@@ -47,7 +47,7 @@ fi
 if [[ "$species" == "mouse" ]]; then
     tar zxf $WORK/../common/${MOUSE_VDJ_REFDATA}.tar.gz
 fi
-
+cd ../
 # ----------------------------------------------------------------------------
 # Launcher to use multicores on node
 export LAUNCHER_WORKDIR=$PWD

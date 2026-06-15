@@ -82,15 +82,15 @@ function run_cellranger_workflow() {
     ## Find repertoire_id for the fastq file
     repertoire_id=$(getRepertoireForFile $ForwardPairedFile)
 
-    # # rename sequence files to match what cellranger wants
-    # fileExtension="${ForwardPairedFile#*.}" # file.fastq.gz => fastq.gz
-    # forwardFile=${repertoire_id}_S1_L001_R1_001.${fileExtension}
-    # mv ${ForwardPairedFile} ${forwardFile}
+    # rename sequence files to match what cellranger wants
+    fileExtension="${ForwardPairedFile#*.}" # file.fastq.gz => fastq.gz
+    forwardFile=${repertoire_id}_S1_L001_R1_001.${fileExtension}
+    mv ${ForwardPairedFile} ${forwardFile}
     # noArchive ${forwardFile}
 
-    # fileExtension="${ReversePairedFile#*.}" # file.fastq.gz => fastq.gz
-    # reverseFile=${repertoire_id}_S1_L001_R2_001.${fileExtension}
-    # mv ${ReversePairedFile} ${reverseFile}
+    fileExtension="${ReversePairedFile#*.}" # file.fastq.gz => fastq.gz
+    reverseFile=${repertoire_id}_S1_L001_R2_001.${fileExtension}
+    mv ${ReversePairedFile} ${reverseFile}
     # noArchive ${reverseFile}
 
     # assume human
@@ -101,8 +101,8 @@ function run_cellranger_workflow() {
 
     echo "Starting cellranger on $(date)"
 
-    echo cellranger vdj --id ${repertoire_id} --reference ${reference_dir} --fastqs $PWD --localmem $CELLRANGER_MEM 
-    $CELLRANGER_EXE vdj --id ${repertoire_id} --reference ${reference_dir} --fastqs $PWD --localmem $CELLRANGER_MEM 
+    echo cellranger vdj --id ${repertoire_id} --reference ${reference_dir} --fastqs $PWD --sample ${repertoire_id} --localmem $CELLRANGER_MEM 
+    $CELLRANGER_EXE vdj --id ${repertoire_id} --reference ${reference_dir} --fastqs $PWD --sample ${repertoire_id} --localmem $CELLRANGER_MEM 
     # noArchive ${repertoire_id}
 
     # check number of jobs to be run
