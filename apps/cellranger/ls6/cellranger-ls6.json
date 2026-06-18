@@ -20,8 +20,8 @@
             "sourceUrls": [ "tapis://data-storage.vdjserver.org/akc/germlines/db.2019.01.23.tgz",
                             "tapis://data-storage.vdjserver.org/akc/germlines/db.2026.01.12.tgz"]},
             { "name":"JobFiles", "inputMode": "OPTIONAL", "targetDir":"." },
-            { "name":"ForwardPairedFile", "inputMode": "OPTIONAL", "targetDir":"." },
-            { "name":"ReversePairedFile", "inputMode": "OPTIONAL", "targetDir":"." }
+            { "name":"ForwardPairedFiles", "inputMode": "OPTIONAL", "targetDir":"." },
+            { "name":"ReversePairedFiles", "inputMode": "OPTIONAL", "targetDir":"." }
         ],
         "parameterSet": {
             "logConfig": {
@@ -37,8 +37,8 @@
                 {"key": "strain", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "germline_db_TR", "inputMode": "REQUIRED" },
                 {"key": "germline_db_IG", "inputMode": "REQUIRED" },
-                {"key": "ForwardPairedFile", "inputMode": "INCLUDE_BY_DEFAULT" },
-                {"key": "ReversePairedFile", "inputMode": "INCLUDE_BY_DEFAULT" }
+                {"key": "ForwardPairedFiles", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "ReversePairedFiles", "inputMode": "INCLUDE_BY_DEFAULT" }
             ]
         }
     }

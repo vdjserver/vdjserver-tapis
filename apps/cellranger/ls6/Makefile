@@ -76,3 +76,5 @@ deploy: build
 
 test-cli:
 	vdjserver-tools jobs submit test/test-cli.json
+test-multi:
+	vdjserver-tools jobs submit test/test-multi.json

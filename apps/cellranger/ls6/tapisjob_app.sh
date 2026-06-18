@@ -28,9 +28,10 @@ export PYTHON=python3
 PYTHON="apptainer exec -e ${cellranger_image} python3"
 
 CELLRANGER_EXE="apptainer exec -e ${cellranger_image} cellranger"
-PYTHON3_EXE=="apptainer exec -e ${repcalc_image} python3"
+PYTHON3_EXE="apptainer exec -e ${repcalc_image} python3"
 IGBLASTN_EXE="apptainer exec ${repcalc_image} igblastn -num_threads 1"
 AIRR_TOOLS_EXE="apptainer exec -e ${repcalc_image} airr-tools"
+
 
 # Max memory in GB for cellranger
 export CELLRANGER_MEM=50
@@ -71,3 +72,6 @@ compress_and_archive
 # End
 printf "DONE at $(date)\n\n"
 
+
+#for downloading files from test job
+#vdjserver-tools files list --system test-ls6.tacc.utexas.edu file_path
