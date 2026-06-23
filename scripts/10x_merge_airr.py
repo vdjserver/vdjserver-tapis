@@ -124,3 +124,4 @@ if (__name__=="__main__"):
         for clone in clones:
             data_airr['Clone'].append(clones[clone])
         airr.write_airr(file_output_airr_json, data_airr)
+    print("Done with 10X merge.")

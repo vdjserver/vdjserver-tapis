@@ -42,7 +42,7 @@ function print_versions() {
 
 function print_parameters() {
     echo "Input files:"
-    echo "repcalc_image=${cellranger_image}"
+    echo "cellranger_image=${cellranger_image}"
     echo "repcalc_image=${repcalc_image}"
     echo "germline_archives=${germline_archives}"
     echo "analysis_provenance=${analysis_provenance}"
@@ -125,8 +125,6 @@ function run_cellranger_workflow() {
         echo "R1: $ForwardPairedFile"
         echo "R2: $ReversePairedFile"
 
-
-        
         ######################################################
         # Find repertoire_id for the fastq file
         ######################################################
@@ -152,8 +150,8 @@ function run_cellranger_workflow() {
         ####################################
         echo "Starting cellranger for $repertoire_id at $(date)"
 
-        echo cellranger vdj --id ${repertoire_id} --reference "${reference_dir}" --fastqs $PWD --sample ${repertoire_id} --localmem $CELLRANGER_MEM 
-        $CELLRANGER_EXE vdj --id ${repertoire_id} --reference "${reference_dir}" --fastqs $PWD --sample ${repertoire_id} --localmem $CELLRANGER_MEM 
+        echo cellranger vdj --id "${repertoire_id}" --reference "${reference_dir}" --fastqs $PWD --sample "${repertoire_id}" --localmem $CELLRANGER_MEM 
+        $CELLRANGER_EXE vdj --id "${repertoire_id}" --reference "${reference_dir}" --fastqs $PWD --sample "${repertoire_id}" --localmem $CELLRANGER_MEM 
 
         # check number of jobs to be run
         export LAUNCHER_PPN=$LAUNCHER_MAX_PPN
@@ -189,7 +187,7 @@ function run_cellranger_workflow() {
             ARGS=""
             QUERY_ARGS="-query ${repertoire_id}_TCR.fasta"
             ARGS="$ARGS -ig_seqtype TCR"
-            if [ -n $organism ]; then 
+            if [ -n "$organism" ]; then 
                 ARGS="$ARGS -organism $organism"
                 # ARGS="$ARGS -auxiliary_data $IGDATA/optional_file/${germline_set}_gl.aux"
                 ARGS="$ARGS -germline_db_V $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}_V.fna"
@@ -209,7 +207,7 @@ function run_cellranger_workflow() {
                 # fi
 
             fi
-            if [ -n $domain_system ]; then ARGS="$ARGS -domain_system $domain_system"; fi
+            if [ -n "$domain_system" ]; then ARGS="$ARGS -domain_system $domain_system"; fi
             IGBLAST_PARAMS="$ARGS"
 
             # AIRR output
@@ -233,7 +231,7 @@ function run_cellranger_workflow() {
             ARGS=""
             QUERY_ARGS="-query ${repertoire_id}_IG.fasta"
             ARGS="$ARGS -ig_seqtype Ig"
-            if [ -n $organism ]; then 
+            if [ -n "$organism" ]; then 
                 ARGS="$ARGS -organism $organism"
                 ARGS="$ARGS -germline_db_V $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}_V.fna"
                 ARGS="$ARGS -germline_db_D $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}_D.fna"
@@ -251,7 +249,7 @@ function run_cellranger_workflow() {
                     ARGS="$ARGS -custom_internal_data $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}.ndm"
                 fi
             fi
-            if [ -n $domain_system ]; then ARGS="$ARGS -domain_system $domain_system"; fi
+            if [ -n "$domain_system" ]; then ARGS="$ARGS -domain_system $domain_system"; fi
             IGBLAST_PARAMS="$ARGS"
 
             # AIRR output
@@ -269,7 +267,7 @@ function run_cellranger_workflow() {
         #############################################
         
         $AIRR_TOOLS_EXE merge -a $AIRR_MERGE -o ${repertoire_id}.igblast.airr.tsv
-        $PYTHON3_EXE 10x_merge_airr.py ${repertoire_id} ${_tapisJobUUID} #changed data_processing_id to _tapisJobUUID
+        $PYTHON3_EXE 10x_merge_airr.py ${repertoire_id} "${_tapisJobUUID}" #changed data_processing_id to _tapisJobUUID
 
         gzip ${repertoire_id}.10x.igblast.airr.tsv
         # addOutputFile group0 $APP_NAME airr ${repertoire_id}.10x.igblast.airr.tsv.gz "${repertoire_id} IgBlast AIRR TSV" "tsv" null
@@ -292,7 +290,7 @@ function run_cellranger_workflow() {
 
         cp ${repertoire_id}/outs/clonotypes.csv ./${repertoire_id}.clonotypes.csv
         # addOutputFile group0 $APP_NAME 10x_clonotypes ${repertoire_id}_.lonotypes.csv "${repertoire_id} 10X Clonotypes" "csv" null
-        wasDerivedFrom ${repertoire_id}_.lonotypes.csv ${repertoire_id}.airr_rearrangement.tsv "10x_clonotypes" "${repertoire_id} 10X Clonotypes" "csv"
+        wasDerivedFrom ${repertoire_id}.clonotypes.csv ${repertoire_id}.airr_rearrangement.tsv "10x_clonotypes" "${repertoire_id} 10X Clonotypes" "csv"
 
         cp ${repertoire_id}/outs/consensus_annotations.csv ./${repertoire_id}.consensus_annotations.csv
         # addOutputFile group0 $APP_NAME 10x_consensus_annotations ${repertoire_id}.consensus_annotations.csv "${repertoire_id} 10X Clonotypes Consensus Annotations" "csv" null
@@ -304,7 +302,22 @@ function run_cellranger_workflow() {
         cp ${repertoire_id}/outs/vloupe.vloupe ./${repertoire_id}.vloupe.vloupe
         # addOutputFile group0 $APP_NAME 10x_vloupe ${repertoire_id}.vloupe.vloupe "${repertoire_id} 10X Loupe V(D)J Browser file" "vloupe" null
         wasDerivedFrom ${repertoire_id}.vloupe.vloupe ${repertoire_id}.airr_rearrangement.tsv "10x_vloupe" "${repertoire_id} 10X Loupe V(D)J Browser file" "vloupe"
+    done
 
+}
+
+copy_germline () {
+    local x="$1"
+
+    if [ -d "$x" ]; then
+        cp -r "$x" "${_tapisJobUUID}/"
+    elif [ -f "$x.tgz" ]; then
+        cp "$x.tgz" "${_tapisJobUUID}/"
+    elif [ -f "$x.tar.gz" ]; then
+        cp "$x.tar.gz" "${_tapisJobUUID}/"
+    else
+        echo "WARNING: Germline not found: $x"
+    fi
 }
 
 function compress_and_archive() {
@@ -315,21 +328,23 @@ function compress_and_archive() {
     wasGeneratedBy "tapisjob.err" "${ACTIVITY_NAME}" output_error_log "Output logs (Error)" txt
 
     # gzip any files
-    for file in $GZIP_FILE_LIST; do
+    for file in "$GZIP_FILE_LIST"; do
         if [ -f $file ]; then
             gzip $file
         fi
     done
 
     # zip archive of all output files
-    for file in $ARCHIVE_FILE_LIST; do
-        if [ -f $file ]; then
-            cp -f $file ${_tapisJobUUID}
+    for file in "$ARCHIVE_FILE_LIST"; do
+        if [ -f "$file" ]; then
+            cp -f "$file" "${_tapisJobUUID}"
             cp -f $file output
         fi
     done
-    cp -f ${germline_db_TR} ${_tapisJobUUID}
-    cp -f ${germline_db_IG} ${_tapisJobUUID}
+    # cp -r ${germline_db_TR} ${_tapisJobUUID}
+    # cp -r ${germline_db_IG} ${_tapisJobUUID}
+    copy_germline "$germline_db_TR"
+    copy_germline "$germline_db_IG"
     zip ${_tapisJobUUID}.zip ${_tapisJobUUID}/*
     
     #addLogFile $APP_NAME log output_archive ${_tapisJobUUID}.zip "Archive of Output Files" "zip" null
