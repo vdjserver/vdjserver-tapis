@@ -328,16 +328,18 @@ function compress_and_archive() {
     wasGeneratedBy "tapisjob.err" "${ACTIVITY_NAME}" output_error_log "Output logs (Error)" txt
 
     # gzip any files
-    for file in "$GZIP_FILE_LIST"; do
+    for file in $GZIP_FILE_LIST; do
         if [ -f $file ]; then
             gzip $file
         fi
     done
 
+    echo "ARCHIVE_FILE_LIST: $ARCHIVE_FILE_LIST"
+
     # zip archive of all output files
-    for file in "$ARCHIVE_FILE_LIST"; do
-        if [ -f "$file" ]; then
-            cp -f "$file" "${_tapisJobUUID}"
+    for file in $ARCHIVE_FILE_LIST; do
+        if [ -f $file ]; then
+            cp -f $file ${_tapisJobUUID}
             cp -f $file output
         fi
     done
