@@ -1,0 +1,106 @@
+{
+    "uuid": "123456789101121314-161718",
+    "associationIds": [
+        "cellranger-test-123"
+    ],
+    "owner": "vdj",
+    "created": "2026-06-04T18:44:56.266Z",
+    "lastUpdated": "2026-06-04T17:53:59.152Z",
+    "name": "analysis_document",
+    "value": {
+        "entity": {
+            "airr:Repertoire:9c7013fe-d7be-488e-b417-5e59c75819a6": {
+                "airr:type": "Repertoire",
+                "vdjserver:type": "app:inputs",
+                "vdjserver:uuid": "5f36534d-ea33-458f-94bd-26ab4528bb74"
+            },
+            "airr:Repertoire:d1a0877c-edfc-4ec7-adcf-79aaf7e11213": {
+                "airr:type": "Repertoire",
+                "vdjserver:type": "app:inputs",
+                "vdjserver:uuid": "5f36534d-ea33-458f-94bd-26ab4528bb74"
+            },
+            "vdjserver:app:parameters:cellranger": {
+                    "vdjserver:type": "app:parameters",
+                    "JobFiles": "",
+                    "species":"human",
+                    "strain": "",
+                    "germline_db_TR": "db.2019.01.23",
+                    "germline_db_IG": "db.2026.01.12",
+                    "ForwardPairedFiles": "",
+                    "ReversePairedFiles": ""
+                },
+            "vdjserver:app:outputs:cellranger": {
+                "vdjserver:type": "app:outputs"
+            },
+            "vdjserver:project_file:SRR7191921_1.fastq.gz": {
+                "vdjserver:type": "app:inputs",
+                "ForwardPairedFile": "SRR7191921_1.fastq.gz",
+                "ReversePairedFile": "SRR7191921_2.fastq.gz",
+                "airr:Repertoire": "9c7013fe-d7be-488e-b417-5e59c75819a6",
+                "vdjserver:uuid": "5f36534d-ea33-458f-94bd-26ab4528bb74"
+            }
+            ,
+            "vdjserver:project_file:SRR7191924_1.fastq.gz": {
+                "vdjserver:type": "app:inputs",
+                "ForwardPairedFile": "SRR7191924_1.fastq.gz",
+                "ReversePairedFile": "SRR7191924_2.fastq.gz",
+                "airr:Repertoire": "d1a0877c-edfc-4ec7-adcf-79aaf7e11213",
+                "vdjserver:uuid": "5f36534d-ea33-458f-94bd-26ab4528bb74"
+            }
+        },
+        "agent": {},
+        "activity": {
+            "vdjserver:activity:cellranger": {
+                "vdjserver:app:name": "cellranger-ls6",
+                "vdjserver:app:version": "10.0.0",
+                "vdjserver:app:default": true,
+                "prov:startTime": "2026-06-04T20:20:57.688Z",
+                "vdjserver:job": "job999"
+            }
+        },
+        "used": {},
+        "wasAttributedTo": {},
+        "wasAssociatedWith": {},
+        "wasDerivedFrom": {},
+        "wasGeneratedBy": {},
+        "uses": {
+            "airr:Repertoire:9c7013fe-d7be-488e-b417-5e59c75819a6": {
+                "prov:activity": "vdjserver:activity:cellranger",
+                "prov:entity": "airr:Repertoire:9c7013fe-d7be-488e-b417-5e59c75819a6"
+            },
+            "airr:Repertoire:d1a0877c-edfc-4ec7-adcf-79aaf7e11213": {
+                "prov:activity": "vdjserver:activity:cellranger",
+                "prov:entity": "airr:Repertoire:d1a0877c-edfc-4ec7-adcf-79aaf7e11213"
+            },
+            "vdjserver:app:parameters:cellranger": {
+                "prov:activity": "vdjserver:activity:cellranger",
+                "prov:entity": "vdjserver:app:parameters:cellranger"
+            },
+            "vdjserver:app:inputs:cellranger:SRR7191921_1.fastq.gz": {
+                "prov:activity": "vdjserver:activity:cellranger",
+                "prov:entity": "vdjserver:project_file:SRR7191921_1.fastq.gz"
+            },
+            "vdjserver:app:inputs:cellranger:SRR7191924_1.fastq.gz": {
+                "prov:activity": "vdjserver:activity:cellranger",
+                "prov:entity": "vdjserver:project_file:SRR7191924_1.fastq.gz"
+            }
+        },
+        "isAttributedTo": {},
+        "isAssociatedWith": {},
+        "isDerivedFrom": {},
+        "isGeneratedBy": {
+            "vdjserver:app:outputs:cellranger": {
+                "prov:activity": "vdjserver:activity:cellranger",
+                "prov:entity": "vdjserver:app:outputs:cellranger"
+            }
+        },
+        "workflow_name": "cellRanger",
+        "workflow_mode": "cellranger",
+        "status": "FINISHED",
+        "status_message": "",
+        "prefix": {
+            "airr": "https://airr-community.org/",
+            "vdjserver": "https://vdjserver.org/"
+        }
+    }
+}

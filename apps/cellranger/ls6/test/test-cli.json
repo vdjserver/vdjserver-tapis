@@ -1,0 +1,32 @@
+{
+    "name": "cellranger-test",
+    "appId": "cellranger-ls6",
+    "appVersion": "10.0.0",
+    "maxMinutes":60,
+    "nodeCount": 1,
+    "fileInputs":[
+        { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_cellranger.json", "targetPath":"analysis_document_cellranger.json" },
+        { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/5f36534d-ea33-458f-94bd-26ab4528bb74/files/repertoires.airr.json", "targetPath":"repertoires.airr.json" }
+    ],
+    "fileInputArrays":[
+        { "name":"ForwardPairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/projects/5f36534d-ea33-458f-94bd-26ab4528bb74/files/SRR7191921_1.fastq.gz" ]},
+        { "name":"ReversePairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/projects/5f36534d-ea33-458f-94bd-26ab4528bb74/files/SRR7191921_2.fastq.gz" ]}
+    ],
+    "parameterSet": {
+        "schedulerOptions": [
+            { "name":"allocation", "arg":"-A MCB23006" }
+        ],
+        "containerArgs": [
+        ],
+        "appArgs": [
+        ],
+        "envVariables": [
+            {"key": "species", "value": "human" },
+            {"key": "strain", "value": "" },
+            {"key": "germline_db_TR", "value": "db.2019.01.23"},
+            {"key": "germline_db_IG", "value": "db.2026.01.12"},
+            {"key": "ForwardPairedFiles", "value": "SRR7191921_1.fastq.gz" },
+            {"key": "ReversePairedFiles", "value": "SRR7191921_2.fastq.gz" }
+        ]
+    }
+}
