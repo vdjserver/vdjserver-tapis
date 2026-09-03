@@ -1,7 +1,7 @@
 # helper commands for tapis v3 apps
 
 APP_NAME=igblast
-APP_VERSION=0.10
+APP_VERSION=0.11
 APP_SYSTEM=ls6
 
 APP_ID=${APP_NAME}-${APP_SYSTEM}
@@ -76,7 +76,7 @@ build: clean common-scripts
 	cp do_makedb.sh ${BUILD_DIR}
 	cp do_merge.sh ${BUILD_DIR}
 	cp fastq2fasta.py ${BUILD_DIR}
-	cp splitfasta.pl ${BUILD_DIR}
+	cp splitfasta.py ${BUILD_DIR}
 	tar zcf ${APP_ARCHIVE} -C ${BUILD_DIR} .
 
 deploy: build
