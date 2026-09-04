@@ -56,6 +56,7 @@ function setup_germline () {
     export IGDATA="./$VDJ_DB_VERSION"
     export VDJ_DB_ROOT="$IGDATA/germline/"
 
+    
     # TODO: handle mouse strains
     export germline_db_file="$VDJ_DB_ROOT/$species/vdjserver_germline.airr.json"
     export germline_fasta="$VDJ_DB_ROOT/$species/ReferenceDirectorySet/${locus}_VDJ.fna"

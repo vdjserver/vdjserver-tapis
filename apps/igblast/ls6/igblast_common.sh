@@ -15,7 +15,7 @@ APP_NAME=igblast
 export ACTIVITY_NAME="vdjserver:activity:igblast"
 
 # automatic parallelization of large files
-READS_PER_FILE=10000
+READS_PER_FILE=1000
 
 # bring in common functions
 source ./common_functions.sh
@@ -47,8 +47,8 @@ function print_parameters() {
     echo ""
     echo "Application parameters:"
     echo "species=$species"
-    echo "strain=$strain"
     echo "locus=$locus"
+    echo "germline_db=$germline_db"
     echo "germline_db_file=${germline_db_file}"
     echo "germline_fasta=${germline_fasta}"
     echo "domain_system=$domain_system"
@@ -144,11 +144,7 @@ function run_igblast_workflow() {
             # TODO: get these from repertoire metadata
             organism=${species}
             germline_set=${species}
-            if [ "$species" == "macaque" ]; then
-                organism="rhesus_monkey"
-                strain="indian"
-                germline_set="macaque_indian"
-            fi
+
             QUERY_ARGS=""
             ARGS=""
             MDARGS=""
@@ -176,8 +172,10 @@ function run_igblast_workflow() {
                 fi
 
                 # for newer version of igblast we need an extra argument
-                if [ "$germline_db" == "db.2026.01.12" ]; then
-                    ARGS="$ARGS -c_region_db  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_C.fna"
+                if [ "$germline_db" == "db.2026.09.03" ]; then
+                    if [[ "$species" == "NCBITAXON_9606" ]]; then
+                        ARGS="$ARGS -c_region_db  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_C.fna"
+                    fi
                     ARGS="$ARGS -auxiliary_data  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}.aux"
                     ARGS="$ARGS -custom_internal_data $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}.ndm"
                 fi
@@ -200,11 +198,6 @@ function run_igblast_workflow() {
             # igblast jobs
             echo "export IGDATA=\"$IGDATA\" && export VDJ_DB_ROOT=\"$VDJ_DB_ROOT\" && $IGBLASTN_EXE $CO_ARGS \"$OUTFMT\" > ${smallFile}.igblast.txt" >> joblist
             
-            ## Print MDARGS
-            # echo 
-            # echo "MDARGS"
-            # echo "$MDARGS"
-            # echo 
             # the post processing jobs
             echo "export IGDATA=\"$IGDATA\" && export VDJ_DB_ROOT=\"$VDJ_DB_ROOT\" && apptainer exec ${repcalc_image} bash ./do_airr_makedb.sh $MDARGS" >> joblist-post-process
             #fi
