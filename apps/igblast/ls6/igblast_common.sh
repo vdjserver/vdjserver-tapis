@@ -405,10 +405,7 @@ function run_assign_clones() {
     count=0
     if [[ "$ClonalTool" == "changeo" ]] ; then
         fileMetadataList=($repertoires)
-        for file in ${filelist[@]}; do
-            mfile=${fileMetadataList[count]}
-            fileBasename="${file%.*}" # test/file.fasta -> test/file
-            fileOutname="${fileBasename##*/}" # test/file -> file
+        for mfile in ${fileMetadataList[@]}; do
             file=${mfile}.igblast.makedb.airr.tsv
 
             # Assuming airr.tsv extension
@@ -439,11 +436,8 @@ function run_assign_clones() {
 
     if [[ "$ClonalTool" == "repcalc" ]] ; then
         fileMetadataList=($repertoires)
-        for file in ${filelist[@]}; do
-            mfile=${fileMetadataList[count]}
-            fileBasename="${file%.*}" # test/file.fasta -> test/file
-            #rep_id="${fileBasename##*/}" # test/file -> file
-            rep_id=$mfile
+        for file in ${fileMetadataList[@]}; do
+            rep_id=$file
 
             # We have the raw IgBlast AIRR TSV and the MakeDB processed AIRR TSV
 
