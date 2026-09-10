@@ -33,6 +33,9 @@ help:
 	@echo "make test-tcr  -- Submit test TCR job"
 	@echo "make test-bcr  -- Submit test BCR job"
 	@echo "make test-all  -- Submit all test jobs"
+	@echo "make test-bcr-old  -- Submit test BCR job with old germline"
+	@echo "make test-mouse-ig  -- Submit test mouse BCR job"
+	@echo "make test-sol-multi	-- Submit test sol TCR job for multiple samples"
 	@echo ""
 
 list:
@@ -84,6 +87,15 @@ deploy: build
 
 test-bcr:
 	vdjserver-tools jobs submit test/test-bcr.json
+
+test-bcr-old:
+	vdjserver-tools jobs submit test/test-bcr-old.json
+
+test-mouse-ig:
+	vdjserver-tools jobs submit test/test-mouse-ig.json
+
+test-sol-multi:
+	vdjserver-tools jobs submit test/test_tcr_sol.json
 
 test-tcr:
 	vdjserver-tools jobs submit test/test-tcr.json

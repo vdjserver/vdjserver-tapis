@@ -60,12 +60,12 @@ build_vdj_fasta() {
 
     > "$vdj_file"
 
-    for segment in V D J; do
+    for segment in V D J C; do
         if [[ "$segment" == "V" ]]; then
-            src_fasta="${germline_dir}/${strain_id}_IG_V_gapped.fna"
+            src_fasta="${germline_dir}/${strain_id}_V_gapped.fna"
         
         else
-            src_fasta="${germline_dir}/${strain_id}_IG_${segment}.fna"
+            src_fasta="${germline_dir}/${strain_id}_${segment}.fna"
         fi
 
         if [[ -f "$src_fasta" ]]; then
@@ -95,7 +95,7 @@ build_vdj_fasta() {
 merge_igblast_files() {
 
     local ext="$1"
-    local combined_file="${germline_dir}/${strain_id}_IG.${ext}"
+    local combined_file="${germline_dir}/${strain_id}.${ext}"
     local found_any=false
 
     echo "Merging .$ext files..."
@@ -133,9 +133,9 @@ merge_igblast_files() {
 
 build_blast_databases() {
 
-    for segment in V D J; do
-        local combined_file="${germline_dir}/${strain_id}_IG_${segment}.fna"
-        local outbase="${germline_dir}/${strain_id}_IG_${segment}"
+    for segment in V D J C; do
+        local combined_file="${germline_dir}/${strain_id}_${segment}.fna"
+        local outbase="${germline_dir}/${strain_id}_${segment}"
 
         if [[ -f "$combined_file" && -s "$combined_file" ]]; then
 
@@ -207,6 +207,7 @@ do
     # species_dir="${database_root}/germline/${species_id}" # turn this on if you want species id
 
     species_dir="${database_root}/germline/" #Using strain id as species id
+    internal_dir="${database_root}/internal_data/${strain_id}"
     strain_dir="${species_dir}/${strain_id}"
     germline_dir="${strain_dir}/ReferenceDirectorySet"
 
@@ -229,6 +230,9 @@ do
     strain_short="${strain//\//_}"
     strain_short="${strain_short// /_}"
 
+    echo "strain_short : $strain_short"
+    echo "strain_id : $strain_id"
+
     echo "Directory: $germline_dir"
 
     echo "======================================================================================"
@@ -243,7 +247,7 @@ do
 
     download_set "IGH" "$igh_set" "${strain_short}_IGH" "vdjserver_${strain_short}_IGH_germline.airr"
     # IGHC -- still uses IGH locus for human
-    download_set "IGH" "$ighc_set" "${strain_short}_IGH_C" "vdjserver_${strain_short}_IGH_C_germline.airr"
+    download_set "IGH" "$ighc_set" "${strain_short}_IGH" "vdjserver_${strain_short}_IGH_C_germline.airr"
 
 
     # There is no D segment for IGK and IGL.
@@ -284,15 +288,22 @@ do
 
     cp "${combined_airr}" "${final_airr}" 
 
-    # python combine_airr_json.py --CheckCGene "$germline_dir" # Need to figure out about mismatched gene names
+    if [[ "$species" == "Homo sapiens" ]]; then
+        #Remove _SC alleles as they do not appear in the airr json file yet.
+        echo "Remove All _SC alleles from ${strain_short}_IGH_C.fna!"
+        python combine_airr_json.py --removeSCGgenes "$strain_short" "$germline_dir"
+        #rename the updated file to the old file
+        mv -f "${germline_dir}/${strain_short}_IGH_C_updated.fasta" "${germline_dir}/${strain_short}_IGH_C.fasta"
+    fi
+        
 
     echo
     echo "======================================================================================"
     echo "                          COMBINE FASTA FILES ACROSS LOCI AND GAPPED V FILES"
     echo "======================================================================================"
 
-    for segment in V D J; do
-        combined_file="${germline_dir}/${strain_id}_IG_${segment}.fna"
+    for segment in V D J C; do
+        combined_file="${germline_dir}/${strain_id}_${segment}.fna"
         pattern="${germline_dir}/${strain_short}_"*"_${segment}.fasta"
 
         combine_fasta_files "$segment" "$combined_file" "$pattern"
@@ -300,7 +311,7 @@ do
     done
     echo "All loci for each segment have been merged into a single IG locus — complete!"
 
-    v_gapped_combined="${germline_dir}/${strain_id}_IG_V_gapped.fna"
+    v_gapped_combined="${germline_dir}/${strain_id}_V_gapped.fna"
     pattern="${germline_dir}/${strain_short}_"*"_V_gapped.fasta"
 
     combine_fasta_files "gapped V" "$v_gapped_combined" "$pattern"
@@ -314,7 +325,6 @@ do
 
     build_vdj_fasta || exit 1
 
-
     echo
     echo "======================================================================================"
     echo "                          MERGING AUX AND NDM FILES"
@@ -323,8 +333,6 @@ do
 
     merge_igblast_files "aux"
     merge_igblast_files "ndm"
-
-    echo
 
     echo
     echo "======================================================================================"
@@ -352,6 +360,23 @@ do
     echo "======================================================================================"
 
     build_blast_databases || exit 1
+
+    echo
+    echo "======================================================================================"
+    echo "                          COPY FILES INTO internal_data"
+    echo "======================================================================================"
+
+
+    src="$germline_dir"
+    dst="$internal_dir"
+    mkdir -p "$dst"
+
+    for ext in ndb nhr nin njs nog nos not nsq ntf nto; do
+        for file in "$src"/*."$ext"; do
+            [[ -f "$file" ]] || continue
+            cp "$file" "$dst/"
+        done
+    done
 
 done < "$map_file"
 

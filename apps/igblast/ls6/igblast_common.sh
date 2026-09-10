@@ -142,6 +142,16 @@ function run_igblast_workflow() {
         for smallFile in $smallFiles; do
             # These come from Agave, but I need to assign them inside the loop.
             # TODO: get these from repertoire metadata
+            
+            # if [[ "$species" == "NCBITAXON_9606" || "$species" == "human" ]]; then
+            #     organism="human"
+            # else
+            #     organism="mouse"
+            # fi
+
+            # echo "Species: $species"
+            # echo "IgBLAST organism: $organism"
+            ## Change organism to human or mouse becuase of internal_data stucture
             organism=${species}
             germline_set=${species}
 
@@ -160,26 +170,30 @@ function run_igblast_workflow() {
                 MDARGS="$MDARGS $locus"
             fi
             if [ -n $organism ]; then 
-
                 ARGS="$ARGS -organism $organism"
-                
-                ARGS="$ARGS -germline_db_V $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_V.fna"
-                ARGS="$ARGS -germline_db_D $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_D.fna"
-                ARGS="$ARGS -germline_db_J $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_J.fna"
-                # If locus is TR then use old auxilary data file.
+                # If locus is TR then use old auxilary data file. Also for custom internal data parameter you do not need to specify the organism. It will be ignored.
                 if [ "$germline_db" == "db.2019.01.23" ]; then
                     ARGS="$ARGS -auxiliary_data $IGDATA/optional_file/${germline_set}_gl.aux"
+                    ARGS="$ARGS -germline_db_V $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_V.fna"
+                    ARGS="$ARGS -germline_db_D $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_D.fna"
+                    ARGS="$ARGS -germline_db_J $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_J.fna"
                 fi
-
+                
                 # for newer version of igblast we need an extra argument
-                if [ "$germline_db" == "db.2026.09.03" ]; then
+                if [ "$germline_db" == "db.2026.09.10" ]; then
+                    ARGS="$ARGS -germline_db_V $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_V"
+                    ARGS="$ARGS -germline_db_D $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_D"
+                    ARGS="$ARGS -germline_db_J $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_J"
                     if [[ "$species" == "NCBITAXON_9606" ]]; then
-                        ARGS="$ARGS -c_region_db  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_C.fna"
+                        ARGS="$ARGS -c_region_db  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_C"
                     fi
-                    ARGS="$ARGS -auxiliary_data  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}.aux"
-                    ARGS="$ARGS -custom_internal_data $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}.ndm"
+                    ARGS="$ARGS -auxiliary_data  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}.aux"
+                    ARGS="$ARGS -custom_internal_data $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}.ndm"
                 fi
+                # MDARGS="$MDARGS $organism"
+                # changing it to have species there.
                 MDARGS="$MDARGS $organism"
+
             fi
             if [ -n $domain_system ]; then ARGS="$ARGS -domain_system $domain_system"; fi
 
