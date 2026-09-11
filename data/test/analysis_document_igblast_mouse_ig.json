@@ -38,7 +38,7 @@
             "vdjserver:app:outputs:igblast": {
                 "vdjserver:type": "app:outputs"
             },
-            "vdjserver:project_file:01.fasta": {
+            "vdjserver:project_file:ERR346600_2.merged.unique.fasta": {
                 "vdjserver:type": "app:inputs",
                 "query": "ERR346600_2.merged.unique.fasta",
                 "airr:Repertoire": "1234",
@@ -69,7 +69,7 @@
                 "prov:activity": "vdjserver:activity:igblast",
                 "prov:entity": "vdjserver:app:parameters:igblast"
             },
-            "vdjserver:app:inputs:igblast:01.fasta": {
+            "vdjserver:app:inputs:igblast:ERR346600_2.merged.unique.fasta": {
                 "prov:activity": "vdjserver:activity:igblast",
                 "prov:entity": "vdjserver:project_file:ERR346600_2.merged.unique.fasta"
             }

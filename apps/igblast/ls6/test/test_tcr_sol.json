@@ -7,7 +7,7 @@
     "archiveSystemId": "data-storage.vdjserver.org",
     "archiveSystemDir": "/projects/d57ccb61-f8c0-45f9-a5d3-9712d3c99c28/analyses/${JobUUID}",
     "fileInputs":[
-        { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_igblast_ig.json", "targetPath":"analysis_document_igblast_ig.json" },
+        { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_sol_TR.json", "targetPath":"analysis_document_sol_TR.json" },
         { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/d57ccb61-f8c0-45f9-a5d3-9712d3c99c28/files/repertoires.airr.json", "targetPath":"repertoires.airr.json" }
     ],
     "fileInputArrays":[

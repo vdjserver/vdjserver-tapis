@@ -371,7 +371,9 @@ function run_igblast_workflow() {
 
     #add provenance here.
     count=0
-    for file in ${filelist[@]}; do
+    
+    # for file in ${filelist[@]}; do
+    for file in $query; do
         mfile=${seqMetadata[count]}
 
         wasDerivedFrom "${mfile}.igblast.airr.tsv.gz" "${file}" "vdj_sequence_annotation" "IgBlast AIRR TSV" tsv
