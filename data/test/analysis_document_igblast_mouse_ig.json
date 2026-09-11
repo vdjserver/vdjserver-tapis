@@ -1,0 +1,95 @@
+{
+    "uuid": "abc123",
+    "associationIds": [
+        "project123"
+    ],
+    "owner": "vdj",
+    "created": "2025-07-25T18:44:56.266Z",
+    "lastUpdated": "2025-10-24T17:53:59.152Z",
+    "name": "analysis_document",
+    "value": {
+        "entity": {
+            "airr:Repertoire:1234": {
+                "airr:type": "Repertoire",
+                "vdjserver:type": "app:inputs",
+                "vdjserver:uuid": "1234"
+            },
+            "airr:Repertoire:3456": {
+                "airr:type": "Repertoire",
+                "vdjserver:type": "app:inputs",
+                "vdjserver:uuid": "3456"
+            },
+            "airr:Repertoire:5678": {
+                "airr:type": "Repertoire",
+                "vdjserver:type": "app:inputs",
+                "vdjserver:uuid": "5678"
+            },
+            "airr:Repertoire:78910": {
+                "airr:type": "Repertoire",
+                "vdjserver:type": "app:inputs",
+                "vdjserver:uuid": "78910"
+            },
+            "vdjserver:app:parameters:igblast": {
+                "vdjserver:type": "app:parameters",
+                "query": "ERR346600_2.merged.unique.fasta",
+                "species": "ONTIE:0000001",
+                "locus": "IG"
+            },
+            "vdjserver:app:outputs:igblast": {
+                "vdjserver:type": "app:outputs"
+            },
+            "vdjserver:project_file:ERR346600_2.merged.unique.fasta": {
+                "vdjserver:type": "app:inputs",
+                "query": "ERR346600_2.merged.unique.fasta",
+                "airr:Repertoire": "1234",
+                "vdjserver:uuid": "uuid432"
+            }
+        },
+        "agent": {},
+        "activity": {
+            "vdjserver:activity:igblast": {
+                "vdjserver:app:name": "igblast-ls6",
+                "vdjserver:app:version": "0.11",
+                "vdjserver:app:default": true,
+                "prov:startTime": "2026-09-10T20:20:57.688Z",
+                "vdjserver:job": "job9839"
+            }
+        },
+        "used": {},
+        "wasAttributedTo": {},
+        "wasAssociatedWith": {},
+        "wasDerivedFrom": {},
+        "wasGeneratedBy": {},
+        "uses": {
+            "airr:Repertoire:abc567": {
+                "prov:activity": "vdjserver:activity:igblast",
+                "prov:entity": "airr:Repertoire:abc567"
+            },
+            "vdjserver:app:parameters:igblast": {
+                "prov:activity": "vdjserver:activity:igblast",
+                "prov:entity": "vdjserver:app:parameters:igblast"
+            },
+            "vdjserver:app:inputs:igblast:ERR346600_2.merged.unique.fasta": {
+                "prov:activity": "vdjserver:activity:igblast",
+                "prov:entity": "vdjserver:project_file:ERR346600_2.merged.unique.fasta"
+            }
+        },
+        "isAttributedTo": {},
+        "isAssociatedWith": {},
+        "isDerivedFrom": {},
+        "isGeneratedBy": {
+            "vdjserver:app:outputs:igblast": {
+                "prov:activity": "vdjserver:activity:igblast",
+                "prov:entity": "vdjserver:app:outputs:igblast"
+            }
+        },
+        "workflow_name": "IgBLAST",
+        "workflow_mode": "igblast",
+        "status": "FINISHED",
+        "status_message": "",
+        "prefix": {
+            "airr": "https://airr-community.org/",
+            "vdjserver": "https://vdjserver.org/"
+        }
+    }
+}

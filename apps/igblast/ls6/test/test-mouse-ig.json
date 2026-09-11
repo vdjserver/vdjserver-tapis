@@ -1,19 +1,29 @@
 {
-  "name":"igblast_test_mouse_ig",
-  "appId": "igblast-ls6-1.20",
-  "maxRunTime": "01:00:00",
-  "memoryPerNode": "1GB",
+  "name": "igblast_test_mouse_ig",
+  "appId": "igblast-ls6",
+  "appVersion": "0.11",
+  "maxMinutes": 15,
   "nodeCount": 1,
-  "archive": false,
-  "archiveSystem": "data.vdjserver.org",
-  "inputs": {
-    "query": ["agave://data.vdjserver.org//apps/data/test/ERR346600_2.merged.unique.fasta"]
-  },
-  "parameters": {
-    "Creator": "vdj",
-    "species": "mouse",
-    "ig_seqtype": "Ig",
-    "domain_system": "imgt",
-    "QueryFilesMetadata": [ "1234" ]
+  "fileInputs":[
+      { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_igblast_mouse_ig.json", "targetPath":"analysis_document_igblast_mouse_ig.json" },
+      { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/repertoire_metadata_mouse_ig.airr.json", "targetPath":"repertoire_metadata_mouse_ig.airr.json" }
+  ],
+  "fileInputArrays":[
+      { "name":"query", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/ERR346600_2.merged.unique.fasta" ]}
+  ],
+  "parameterSet": {
+      "schedulerOptions": [
+          { "name":"allocation", "arg":"-A MCB23006" }
+      ],
+      "containerArgs": [
+      ],
+      "appArgs": [
+      ],
+      "envVariables": [
+          {"key": "query", "value": "ERR346600_2.merged.unique.fasta" },
+          {"key": "species", "value": "ONTIE:0000001" },
+          {"key": "locus", "value": "IG" },
+          {"key": "germline_db", "value": "db.2026.09.10" }
+      ]
   }
 }
