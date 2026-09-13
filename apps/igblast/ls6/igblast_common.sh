@@ -15,7 +15,7 @@ APP_NAME=igblast
 export ACTIVITY_NAME="vdjserver:activity:igblast"
 
 # automatic parallelization of large files
-READS_PER_FILE=1000
+READS_PER_FILE=10000
 
 # bring in common functions
 source ./common_functions.sh
@@ -86,6 +86,8 @@ function run_igblast_workflow() {
     fi
     touch joblist-post-process
 
+    # we parallelize by splitting the input files into smaller files
+    # and using launcher to run igblast jobs
     filelist=()
     count=0
     repertoires=""
@@ -96,7 +98,6 @@ function run_igblast_workflow() {
         repertoires="${repertoires} ${rep_id}"
 
         fileOutname="${file##*/}" # test/file -> file
-        #addOutputFile $group $APP_NAME assignment_sequence "$file" "Input Sequences ($fileOutname)" "read" null
 
         expandfile $file
         fileExtension="${file##*.}" # file.fastq -> fastq
@@ -171,19 +172,18 @@ function run_igblast_workflow() {
             fi
             if [ -n $organism ]; then 
                 ARGS="$ARGS -organism $organism"
-                # If locus is TR then use old auxilary data file. Also for custom internal data parameter you do not need to specify the organism. It will be ignored.
                 if [ "$germline_db" == "db.2019.01.23" ]; then
+                    # old germline
                     ARGS="$ARGS -auxiliary_data $IGDATA/optional_file/${germline_set}_gl.aux"
                     ARGS="$ARGS -germline_db_V $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_V.fna"
                     ARGS="$ARGS -germline_db_D $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_D.fna"
                     ARGS="$ARGS -germline_db_J $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_J.fna"
-                fi
-                
-                # for newer version of igblast we need an extra argument
-                if [ "$germline_db" == "db.2026.09.10" ]; then
+                else
+                    # newer OGRDB-based germlines conform to standard directory structure and file names
                     ARGS="$ARGS -germline_db_V $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_V"
                     ARGS="$ARGS -germline_db_D $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_D"
                     ARGS="$ARGS -germline_db_J $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_J"
+                    # currently only human has C genes
                     if [[ "$species" == "NCBITAXON_9606" ]]; then
                         ARGS="$ARGS -c_region_db  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_C"
                     fi
@@ -199,22 +199,17 @@ function run_igblast_workflow() {
 
             IGBLAST_PARAMS="$ARGS"
 
-            # AIRR output
+            # igblast job with AIRR output
             AIRR_ARGS="$QUERY_ARGS $ARGS -outfmt 19"
             echo "export IGDATA=\"$IGDATA\" && $IGBLASTN_EXE $AIRR_ARGS > ${smallFile}.igblast.airr.tsv" >> joblist
 
-            # ChangeO output
+            # igblast job with ChangeO output
             CO_ARGS="$QUERY_ARGS $ARGS -outfmt "
             OUTFMT="7 qseqid qgi qacc qaccver qlen sseqid sallseqid sgi sallgi sacc saccver sallacc slen qstart qend sstart send qseq sseq evalue bitscore score length pident nident mismatch positive gapopen gaps ppos frames qframe sframe btop"
-
-            # macaque not support yet
-            #if [ "$species" != "macaque" ]; then
-            # igblast jobs
             echo "export IGDATA=\"$IGDATA\" && export VDJ_DB_ROOT=\"$VDJ_DB_ROOT\" && $IGBLASTN_EXE $CO_ARGS \"$OUTFMT\" > ${smallFile}.igblast.txt" >> joblist
-            
+
             # the post processing jobs
             echo "export IGDATA=\"$IGDATA\" && export VDJ_DB_ROOT=\"$VDJ_DB_ROOT\" && apptainer exec ${repcalc_image} bash ./do_airr_makedb.sh $MDARGS" >> joblist-post-process
-            #fi
         done
 
         count=$(( $count + 1 ))
@@ -249,9 +244,11 @@ function run_igblast_workflow() {
     # and now to knit smallFiles back together
 
     seqMetadata=($repertoires)
+    query_files=($query)
     count=0
     for file in ${filelist[@]}; do
         mfile=${seqMetadata[count]}
+        query_file=${query_files[count]}
 
         fileBasename="${file%.*}" # test/file.fasta -> test/file
         fileOutname="${fileBasename##*/}" # test/file -> file
@@ -269,10 +266,11 @@ function run_igblast_workflow() {
             mv ${file}.igblast.makedb.airr.tsv ${fileOutname}.igblast.makedb.airr.tsv # Do we need this line? Old code had it only if if [ "$species" != "macaque" ]
         fi
 
+        # provenance for sequences that fail MakeDB
+        # we do not merge into repertoire_id file to make it easier to map sequences to original sample file
         if [ -f "${file}.igblast.fail-makedb.airr.tsv" ]; then
             mv ${file}.igblast.fail-makedb.airr.tsv ${fileOutname}.igblast.fail-makedb.airr.tsv
-            wasDerivedFrom "${fileOutname}.igblast.fail-makedb.airr.tsv" "${file}" "airr-fail-makedb" "Change-O MakeDb Failed" tsv
-            #addOutputFile $group $APP_NAME airr-fail-makedb ${fileOutname}.igblast.fail-makedb.airr.tsv "${fileOutname} Change-O MakeDb Failed" "tsv" $mfile
+            wasDerivedFrom "${fileOutname}.igblast.fail-makedb.airr.tsv" "${query_file}" "airr-fail-makedb" "Change-O MakeDb Failed" tsv
         fi
 
         # process pRESTO annotations
@@ -360,8 +358,7 @@ function run_igblast_workflow() {
             fi
         fi
 
-        # TODO: provenance
-
+        # compress the AIRR TSV
         gzipFile ${mfile}.igblast.airr.tsv
         if [ "$species" != "macaque" ]; then
             gzipFile ${mfile}.igblast.makedb.airr.tsv
@@ -371,8 +368,6 @@ function run_igblast_workflow() {
 
     #add provenance here.
     count=0
-    
-    # for file in ${filelist[@]}; do
     for file in $query; do
         mfile=${seqMetadata[count]}
 
@@ -535,7 +530,6 @@ function compress_and_archive() {
     cp -f ${germline_db_file} ${_tapisJobUUID}
     zip ${_tapisJobUUID}.zip ${_tapisJobUUID}/*
     
-    #addLogFile $APP_NAME log output_archive ${_tapisJobUUID}.zip "Archive of Output Files" "zip" null
     cp ${_tapisJobUUID}.zip output
     
 }

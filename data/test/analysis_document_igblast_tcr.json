@@ -9,15 +9,15 @@
     "name": "analysis_document",
     "value": {
         "entity": {
-            "airr:Repertoire:abc567": {
+            "airr:Repertoire:3456": {
                 "airr:type": "Repertoire",
                 "vdjserver:type": "app:inputs",
-                "vdjserver:uuid": "abc567"
+                "vdjserver:uuid": "3456"
             },
-            "airr:Repertoire:abc123": {
+            "airr:Repertoire:1234": {
                 "airr:type": "Repertoire",
                 "vdjserver:type": "app:inputs",
-                "vdjserver:uuid": "abc123"
+                "vdjserver:uuid": "1234"
             },
             "vdjserver:app:parameters:igblast": {
                 "vdjserver:type": "app:parameters",
@@ -31,13 +31,13 @@
             "vdjserver:project_file:special_seqs.fasta": {
                 "vdjserver:type": "app:inputs",
                 "SequenceFASTQ": "special_seqs.fasta",
-                "airr:Repertoire": "abc123",
+                "airr:Repertoire": "1234",
                 "vdjserver:uuid": "uuid432"
             },
             "vdjserver:project_file:funky_ids.fasta": {
                 "vdjserver:type": "app:inputs",
                 "SequenceFASTQ": "funky_ids.fasta",
-                "airr:Repertoire": "abc567",
+                "airr:Repertoire": "3456",
                 "vdjserver:uuid": "uuid567"
             }
         },

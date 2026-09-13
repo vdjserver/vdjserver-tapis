@@ -22,7 +22,7 @@
         ],
         "envVariables": [
             {"key": "query", "value": "special_seqs.fasta funky_ids.fasta" },
-            {"key": "species", "value": "human" },
+            {"key": "species", "value": "NCBITAXON:9606" },
             {"key": "locus", "value": "TR" },
             {"key": "germline_db", "value": "db.2019.01.23" }
         ]
