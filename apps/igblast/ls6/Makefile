@@ -30,12 +30,13 @@ help:
 	@echo "make deploy    -- Deploy app assets"
 	@echo ""
 	@echo "Testing:"
-	@echo "make test-tcr  -- Submit test TCR job"
-	@echo "make test-bcr  -- Submit test BCR job"
-	@echo "make test-all  -- Submit all test jobs"
-	@echo "make test-bcr-old  -- Submit test BCR job with old germline"
-	@echo "make test-mouse-ig  -- Submit test mouse BCR job"
-	@echo "make test-sol-multi	-- Submit test sol TCR job for multiple samples"
+	@echo "make test-tcr         -- Submit test TCR job"
+	@echo "make test-bcr         -- Submit test BCR job"
+	@echo "make test-bcr-old     -- Submit test BCR job with old germline"
+	@echo "make test-mouse-ig    -- Submit test mouse BCR job"
+	@echo "make test-sol-multi   -- Submit test sol TCR job for multiple samples"
+	@echo "make test-all         -- Submit all basic test jobs"
+	@echo "make test-all-big     -- Submit all big test jobs"
 	@echo ""
 
 list:
@@ -102,9 +103,11 @@ test-tcr:
 	vdjserver-tools jobs submit test/test-tcr.json
 
 test-all:
-	tapis_jobs_submit test/test-bcr.json
-	tapis_jobs_submit test/test-tcr.json
-	tapis_jobs_submit test/test-bcr4.json
-	tapis_jobs_submit test/test-cdr3-bcr4.json
-	tapis_jobs_submit test/test-gene-bcr4.json
-	tapis_jobs_submit test/test-mutations-bcr4.json
+	vdjserver-tools jobs submit test/test-bcr.json
+	vdjserver-tools jobs submit test/test-bcr-old.json
+	vdjserver-tools jobs submit test/test-tcr.json
+	vdjserver-tools jobs submit test/test-mouse-ig.json
+	vdjserver-tools jobs submit test/test_tcr_sol.json
+
+test-all-big:
+	@echo Not implemented
