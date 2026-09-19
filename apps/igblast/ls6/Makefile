@@ -69,6 +69,7 @@ common-scripts:
 	cp ${SCRIPTS_DIR}/repcalc_clones.sh ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/tcr_clone_template.json ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/clone_report.py ${BUILD_DIR}
+	cp ${SCRIPTS_DIR}/igblast_config.sh ${BUILD_DIR}
 
 build: clean common-scripts
 	cp ${APP_JSON} ${BUILD_DIR}

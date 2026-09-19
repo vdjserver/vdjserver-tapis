@@ -23,6 +23,9 @@ source ./common_functions.sh
 # bring in provenance functions
 source ./provenance_functions.sh
 
+
+# bring in igblast setup functions
+source ./igblast_config.sh
 # ----------------------------------------------------------------------------
 # IgBlast workflow
 
@@ -140,73 +143,38 @@ function run_igblast_workflow() {
             smallFiles="$file"
         fi
         
+
+        # species="${species//:/_}"
+        # species="${species^^}"
+
         for smallFile in $smallFiles; do
             # These come from Agave, but I need to assign them inside the loop.
             # TODO: get these from repertoire metadata
+            ###########################################################################
+            # Configure IGblast arguments
+            ###########################################################################
+
+            configure_igblast "$locus" "$species" "$germline_db"
             
-            # if [[ "$species" == "NCBITAXON_9606" || "$species" == "human" ]]; then
-            #     organism="human"
-            # else
-            #     organism="mouse"
-            # fi
-
-            # echo "Species: $species"
-            # echo "IgBLAST organism: $organism"
-            ## Change organism to human or mouse becuase of internal_data stucture
-            organism=${species}
-            germline_set=${species}
-
-            QUERY_ARGS=""
-            ARGS=""
-            MDARGS=""
-            if [ -f $smallFile ]; then 
-                QUERY_ARGS="-query $smallFile" 
-                MDARGS="$MDARGS $smallFile"
-                MDARGS="$MDARGS $PWD/${smallFile}.igblast.txt"
-            fi
-            if [ -n $locus ]; then 
-                if [ "$locus" == "TR" ]; then seqType="TCR"; fi  
-                if [ "$locus" == "IG" ]; then seqType="Ig"; fi  
-                ARGS="$ARGS -ig_seqtype $seqType"
-                MDARGS="$MDARGS $locus"
-            fi
-            if [ -n $organism ]; then 
-                ARGS="$ARGS -organism $organism"
-                if [ "$germline_db" == "db.2019.01.23" ]; then
-                    # old germline
-                    ARGS="$ARGS -auxiliary_data $IGDATA/optional_file/${germline_set}_gl.aux"
-                    ARGS="$ARGS -germline_db_V $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_V.fna"
-                    ARGS="$ARGS -germline_db_D $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_D.fna"
-                    ARGS="$ARGS -germline_db_J $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${locus}_J.fna"
-                else
-                    # newer OGRDB-based germlines conform to standard directory structure and file names
-                    ARGS="$ARGS -germline_db_V $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_V"
-                    ARGS="$ARGS -germline_db_D $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_D"
-                    ARGS="$ARGS -germline_db_J $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_J"
-                    # currently only human has C genes
-                    if [[ "$species" == "NCBITAXON_9606" ]]; then
-                        ARGS="$ARGS -c_region_db  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_C"
-                    fi
-                    ARGS="$ARGS -auxiliary_data  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}.aux"
-                    ARGS="$ARGS -custom_internal_data $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}.ndm"
-                fi
-                # MDARGS="$MDARGS $organism"
-                # changing it to have species there.
-                MDARGS="$MDARGS $organism"
-
-            fi
-            if [ -n $domain_system ]; then ARGS="$ARGS -domain_system $domain_system"; fi
-
-            IGBLAST_PARAMS="$ARGS"
-
             # igblast job with AIRR output
-            AIRR_ARGS="$QUERY_ARGS $ARGS -outfmt 19"
+            AIRR_ARGS="-query $smallFile $IGBLAST_PARAMS -outfmt 19"
             echo "export IGDATA=\"$IGDATA\" && $IGBLASTN_EXE $AIRR_ARGS > ${smallFile}.igblast.airr.tsv" >> joblist
 
             # igblast job with ChangeO output
-            CO_ARGS="$QUERY_ARGS $ARGS -outfmt "
+            CO_ARGS="-query $smallFile $IGBLAST_PARAMS -outfmt"
             OUTFMT="7 qseqid qgi qacc qaccver qlen sseqid sallseqid sgi sallgi sacc saccver sallacc slen qstart qend sstart send qseq sseq evalue bitscore score length pident nident mismatch positive gapopen gaps ppos frames qframe sframe btop"
             echo "export IGDATA=\"$IGDATA\" && export VDJ_DB_ROOT=\"$VDJ_DB_ROOT\" && $IGBLASTN_EXE $CO_ARGS \"$OUTFMT\" > ${smallFile}.igblast.txt" >> joblist
+
+            ###########################################################################
+            # Post-processing arguments
+            ###########################################################################
+
+            MDARGS=""
+            MDARGS="$MDARGS $smallFile"
+            MDARGS="$MDARGS $PWD/${smallFile}.igblast.txt"
+            MDARGS="$MDARGS $locus"
+            MDARGS="$MDARGS $species"
+            MDARGS="$MDARGS $germline_db"
 
             # the post processing jobs
             echo "export IGDATA=\"$IGDATA\" && export VDJ_DB_ROOT=\"$VDJ_DB_ROOT\" && apptainer exec ${repcalc_image} bash ./do_airr_makedb.sh $MDARGS" >> joblist-post-process

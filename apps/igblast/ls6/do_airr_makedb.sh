@@ -3,12 +3,28 @@
 # Uses singularity image
 #
 
-seqType="$3"
-organism="$4"
+
+locus="$3"
+species="$4"
+germline_db="$5"
+
+
+if [[ "$germline_db" == "db.2019.01.23" ]]; then
+
+    if [[ "$species" == "NCBITAXON:9606" ]]; then
+        species="human"
+    else
+        species="mouse"
+    fi
+else
+    species="${species//:/_}"
+    species="${species^^}"
+
+fi
 
 fileBasename="${2%.*}" # file.fastq -> file
 
-MakeDb.py igblast -s "$1" -i "$2" -r "$VDJ_DB_ROOT/${organism}/ReferenceDirectorySet/${seqType}_VDJ.fna" --extended --failed
+MakeDb.py igblast -s "$1" -i "$2" -r "$VDJ_DB_ROOT/${species}/ReferenceDirectorySet/${locus}_VDJ.fna" --extended --failed
 
 if [ -f "${fileBasename}_db-pass.tsv" ]; then
     mv "${fileBasename}_db-pass.tsv" "${fileBasename}.makedb.airr.tsv"
