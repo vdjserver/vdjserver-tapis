@@ -14,6 +14,12 @@ configure_igblast()
     local seqType=""
     IGBLAST_PARAMS=""
 
+    ###########################################################################
+    # Setup germline
+    # note: pass unmodified locus and species
+    ###########################################################################
+
+    setup_germline "$germline_db" "$species" "$local"
 
     ###########################################################################
     # Old database uses human/mouse organism names
@@ -52,12 +58,6 @@ configure_igblast()
         echo "Expected TR or IG"
         exit 1
     fi
-
-    ###########################################################################
-    # Setup germline
-    ###########################################################################
-
-    setup_germline "$germline_db"
 
     ###########################################################################
     # IgBLAST sequence type
