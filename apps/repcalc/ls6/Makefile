@@ -1,7 +1,7 @@
 # helper commands for tapis v3 apps
 
 APP_NAME=repcalc2
-APP_VERSION=0.9
+APP_VERSION=0.10
 APP_SYSTEM=ls6
 
 APP_ID=${APP_NAME}-${APP_SYSTEM}
@@ -84,12 +84,14 @@ deploy: build
 
 test-bcr:
 	vdjserver-tools jobs submit test/test-bcr.json
+	vdjserver-tools jobs submit test/test-bcr-old.json
 
 test-tcr:
 	vdjserver-tools jobs submit test/test-tcr.json
 
 test-all:
 	vdjserver-tools jobs submit test/test-bcr.json
+	vdjserver-tools jobs submit test/test-bcr-old.json
 	vdjserver-tools jobs submit test/test-tcr.json
 	vdjserver-tools jobs submit test/test-bcr4.json
 	vdjserver-tools jobs submit test/test-cdr3-bcr4.json

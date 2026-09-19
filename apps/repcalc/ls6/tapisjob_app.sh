@@ -37,18 +37,7 @@ export LAUNCHER_BIND=0
 # Start
 printf "START at $(date)\n\n"
 
-# TODO: how to tell Tapis that the job failed?
-export JOB_ERROR=0
-
-#gather_secondary_inputs
-
-# if [ "$locus" == "TR" ]; then
-#     setup_germline "db.2019.01.23"
-# fi
-# if [ "$locus" == "IG" ]; then
-#     setup_germline "db.2026.01.12"
-# fi
-setup_germline "$germline_db"
+setup_germline "$germline_db" "$species" "$locus"
 
 initProvenance
 print_parameters

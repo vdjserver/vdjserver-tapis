@@ -1,7 +1,7 @@
 {
     "name": "repcalc_test_tcr",
     "appId": "repcalc2-ls6",
-    "appVersion": "0.9",
+    "appVersion": "0.10",
     "maxMinutes": 30,
     "nodeCount": 1,
     "fileInputs":[
@@ -21,7 +21,7 @@
         ],
         "envVariables": [
             {"key": "JobFiles", "value": "a409f7f5-0fa9-42c8-a71f-dbe8fb96847e-007.zip" },
-            {"key": "species", "value": "human" },
+            {"key": "species", "value": "NCBITAXON:9606" },
             {"key": "locus", "value": "TR" },
             {"key": "germline_db", "value": "db.2019.01.23"},
             {"key": "GeneSegmentFlag", "value": "1" },
