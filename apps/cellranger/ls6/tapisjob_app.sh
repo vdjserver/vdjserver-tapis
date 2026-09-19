@@ -41,13 +41,15 @@ source ./cellranger_common.sh
 
 mkdir cellranger
 cd cellranger
+
+echo "SPECIES in tapisjob_app.sh: $species"
 #tar zxf $WORK/cellranger/cellranger-${CELLRANGER_VERSION}.tar.gz
-if [[ "$species" == "human" ]]; then
-    tar zxf $WORK/../common/${HUMAN_VDJ_REFDATA}.tar.gz
+if [[ "$species" == "NCBITAXON:9606" || "$species" == "human" ]]; then
+    tar zxf "$WORK/../common/${HUMAN_VDJ_REFDATA}.tar.gz"
+else
+    tar zxf "$WORK/../common/${MOUSE_VDJ_REFDATA}.tar.gz"
 fi
-if [[ "$species" == "mouse" ]]; then
-    tar zxf $WORK/../common/${MOUSE_VDJ_REFDATA}.tar.gz
-fi
+
 cd ../
 # ----------------------------------------------------------------------------
 # Launcher to use multicores on node

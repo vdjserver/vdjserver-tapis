@@ -1,7 +1,7 @@
 # helper commands for tapis v3 apps
 
 APP_NAME=cellranger
-APP_VERSION=10.0.0
+APP_VERSION=0.2
 APP_SYSTEM=ls6
 
 APP_ID=${APP_NAME}-${APP_SYSTEM}
@@ -34,6 +34,7 @@ help:
 	@echo ""
 	@echo "Testing:"
 	@echo "make test-cli  -- Submit test  job"
+	@echo "make test-multi -- Submit test  with multiple files job"
 	@echo ""
 
 docker:
@@ -61,6 +62,7 @@ common-scripts:
 	cp ${SCRIPTS_DIR}/airr_extract_fasta.py ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/10x_merge_airr.py ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/prov_metadata.py ${BUILD_DIR}
+	cp ${SCRIPTS_DIR}/igblast_config.sh ${BUILD_DIR}
 	
 
 
