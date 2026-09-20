@@ -5,11 +5,11 @@
     "maxMinutes": 30,
     "nodeCount": 1,
     "fileInputs":[
-      { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/1a64daff-2e5d-4b87-a0f4-72e24b84c2d2/analyses/6fb777d8-ab35-4b39-a551-d324d243143f/analysis_document.json", "targetPath":"analysis_document.json" },
-      { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/1a64daff-2e5d-4b87-a0f4-72e24b84c2d2/analyses/6fb777d8-ab35-4b39-a551-d324d243143f/repertoires.airr.json", "targetPath":"repertoires.airr.json" }
+      { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/1a64daff-2e5d-4b87-a0f4-72e24b84c2d2/analyses/28e8cd9e-fc05-49a6-9e54-32a0d59514cf/analysis_document.json", "targetPath":"analysis_document.json" },
+      { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/1a64daff-2e5d-4b87-a0f4-72e24b84c2d2/analyses/28e8cd9e-fc05-49a6-9e54-32a0d59514cf/repertoires.airr.json", "targetPath":"repertoires.airr.json" }
     ],
     "fileInputArrays":[
-      { "name":"JobFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org//projects/1a64daff-2e5d-4b87-a0f4-72e24b84c2d2/analyses/6fb777d8-ab35-4b39-a551-d324d243143f/a409f7f5-0fa9-42c8-a71f-dbe8fb96847e-007/a409f7f5-0fa9-42c8-a71f-dbe8fb96847e-007.zip" ]}
+      { "name":"JobFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org//projects/1a64daff-2e5d-4b87-a0f4-72e24b84c2d2/analyses/8cc1c4c4-5233-445d-a640-966c963beeae/cba20097-d3ee-4d57-9a88-5f3cb8e0b3c6-007/cba20097-d3ee-4d57-9a88-5f3cb8e0b3c6-007.zip" ]}
     ],
     "parameterSet": {
         "schedulerOptions": [
@@ -20,7 +20,7 @@
         "appArgs": [
         ],
         "envVariables": [
-            {"key": "JobFiles", "value": "a409f7f5-0fa9-42c8-a71f-dbe8fb96847e-007.zip" },
+            {"key": "JobFiles", "value": "cba20097-d3ee-4d57-9a88-5f3cb8e0b3c6-007.zip" },
             {"key": "species", "value": "NCBITAXON:9606" },
             {"key": "locus", "value": "TR" },
             {"key": "germline_db", "value": "db.2019.01.23"},
