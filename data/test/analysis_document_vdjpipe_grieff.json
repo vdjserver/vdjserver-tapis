@@ -50,11 +50,11 @@
                 "ReversePrimerFile": "Greiff2014_CPrimers_rev.fasta",
                 "vdjserver:uuid": "uuid434"
             },
-            "vdjserver:project_file:ERR346600_1.fastq": {
+            "vdjserver:project_file:ERR346600_2.fastq": {
                 "vdjserver:type": "app:inputs",
-                "SequenceForwardPairedFiles": "ERR346600_1.fastq",
+                "SequenceForwardPairedFiles": "ERR346600_2.fastq",
                 "vdjserver:uuid": "uuid435",
-                "SequenceReversePairedFiles": "ERR346600_2.fastq"
+                "SequenceReversePairedFiles": "ERR346600_1.fastq"
             }
         },
         "agent": {},
