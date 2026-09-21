@@ -1,5 +1,5 @@
 {
-    "name": "sra_test-host-staging",
+    "name": "sra_test-host-dev",
     "appId": "sra-download-vm",
     "appVersion": "0.2",
     "maxMinutes": 240,
@@ -14,9 +14,9 @@
         ],
         "envVariables": [
             {"key": "SRA_run_ids", "value": "SRR32457848 SRR1234 SRR32457851" },
-            {"key": "project_id", "value": "f7fbe146-12c0-4fed-898c-dd9283e4385d" },
+            {"key": "project_id", "value": "74805b6c-a6fc-40b7-b8d8-4ab791f46b39" },
             {"key": "split_flag", "value": "1" },
-            {"key": "vdj_default_host", "value": "vdj-staging.tacc.utexas.edu" }
+            {"key": "vdj_default_host", "value": "vdj-dev.tacc.utexas.edu" }
         ]
     }
 }

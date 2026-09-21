@@ -1,16 +1,16 @@
 {
     "id":"repcalc2-ls6",
-    "version":"0.9",
+    "version":"0.10",
     "description":"RepCalc on Lonestar6",
     "runtime":"ZIP",
     "runtimeOptions": ["NONE"],
-    "containerImage":"tapis://data-storage.vdjserver.org/apps/repcalc2-ls6-0.9.tgz",
+    "containerImage":"tapis://data-storage.vdjserver.org/apps/repcalc2-ls6-0.10.tgz",
     "jobType":"BATCH",
     "jobAttributes": {
         "description": "default job description",
         "execSystemId": "test-ls6.tacc.utexas.edu",
         "fileInputs":[
-            { "name":"repcalc_image", "inputMode": "FIXED", "envKey":"repcalc_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/repcalc-v2.3.3-imm4.4.sif", "targetPath":"repcalc-v2.3.3-imm4.4.sif" },
+            { "name":"repcalc_image", "inputMode": "FIXED", "envKey":"repcalc_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/repcalc-v2.3.4-imm4.4.sif", "targetPath":"repcalc-v2.3.3-imm4.4.sif" },
             { "name":"analysis_provenance", "inputMode": "REQUIRED", "envKey":"analysis_provenance", "targetPath":"." },
             { "name":"AIRRMetadata", "inputMode": "REQUIRED", "envKey":"AIRRMetadata", "targetPath":"." },
             { "name":"RepertoireGroupMetadata", "inputMode": "OPTIONAL", "envKey":"RepertoireGroupMetadata", "targetPath":"." }
@@ -18,8 +18,8 @@
         "fileInputArrays":[
             {  "name":"germline_archives", "inputMode": "FIXED", "targetDir":".",
             "sourceUrls": [ "tapis://data-storage.vdjserver.org/akc/germlines/db.2019.01.23.tgz",
-                            "tapis://data-storage.vdjserver.org/akc/germlines/db.2025.10.31.tgz",
-                            "tapis://data-storage.vdjserver.org/akc/germlines/db.2026.01.12.tgz"]},
+                            "tapis://data-storage.vdjserver.org/akc/germlines/db.2026.01.12.tgz",
+                            "tapis://data-storage.vdjserver.org/akc/germlines/db.2026.09.10.tgz"]},
             { "name":"JobFiles", "inputMode": "OPTIONAL", "targetDir":"." },
             { "name":"AIRRFiles", "inputMode": "OPTIONAL", "targetDir":"." }
         ],
@@ -33,8 +33,7 @@
             "appArgs": [
             ],
             "envVariables": [
-                {"key": "species", "inputMode": "REQUIRED", "value": "human" },
-                {"key": "strain", "inputMode": "INCLUDE_BY_DEFAULT" },
+                {"key": "species", "inputMode": "REQUIRED", "value": "NCBITAXON:9606" },
                 {"key": "locus", "inputMode": "REQUIRED" },
                 {"key": "germline_db", "inputMode": "REQUIRED" },
                 {"key": "GeneSegmentFlag", "inputMode": "REQUIRED", "value": "0" },

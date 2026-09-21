@@ -1,10 +1,10 @@
 {
     "id":"sra-download-vm",
-    "version":"0.1",
+    "version":"0.2",
     "description":"File transfer from SRA",
     "runtime":"ZIP",
     "runtimeOptions": ["NONE"],
-    "containerImage":"tapis://data-storage.vdjserver.org/apps/sra-download-vm-0.1.tgz",
+    "containerImage":"tapis://data-storage.vdjserver.org/apps/sra-download-vm-0.2.tgz",
     "jobType":"FORK",
     "jobAttributes": {
         "description": "default job description",
@@ -25,7 +25,8 @@
             "envVariables": [
                 {"key": "SRA_run_ids", "inputMode": "REQUIRED" },
                 {"key": "project_id", "inputMode": "REQUIRED" },
-                {"key": "split_flag", "inputMode": "REQUIRED", "value": "1" }
+                {"key": "split_flag", "inputMode": "REQUIRED", "value":"1"},
+                {"key": "vdj_default_host", "inputMode": "REQUIRED", "value":"vdjserver.org"}
             ]
         }
     }

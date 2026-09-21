@@ -1,0 +1,21 @@
+species_id	strain_id	species	strain	igkv_set	iglv_set	igh_set	ighc_set	igkj_set	iglj_set	update_allele
+NCBITAXON_9606	NCBITAXON_9606	Homo sapiens	human	IGKappa_VJ	IGLambda_VJ	IGH_VDJ	IGHC	NA	NA	N
+NCBITAXON_10090	ONTIE_0000841	Mus musculus	129S1/SvImJ	129S1/SvImJ IGKV	129S1/SvImJ IGLV	NA	NA	IGKJ (all strains)	IGLJ (all strains)	Y
+NCBITAXON_10090	ONTIE_0000168	Mus musculus	A/J	A/J IGKV	A/J IGLV	NA	NA	IGKJ (all strains)	IGLJ (all strains)	Y
+NCBITAXON_10090	ONTIE_0000170	Mus musculus	AKR	AKR/J IGKV	AKR/J IGLV	NA	NA	IGKJ (all strains)	IGLJ (all strains)	Y
+NCBITAXON_10090	ONTIE_0000001	Mus musculus	BALB/c	NA	NA	BALB/c IGH	NA	IGKJ (all strains)	IGLJ (all strains)	Y
+NCBITAXON_10090	ONTIE_0000019	Mus musculus	BALB/c/ByJ	BALB/c/ByJ IGKV	BALB/c/ByJ IGLV	NA	NA	IGKJ (all strains)	IGLJ (all strains)	Y
+NCBITAXON_10090	ONTIE_0000037	Mus musculus	C3H/HeJ	C3H/HeJ IGKV	C3H/HeJ IGLV	NA	NA	IGKJ (all strains)	IGLJ (all strains)	Y
+NCBITAXON_10090	ONTIE_0000062	Mus musculus	C57BL/6	C57BL/6J IGKV	C57BL/6J IGLV	C57BL/6 IGH	NA	IGKJ (all strains)	IGLJ (all strains)	Y
+NCBITAXON_10091	NCBITAXON_10091	Mus musculus	CAST/EiJ	CAST/EiJ IGKV	CAST/EiJ IGLV	CAST/EiJ IGH	NA	IGKJ (all strains)	IGLJ (all strains)	Y
+NCBITAXON_10090	ONTIE_0000147	Mus musculus	CBA/J	CBA/J IGKV	CBA/J IGLV	NA	NA	IGKJ (all strains)	IGLJ (all strains)	Y
+NCBITAXON_10090	ONTIE_0000050	Mus musculus	DBA/1J	DBA/1J IGKV	DBA/1J IGLV	NA	NA	IGKJ (all strains)	IGLJ (all strains)	Y
+NCBITAXON_10090	ONTIE_0000051	Mus musculus	DBA/2J	DBA/2J IGKV	DBA/2J IGLV	NA	NA	IGKJ (all strains)	IGLJ (all strains)	Y
+NCBITAXON_10090	RRID_IMSR_JAX_002798	Mus musculus	LEWES/EiJ	LEWES/EiJ IGKV	LEWES/EiJ IGLV	LEWES/EiJ IGH	NA	IGKJ (all strains)	IGLJ (all strains)	Y
+NCBITAXON_10090	ONTIE_0000535	Mus musculus	MRL/MpJ	MRL/MpJ IGKV	MRL/MpJ IGLV	NA	NA	IGKJ (all strains)	IGLJ (all strains)	Y
+NCBITAXON_10090	RRID_IMSR_JAX_003719	Mus musculus	MSM/MsJ	MSM/MsJ IGKV	MSM/MsJ IGLV	MSM/MsJ IGH	NA	IGKJ (all strains)	IGLJ (all strains)	Y
+NCBITAXON_10090	ONTIE_0000543	Mus musculus	NOD/ShiLtJ	NOD/ShiLtJ IGKV	NOD/ShiLtJ IGLV	NOD/ShiLtJ IGH	NA	IGKJ (all strains)	IGLJ (all strains)	Y
+NCBITAXON_10090	ONTIE_0001059	Mus musculus	NOR/LtJ	NOR/LtJ IGKV	NOR/LtJ IGLV	NA	NA	IGKJ (all strains)	IGLJ (all strains)	Y
+NCBITAXON_10090	ONTIE_0000547	Mus musculus	NZB/BlNJ	NZB/BlNJ IGKV	NZB/BlNJ IGLV	NA	NA	IGKJ (all strains)	IGLJ (all strains)	Y
+NCBITAXON_10090	RRID_IMSR_JAX_004660	Mus musculus	PWD/PhJ	PWD/PhJ IGKV	PWD/PhJ IGLV	PWD/PhJ IGH	NA	IGKJ (all strains)	IGLJ (all strains)	Y
+NCBITAXON_10090	ONTIE_0000556	Mus musculus	SJL/J	SJL/J IGKV	SJL/J IGLV	NA	NA	IGKJ (all strains)	IGLJ (all strains)	Y

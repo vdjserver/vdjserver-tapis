@@ -42,7 +42,20 @@ printf "START at $(date)\n\n"
 # TODO: how to tell Tapis that the job failed?
 export JOB_ERROR=0
 
-setup_germline "${germline_db}"
+# # change species_id here 
+# species="${species//:/_}"
+# species="${species^^}"
+
+# echo "SPECIES: $species"
+
+# if [[ "$germline_db" == "db.2019.01.23" ]]; then
+#     if [[ "$species" == "NCBITAXON_9606" ]]; then
+#         species="human"
+#     else
+#         species="mouse"
+#     fi
+# fi
+
 if [ "$locus" == "TR" ]; then
     export ClonalTool=repcalc
 fi

@@ -35,10 +35,10 @@ bash ./create_germlines.sh ${file} ${out_prefix} ${germline_fasta}
 germFilename="${out_prefix}.germ.airr.tsv"
 
 # mutations
-if [ "$species" == "mouse" ]; then
-    Rscript ./mutational_analysis.R -d $germFilename -m MK_RS5NF -o ${out_prefix}
-else
+if [ "$species" == "NCBITAXON:9606" ]; then
     Rscript ./mutational_analysis.R -d $germFilename -m HH_S5F -o ${out_prefix}
+else
+    Rscript ./mutational_analysis.R -d $germFilename -m MK_RS5NF -o ${out_prefix}
 fi
 
 # rename output

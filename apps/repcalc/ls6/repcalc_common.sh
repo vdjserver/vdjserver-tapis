@@ -51,7 +51,6 @@ function print_parameters() {
     echo ""
     echo "Application parameters:"
     echo "species=${species}"
-    echo "strain=${strain}"
     echo "locus=${locus}"
     echo "germline_db_file=${germline_db_file}"
     echo "germline_fasta=${germline_fasta}"

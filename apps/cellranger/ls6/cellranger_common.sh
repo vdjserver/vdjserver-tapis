@@ -12,18 +12,14 @@ APP_NAME=cellranger
 
 export ACTIVITY_NAME="vdjserver:activity:cellranger"
 
-
-# IgBlast germline database and extra files
-# VDJ_DB_VERSION=db.2019.01.23
-# IGDATA="$WORK/../common/igblast-db/$VDJ_DB_VERSION"
-# export IGDATA
-# export VDJ_DB_ROOT="$IGDATA/germline/"
-
 # bring in common functions
 source ./common_functions.sh
 
 # bring in provenance functions
 source ./provenance_functions.sh
+
+# bring in igblast setup functions
+source ./igblast_config.sh
 # ----------------------------------------------------------------------------
 
 # ----------------------------------------------------------------------------
@@ -92,13 +88,13 @@ function run_cellranger_workflow() {
     # Reference selection
     ########################################
 
-    # assume human
-    reference_dir=$PWD/$HUMAN_VDJ_REFDATA
-    if [[ "$species" == "mouse" ]]; then
-        reference_dir=$PWD/$MOUSE_VDJ_REFDATA
-    fi
+    # # assume human
+    # reference_dir=$PWD/$HUMAN_VDJ_REFDATA
+    # if [[ "$species" == "mouse" ]]; then
+    #     reference_dir=$PWD/$MOUSE_VDJ_REFDATA
+    # fi
 
-    echo "Using reference: $reference_dir"
+    # echo "Using reference: $reference_dir"
 
     # launcher job file
     if [ -f joblist ]; then
@@ -117,6 +113,19 @@ function run_cellranger_workflow() {
     # Main loop over samples
     ########################################
 
+    # species="${species//:/_}"
+    # species="${species^^}"
+
+
+    if [[ "$species" == "NCBITAXON:9606" ]]; then
+        reference_dir=$PWD/$HUMAN_VDJ_REFDATA
+    else
+        reference_dir=$PWD/$MOUSE_VDJ_REFDATA
+    fi
+
+    echo "Species: $species"
+    echo "Using reference: $reference_dir"
+
     for i in "${!FWD[@]}"; do
         ForwardPairedFile="${FWD[$i]}"
         ReversePairedFile="${REV[$i]}"
@@ -131,6 +140,22 @@ function run_cellranger_workflow() {
 
         repertoire_id=$(getRepertoireForFile "$ForwardPairedFile")
         echo "Repertoire ID: $repertoire_id"
+
+        # ######################################################
+        # # Find chain type for the study
+        # ######################################################
+
+        if ! chain_type=$(python3 airr_metadata.py "$AIRRMetadata" --chain_type "$repertoire_id"); then
+            echo "ERROR: Failed to get chain type for repertoire $repertoire_id"
+            exit 1
+        fi
+
+        if [[ "$chain_type" != "TR" && "$chain_type" != "IG" && "$chain_type" != "auto" ]]; then
+            echo "ERROR: Invalid chain type: $chain_type"
+            exit 1
+        fi
+        echo "Repertoire ID: $repertoire_id"
+        echo "Chain type: $chain_type"
 
         ##################################################################
         # Rename sequence files to match what cellranger format
@@ -150,8 +175,8 @@ function run_cellranger_workflow() {
         ####################################
         echo "Starting cellranger for $repertoire_id at $(date)"
 
-        echo cellranger vdj --id "${repertoire_id}" --reference "${reference_dir}" --fastqs $PWD --sample "${repertoire_id}" --localmem $CELLRANGER_MEM 
-        $CELLRANGER_EXE vdj --id "${repertoire_id}" --reference "${reference_dir}" --fastqs $PWD --sample "${repertoire_id}" --localmem $CELLRANGER_MEM 
+        echo cellranger vdj --id "${repertoire_id}" --reference "${reference_dir}" --fastqs $PWD --sample "${repertoire_id}" --chain "$chain_type" --localmem $CELLRANGER_MEM 
+        $CELLRANGER_EXE vdj --id "${repertoire_id}" --reference "${reference_dir}" --fastqs $PWD --sample "${repertoire_id}" --chain "$chain_type" --localmem $CELLRANGER_MEM 
 
         # check number of jobs to be run
         export LAUNCHER_PPN=$LAUNCHER_MAX_PPN
@@ -174,92 +199,40 @@ function run_cellranger_workflow() {
         #############################################
         # Run IGBlast on TCR and IG Separately
         #############################################
+
         AIRR_MERGE=""
+
+        #############################################
+        # TCR
+        #############################################
         if [ -f ${repertoire_id}_TCR.fasta ]; then
-            ## Setup the germline here
-            setup_germline "${germline_db_TR}"
-            ClonalTool=repcalc
-            organism=${species}
-            germline_set=${species}
-            seqType=TR
-            domain_system=imgt
-            QUERY_ARGS=""
-            ARGS=""
-            QUERY_ARGS="-query ${repertoire_id}_TCR.fasta"
-            ARGS="$ARGS -ig_seqtype TCR"
-            if [ -n "$organism" ]; then 
-                ARGS="$ARGS -organism $organism"
-                # ARGS="$ARGS -auxiliary_data $IGDATA/optional_file/${germline_set}_gl.aux"
-                ARGS="$ARGS -germline_db_V $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}_V.fna"
-                ARGS="$ARGS -germline_db_D $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}_D.fna"
-                ARGS="$ARGS -germline_db_J $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}_J.fna"
+            configure_igblast "TR" "$species" "$germline_db_TR"
 
-                # If locus is TR then use old auxilary data file. Later we might need to rethink when ORGDB has TCR data
-                if [ "$germline_db_TR" == "db.2019.01.23" ]; then
-                    ARGS="$ARGS -auxiliary_data $IGDATA/optional_file/${germline_set}_gl.aux"
-                fi
+            echo "Locus: TR"
+            echo "ClonalTool: $ClonalTool"
+            echo "IgBLAST params: $IGBLAST_PARAMS"
 
-                # # for newer version of igblast we need an extra argument
-                # if [ "$germline_db_TR" == "db.2026.01.12" ]; then
-                #     ARGS="$ARGS -c_region_db  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}_C.fna"
-                #     ARGS="$ARGS -auxiliary_data  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}.aux"
-                #     ARGS="$ARGS -custom_internal_data $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}.ndm"
-                # fi
-
-            fi
-            if [ -n "$domain_system" ]; then ARGS="$ARGS -domain_system $domain_system"; fi
-            IGBLAST_PARAMS="$ARGS"
-
-            # AIRR output
-            AIRR_ARGS="$QUERY_ARGS $ARGS -outfmt 19"
+            AIRR_ARGS="-query ${repertoire_id}_TCR.fasta $IGBLAST_PARAMS -outfmt 19"
             echo "$IGBLASTN_EXE $AIRR_ARGS > ${repertoire_id}.TCR.igblast.airr.tsv"
-            $IGBLASTN_EXE $AIRR_ARGS > ${repertoire_id}.TCR.igblast.airr.tsv
+            $IGBLASTN_EXE $AIRR_ARGS > "${repertoire_id}.TCR.igblast.airr.tsv"
 
             AIRR_MERGE="$AIRR_MERGE ${repertoire_id}.TCR.igblast.airr.tsv"
-
         fi
-
+        #############################################
+        # IG
+        #############################################
         if [ -f ${repertoire_id}_IG.fasta ]; then
-            setup_germline "${germline_db_IG}"
-            ClonalTool=changeo
+            configure_igblast "IG" "$species" "$germline_db_IG"
 
-            organism=${species}
-            germline_set=${species}
-            seqType=IG
-            domain_system=imgt
-            QUERY_ARGS=""
-            ARGS=""
-            QUERY_ARGS="-query ${repertoire_id}_IG.fasta"
-            ARGS="$ARGS -ig_seqtype Ig"
-            if [ -n "$organism" ]; then 
-                ARGS="$ARGS -organism $organism"
-                ARGS="$ARGS -germline_db_V $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}_V.fna"
-                ARGS="$ARGS -germline_db_D $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}_D.fna"
-                ARGS="$ARGS -germline_db_J $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}_J.fna"
+            echo "Locus: IG"
+            echo "ClonalTool: $ClonalTool"
+            echo "IgBLAST params: $IGBLAST_PARAMS"
 
-                # If locus is TR then use old auxilary data file.
-                if [ "$germline_db_IG" == "db.2019.01.23" ]; then
-                    ARGS="$ARGS -auxiliary_data $IGDATA/optional_file/${germline_set}_gl.aux"
-                fi
-
-                # for newer version of igblast we need an extra argument
-                if [ "$germline_db_IG" == "db.2026.01.12" ]; then
-                    ARGS="$ARGS -c_region_db  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}_C.fna"
-                    ARGS="$ARGS -auxiliary_data  $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}.aux"
-                    ARGS="$ARGS -custom_internal_data $VDJ_DB_ROOT/${germline_set}/ReferenceDirectorySet/${germline_set}_${seqType}.ndm"
-                fi
-            fi
-            if [ -n "$domain_system" ]; then ARGS="$ARGS -domain_system $domain_system"; fi
-            IGBLAST_PARAMS="$ARGS"
-
-            # AIRR output
-            AIRR_ARGS="$QUERY_ARGS $ARGS -outfmt 19"
+            AIRR_ARGS="-query ${repertoire_id}_IG.fasta $IGBLAST_PARAMS -outfmt 19"
             echo "$IGBLASTN_EXE $AIRR_ARGS > ${repertoire_id}.IG.igblast.airr.tsv"
-            $IGBLASTN_EXE $AIRR_ARGS > ${repertoire_id}.IG.igblast.airr.tsv
+            $IGBLASTN_EXE $AIRR_ARGS > "${repertoire_id}.IG.igblast.airr.tsv"
 
             AIRR_MERGE="$AIRR_MERGE ${repertoire_id}.IG.igblast.airr.tsv"
-            # noArchive ${repertoire_id}_IG.fasta
-            # noArchive ${repertoire_id}.IG.igblast.airr.tsv
         fi
 
         #############################################

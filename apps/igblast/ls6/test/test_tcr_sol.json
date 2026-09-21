@@ -1,16 +1,17 @@
 {
     "name": "sol_efroni_multiple_sample",
     "appId": "igblast-ls6",
-    "appVersion": "0.5",
-    "maxMinutes": 60,
+    "appVersion": "0.11",
+    "maxMinutes": 30,
     "nodeCount": 1,
     "archiveSystemId": "data-storage.vdjserver.org",
     "archiveSystemDir": "/projects/d57ccb61-f8c0-45f9-a5d3-9712d3c99c28/analyses/${JobUUID}",
     "fileInputs":[
-      { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/d57ccb61-f8c0-45f9-a5d3-9712d3c99c28/files/repertoires.airr.json", "targetPath":"repertoires.airr.json" }
+        { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_sol_TR.json", "targetPath":"analysis_document_sol_TR.json" },
+        { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/d57ccb61-f8c0-45f9-a5d3-9712d3c99c28/files/repertoires.airr.json", "targetPath":"repertoires.airr.json" }
     ],
     "fileInputArrays":[
-      { "name":"query", "sourceUrls": [
+            { "name":"query", "sourceUrls": [
             "tapis://data-storage.vdjserver.org/projects/d57ccb61-f8c0-45f9-a5d3-9712d3c99c28/analyses/74a94481-064f-4eac-a19e-c5cfed507d0c-007/healthy-171-19-117_S1_L001-final_collapse-unique.fastq",
             "tapis://data-storage.vdjserver.org/projects/d57ccb61-f8c0-45f9-a5d3-9712d3c99c28/analyses/74a94481-064f-4eac-a19e-c5cfed507d0c-007/healthy-171-19-117_S1_L002-final_collapse-unique.fastq",
             "tapis://data-storage.vdjserver.org/projects/d57ccb61-f8c0-45f9-a5d3-9712d3c99c28/analyses/74a94481-064f-4eac-a19e-c5cfed507d0c-007/healthy-171-19-117_S1_L003-final_collapse-unique.fastq",
@@ -27,10 +28,9 @@
         ],
         "envVariables": [
             {"key": "query", "value": "healthy-171-19-117_S1_L001-final_collapse-unique.fastq healthy-171-19-117_S1_L002-final_collapse-unique.fastq healthy-171-19-117_S1_L003-final_collapse-unique.fastq healthy-171-19-117_S1_L004-final_collapse-unique.fastq" },
-            {"key": "repertoires", "value": "1fea9299-a371-4c03-9dcc-26c88a884e2c 1fea9299-a371-4c03-9dcc-26c88a884e2c 1fea9299-a371-4c03-9dcc-26c88a884e2c 1fea9299-a371-4c03-9dcc-26c88a884e2c" },
-            {"key": "species", "value": "human" },
+            {"key": "species", "value": "NCBITAXON:9606" },
             {"key": "locus", "value": "TR" },
-            {"key": "ClonalTool", "value": "repcalc" }
+            {"key": "germline_db", "value": "db.2019.01.23" }
         ]
     }
 }

@@ -1,7 +1,7 @@
 {
     "name": "cellranger-test-multi",
     "appId": "cellranger-ls6",
-    "appVersion": "10.0.0",
+    "appVersion": "0.2",
     "maxMinutes":120,
     "nodeCount": 1,
     "fileInputs":[
@@ -23,10 +23,10 @@
         "appArgs": [
         ],
         "envVariables": [
-            {"key": "species", "value": "human" },
+            {"key": "species", "value": "NCBITAXON:9606" },
             {"key": "strain", "value": "" },
             {"key": "germline_db_TR", "value": "db.2019.01.23"},
-            {"key": "germline_db_IG", "value": "db.2026.01.12"},
+            {"key": "germline_db_IG", "value": "db.2026.09.10"},
             {"key": "ForwardPairedFiles", "value": "SRR7191921_1.fastq.gz SRR7191924_1.fastq.gz " },
             {"key": "ReversePairedFiles", "value": "SRR7191921_2.fastq.gz SRR7191924_2.fastq.gz " }
         ]

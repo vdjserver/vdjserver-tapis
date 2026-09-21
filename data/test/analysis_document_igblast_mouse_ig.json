@@ -9,46 +9,50 @@
     "name": "analysis_document",
     "value": {
         "entity": {
-            "airr:Repertoire:3456": {
-                "airr:type": "Repertoire",
-                "vdjserver:type": "app:inputs",
-                "vdjserver:uuid": "3456"
-            },
             "airr:Repertoire:1234": {
                 "airr:type": "Repertoire",
                 "vdjserver:type": "app:inputs",
                 "vdjserver:uuid": "1234"
             },
+            "airr:Repertoire:3456": {
+                "airr:type": "Repertoire",
+                "vdjserver:type": "app:inputs",
+                "vdjserver:uuid": "3456"
+            },
+            "airr:Repertoire:5678": {
+                "airr:type": "Repertoire",
+                "vdjserver:type": "app:inputs",
+                "vdjserver:uuid": "5678"
+            },
+            "airr:Repertoire:78910": {
+                "airr:type": "Repertoire",
+                "vdjserver:type": "app:inputs",
+                "vdjserver:uuid": "78910"
+            },
             "vdjserver:app:parameters:igblast": {
                 "vdjserver:type": "app:parameters",
-                "query": "special_seqs.fasta funky_ids.fasta",
-                "species": "human",
-                "locus": "TR"
+                "query": "ERR346600_2.merged.unique.fasta",
+                "species": "ONTIE:0000001",
+                "locus": "IG"
             },
             "vdjserver:app:outputs:igblast": {
                 "vdjserver:type": "app:outputs"
             },
-            "vdjserver:project_file:special_seqs.fasta": {
+            "vdjserver:project_file:ERR346600_2.merged.unique.fasta": {
                 "vdjserver:type": "app:inputs",
-                "SequenceFASTQ": "special_seqs.fasta",
+                "query": "ERR346600_2.merged.unique.fasta",
                 "airr:Repertoire": "1234",
                 "vdjserver:uuid": "uuid432"
-            },
-            "vdjserver:project_file:funky_ids.fasta": {
-                "vdjserver:type": "app:inputs",
-                "SequenceFASTQ": "funky_ids.fasta",
-                "airr:Repertoire": "3456",
-                "vdjserver:uuid": "uuid567"
             }
         },
         "agent": {},
         "activity": {
             "vdjserver:activity:igblast": {
                 "vdjserver:app:name": "igblast-ls6",
-                "vdjserver:app:version": "0.7",
+                "vdjserver:app:version": "0.11",
                 "vdjserver:app:default": true,
-                "prov:startTime": "2025-07-25T20:20:57.688Z",
-                "vdjserver:job": "job983"
+                "prov:startTime": "2026-09-10T20:20:57.688Z",
+                "vdjserver:job": "job9839"
             }
         },
         "used": {},
@@ -65,13 +69,9 @@
                 "prov:activity": "vdjserver:activity:igblast",
                 "prov:entity": "vdjserver:app:parameters:igblast"
             },
-            "vdjserver:app:inputs:igblast:special_seqs.fasta": {
+            "vdjserver:app:inputs:igblast:ERR346600_2.merged.unique.fasta": {
                 "prov:activity": "vdjserver:activity:igblast",
-                "prov:entity": "vdjserver:project_file:special_seqs.fasta"
-            },
-            "vdjserver:app:inputs:igblast:funky_ids.fasta": {
-                "prov:activity": "vdjserver:activity:igblast",
-                "prov:entity": "vdjserver:project_file:funky_ids.fasta"
+                "prov:entity": "vdjserver:project_file:ERR346600_2.merged.unique.fasta"
             }
         },
         "isAttributedTo": {},

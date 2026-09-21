@@ -18,7 +18,8 @@ printf "START at $(date)\n\n"
 echo "Application parameters:"
 echo SRA_run_ids="${SRA_run_ids}"
 echo project_id="${project_id}"
-echo split_flag=${split_flag}
+echo split_flag="${split_flag}"
+echo vdj_default_host="${vdj_default_host}"
 
 if [ "${split_flag}" -eq 1 ]; then
     split_option="--split-files"
@@ -28,6 +29,7 @@ fi
 
 source ${HOME}/sra-download/bin/activate
 source ${HOME}/.ssh/sra-download.env
+
 
 dest_folder="/projects/${project_id}/files/"
 for SRA_run_id in $SRA_run_ids; do

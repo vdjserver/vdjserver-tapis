@@ -49,15 +49,29 @@ function setup_germline () {
     export VDJ_DB_VERSION=$1
     echo "Setting up germline database: ${VDJ_DB_VERSION}"
     tar zxf ${VDJ_DB_VERSION}.tgz
-    #tar zxf $germline_archive
-    #tar zxf $airr_germline
 
     # IgBlast germline database and extra files
     export IGDATA="./$VDJ_DB_VERSION"
     export VDJ_DB_ROOT="$IGDATA/germline/"
 
+    local germline_species=$2
+    local germline_locus=$3
+
+    if [[ "$VDJ_DB_VERSION" == "db.2019.01.23" ]]; then
+        # old germline
+        if [[ "$species" == "NCBITAXON:9606" ]]; then
+            germline_species="human"
+        else
+            germline_species="mouse"
+        fi
+    else
+        # new germlines
+        germline_species="${germline_species//:/_}"
+        germline_species="${germline_species^^}"
+    fi
+
     # TODO: handle mouse strains
-    export germline_db_file="$VDJ_DB_ROOT/$species/vdjserver_germline.airr.json"
-    export germline_fasta="$VDJ_DB_ROOT/$species/ReferenceDirectorySet/${locus}_VDJ.fna"
+    export germline_db_file="$VDJ_DB_ROOT/$germline_species/vdjserver_germline.airr.json"
+    export germline_fasta="$VDJ_DB_ROOT/$germline_species/ReferenceDirectorySet/${germline_locus}_VDJ.fna"
 }
 

@@ -1,0 +1,115 @@
+{
+    "uuid": "abc123",
+    "associationIds": [
+        "project123"
+    ],
+    "owner": "vdj",
+    "created": "2025-07-25T18:44:56.266Z",
+    "lastUpdated": "2025-10-24T17:53:59.152Z",
+    "name": "analysis_document",
+    "value": {
+        "entity": {
+            "airr:Repertoire:abc567": {
+                "airr:type": "Repertoire",
+                "vdjserver:type": "app:inputs",
+                "vdjserver:uuid": "abc567"
+            },
+            "airr:Repertoire:abc123": {
+                "airr:type": "Repertoire",
+                "vdjserver:type": "app:inputs",
+                "vdjserver:uuid": "abc123"
+            },
+            "vdjserver:app:parameters:igblast": {
+                "vdjserver:type": "app:parameters",
+                "query": "healthy-171-19-117_S1_L001-final_collapse-unique.fastq healthy-171-19-117_S1_L002-final_collapse-unique.fastq healthy-171-19-117_S1_L003-final_collapse-unique.fastq healthy-171-19-117_S1_L004-final_collapse-unique.fastq",
+                "species": "NCBITAXON:9606",
+                "locus": "TR"
+            },
+            "vdjserver:app:outputs:igblast": {
+                "vdjserver:type": "app:outputs"
+            },
+            "vdjserver:project_file:healthy-171-19-117_S1_L001-final_collapse-unique.fastq": {
+                "vdjserver:type": "app:inputs",
+                "SequenceFASTQ": "healthy-171-19-117_S1_L001-final_collapse-unique.fastq",
+                "airr:Repertoire": "1fea9299-a371-4c03-9dcc-26c88a884e2c",
+                "vdjserver:uuid": "uuid567"
+            },
+            "vdjserver:project_file:healthy-171-19-117_S1_L002-final_collapse-unique.fastq": {
+                "vdjserver:type": "app:inputs",
+                "SequenceFASTQ": "healthy-171-19-117_S1_L002-final_collapse-unique.fastq",
+                "airr:Repertoire": "1fea9299-a371-4c03-9dcc-26c88a884e2c",
+                "vdjserver:uuid": "uuid567"
+            },
+            "vdjserver:project_file:healthy-171-19-117_S1_L003-final_collapse-unique.fastq": {
+                "vdjserver:type": "app:inputs",
+                "SequenceFASTQ": "healthy-171-19-117_S1_L003-final_collapse-unique.fastq",
+                "airr:Repertoire": "1fea9299-a371-4c03-9dcc-26c88a884e2c",
+                "vdjserver:uuid": "uuid567"
+            },
+            "vdjserver:project_file:healthy-171-19-117_S1_L004-final_collapse-unique.fastq": {
+                "vdjserver:type": "app:inputs",
+                "SequenceFASTQ": "healthy-171-19-117_S1_L004-final_collapse-unique.fastq",
+                "airr:Repertoire": "1fea9299-a371-4c03-9dcc-26c88a884e2c",
+                "vdjserver:uuid": "uuid567"
+            }
+        },
+        "agent": {},
+        "activity": {
+            "vdjserver:activity:igblast": {
+                "vdjserver:app:name": "igblast-ls6",
+                "vdjserver:app:version": "0.11",
+                "vdjserver:app:default": true,
+                "prov:startTime": "2026-09-10T20:20:57.688Z",
+                "vdjserver:job": "job983"
+            }
+        },
+        "used": {},
+        "wasAttributedTo": {},
+        "wasAssociatedWith": {},
+        "wasDerivedFrom": {},
+        "wasGeneratedBy": {},
+        "uses": {
+            "airr:Repertoire:abc567": {
+                "prov:activity": "vdjserver:activity:igblast",
+                "prov:entity": "airr:Repertoire:abc567"
+            },
+            "vdjserver:app:parameters:igblast": {
+                "prov:activity": "vdjserver:activity:igblast",
+                "prov:entity": "vdjserver:app:parameters:igblast"
+            },
+            "vdjserver:app:inputs:igblast:healthy-171-19-117_S1_L001-final_collapse-unique.fastq": {
+                "prov:activity": "vdjserver:activity:igblast",
+                "prov:entity": "vdjserver:project_file:healthy-171-19-117_S1_L001-final_collapse-unique.fastq"
+            },
+            "vdjserver:app:inputs:igblast:healthy-171-19-117_S1_L002-final_collapse-unique.fastq": {
+                "prov:activity": "vdjserver:activity:igblast",
+                "prov:entity": "vdjserver:project_file:healthy-171-19-117_S1_L002-final_collapse-unique.fastq"
+            },
+            "vdjserver:app:inputs:healthy-171-19-117_S1_L003-final_collapse-unique.fastq": {
+                "prov:activity": "vdjserver:activity:igblast",
+                "prov:entity": "vdjserver:project_file:healthy-171-19-117_S1_L003-final_collapse-unique.fastq"
+            },
+            "vdjserver:app:inputs:healthy-171-19-117_S1_L004-final_collapse-unique.fastq": {
+                "prov:activity": "vdjserver:activity:igblast",
+                "prov:entity": "vdjserver:project_file:healthy-171-19-117_S1_L004-final_collapse-unique.fastq"
+            }
+        },
+        "isAttributedTo": {},
+        "isAssociatedWith": {},
+        "isDerivedFrom": {},
+        "isGeneratedBy": {
+            "vdjserver:app:outputs:igblast": {
+                "prov:activity": "vdjserver:activity:igblast",
+                "prov:entity": "vdjserver:app:outputs:igblast"
+            }
+        },
+        "workflow_name": "IgBLAST",
+        "workflow_mode": "igblast",
+        "status": "FINISHED",
+        "status_message": "",
+        "prefix": {
+            "airr": "https://airr-community.org/",
+            "vdjserver": "https://vdjserver.org/"
+        }
+    }
+}

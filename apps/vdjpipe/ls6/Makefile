@@ -38,10 +38,10 @@ list:
 	vdjserver-tools apps list
 
 create:
-	tapis_apps_create ${APP_JSON}
+	vdjserver-tools apps create ${APP_JSON}
 
 update:
-	tapis_apps_update ${APP_ID} ${APP_VERSION} ${APP_JSON}
+	vdjserver-tools apps update ${APP_ID} ${APP_VERSION} ${APP_JSON}
 
 clean:
 	rm -rf ${BUILD_DIR} ${APP_ARCHIVE}
@@ -65,15 +65,15 @@ build: clean common-scripts
 	tar zcf ${APP_ARCHIVE} -C ${BUILD_DIR} .
 
 deploy: build
-	tapis_files_upload /apps/${APP_ARCHIVE} ${APP_ARCHIVE}
+	vdjserver-tools files upload ${APP_ARCHIVE} /apps/${APP_ARCHIVE}
 
 test-job:
-	tapis_jobs_submit test/test-cli.json
+	vdjserver-tools jobs submit test/test-cli.json
 
 test-all:
-	tapis_jobs_submit test/test-cli.json
-	tapis_jobs_submit test/test-grieff.json
-	tapis_jobs_submit test/test-mixed.json
-	tapis_jobs_submit test/test-paired.json
-	tapis_jobs_submit test/test-roche.json
-	tapis_jobs_submit test/test-roche-split.json
+	vdjserver-tools jobs submit test/test-cli.json
+	vdjserver-tools jobs submit test/test-grieff.json
+	vdjserver-tools jobs submit test/test-mixed.json
+	vdjserver-tools jobs submit test/test-paired.json
+	vdjserver-tools jobs submit test/test-roche.json
+	vdjserver-tools jobs submit test/test-roche-split.json

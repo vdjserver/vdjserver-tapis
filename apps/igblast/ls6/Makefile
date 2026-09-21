@@ -1,7 +1,7 @@
 # helper commands for tapis v3 apps
 
 APP_NAME=igblast
-APP_VERSION=0.10
+APP_VERSION=0.11
 APP_SYSTEM=ls6
 
 APP_ID=${APP_NAME}-${APP_SYSTEM}
@@ -30,9 +30,13 @@ help:
 	@echo "make deploy    -- Deploy app assets"
 	@echo ""
 	@echo "Testing:"
-	@echo "make test-tcr  -- Submit test TCR job"
-	@echo "make test-bcr  -- Submit test BCR job"
-	@echo "make test-all  -- Submit all test jobs"
+	@echo "make test-tcr         -- Submit test TCR job"
+	@echo "make test-bcr         -- Submit test BCR job"
+	@echo "make test-bcr-old     -- Submit test BCR job with old germline"
+	@echo "make test-mouse-ig    -- Submit test mouse BCR job"
+	@echo "make test-sol-multi   -- Submit test sol TCR job for multiple samples"
+	@echo "make test-all         -- Submit all basic test jobs"
+	@echo "make test-all-big     -- Submit all big test jobs"
 	@echo ""
 
 list:
@@ -66,6 +70,7 @@ common-scripts:
 	cp ${SCRIPTS_DIR}/repcalc_clones.sh ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/tcr_clone_template.json ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/clone_report.py ${BUILD_DIR}
+	cp ${SCRIPTS_DIR}/igblast_config.sh ${BUILD_DIR}
 
 build: clean common-scripts
 	cp ${APP_JSON} ${BUILD_DIR}
@@ -76,7 +81,7 @@ build: clean common-scripts
 	cp do_makedb.sh ${BUILD_DIR}
 	cp do_merge.sh ${BUILD_DIR}
 	cp fastq2fasta.py ${BUILD_DIR}
-	cp splitfasta.pl ${BUILD_DIR}
+	cp splitfasta.py ${BUILD_DIR}
 	tar zcf ${APP_ARCHIVE} -C ${BUILD_DIR} .
 
 deploy: build
@@ -85,13 +90,24 @@ deploy: build
 test-bcr:
 	vdjserver-tools jobs submit test/test-bcr.json
 
+test-bcr-old:
+	vdjserver-tools jobs submit test/test-bcr-old.json
+
+test-mouse-ig:
+	vdjserver-tools jobs submit test/test-mouse-ig.json
+
+test-sol-multi:
+	vdjserver-tools jobs submit test/test_tcr_sol.json
+
 test-tcr:
 	vdjserver-tools jobs submit test/test-tcr.json
 
 test-all:
-	tapis_jobs_submit test/test-bcr.json
-	tapis_jobs_submit test/test-tcr.json
-	tapis_jobs_submit test/test-bcr4.json
-	tapis_jobs_submit test/test-cdr3-bcr4.json
-	tapis_jobs_submit test/test-gene-bcr4.json
-	tapis_jobs_submit test/test-mutations-bcr4.json
+	vdjserver-tools jobs submit test/test-bcr.json
+	vdjserver-tools jobs submit test/test-bcr-old.json
+	vdjserver-tools jobs submit test/test-tcr.json
+	vdjserver-tools jobs submit test/test-mouse-ig.json
+	vdjserver-tools jobs submit test/test_tcr_sol.json
+
+test-all-big:
+	@echo Not implemented
