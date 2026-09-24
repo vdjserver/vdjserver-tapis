@@ -16,8 +16,9 @@ module load python3/3.9.7
 module load launcher/3.10
 module load tacc-apptainer
 
-# IGBLASTN_EXE="apptainer exec ${igblast_image} igblastn -num_threads 1"
-IGBLASTN_EXE="apptainer exec ${repcalc_image} igblastn -num_threads 64"
+# we split input files into small files, so need only 1 thread
+IGBLASTN_EXE="apptainer exec ${repcalc_image} igblastn -num_threads 1"
+#IGBLASTN_EXE="apptainer exec ${repcalc_image} igblastn -num_threads 64"
 PYTHON="apptainer exec -e ${repcalc_image} python3"
 AIRR_TOOLS="apptainer exec -e ${repcalc_image} airr-tools"
 export domain_system=imgt
@@ -42,20 +43,7 @@ printf "START at $(date)\n\n"
 # TODO: how to tell Tapis that the job failed?
 export JOB_ERROR=0
 
-# # change species_id here 
-# species="${species//:/_}"
-# species="${species^^}"
-
-# echo "SPECIES: $species"
-
-# if [[ "$germline_db" == "db.2019.01.23" ]]; then
-#     if [[ "$species" == "NCBITAXON_9606" ]]; then
-#         species="human"
-#     else
-#         species="mouse"
-#     fi
-# fi
-
+# clonal assignment tool currently hard-coded
 if [ "$locus" == "TR" ]; then
     export ClonalTool=repcalc
 fi
@@ -63,6 +51,11 @@ if [ "$locus" == "IG" ]; then
     export ClonalTool=changeo
 fi
 
+###########################################################################
+# Setup germline
+# We only use one germline per job
+###########################################################################
+setup_germline "$germline_db" "$species" "$locus"
 
 initProvenance
 print_parameters

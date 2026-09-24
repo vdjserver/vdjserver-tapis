@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#!/bin/bash
-
 configure_igblast()
 {
     local locus="$1"
@@ -13,13 +11,6 @@ configure_igblast()
     # Clear previous values
     local seqType=""
     IGBLAST_PARAMS=""
-
-    ###########################################################################
-    # Setup germline
-    # note: pass unmodified locus and species
-    ###########################################################################
-
-    setup_germline "$germline_db" "$species" "$local"
 
     ###########################################################################
     # Old database uses human/mouse organism names

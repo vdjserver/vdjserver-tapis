@@ -23,9 +23,9 @@ source ./common_functions.sh
 # bring in provenance functions
 source ./provenance_functions.sh
 
-
 # bring in igblast setup functions
 source ./igblast_config.sh
+
 # ----------------------------------------------------------------------------
 # IgBlast workflow
 
@@ -143,9 +143,6 @@ function run_igblast_workflow() {
             smallFiles="$file"
         fi
         
-
-        # species="${species//:/_}"
-        # species="${species^^}"
 
         for smallFile in $smallFiles; do
             # These come from Agave, but I need to assign them inside the loop.

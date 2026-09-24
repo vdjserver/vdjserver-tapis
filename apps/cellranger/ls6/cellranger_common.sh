@@ -55,11 +55,6 @@ function print_parameters() {
 }
 
 function run_cellranger_workflow() {
-    # initProcessMetadata
-    # addLogFile $APP_NAME log stdout "${AGAVE_LOG_NAME}.out" "Job Output Log" "log" null
-    # addLogFile $APP_NAME log stderr "${AGAVE_LOG_NAME}.err" "Job Error Log" "log" null
-    # addLogFile $APP_NAME log agave_log .agave.log "Agave Output Log" "log" null
-    # addCalculation vdj_alignment
     addCalculation "${ACTIVITY_NAME}" vdj_alignment
 
     ########################################
@@ -84,18 +79,6 @@ function run_cellranger_workflow() {
 
     echo "Found ${#FWD[@]} paired samples"
 
-    ########################################
-    # Reference selection
-    ########################################
-
-    # # assume human
-    # reference_dir=$PWD/$HUMAN_VDJ_REFDATA
-    # if [[ "$species" == "mouse" ]]; then
-    #     reference_dir=$PWD/$MOUSE_VDJ_REFDATA
-    # fi
-
-    # echo "Using reference: $reference_dir"
-
     # launcher job file
     if [ -f joblist ]; then
         echo "Warning: removing file 'joblist'.  That filename is reserved." 1>&2
@@ -110,12 +93,8 @@ function run_cellranger_workflow() {
     touch joblist-post-process
 
     ########################################
-    # Main loop over samples
+    # Reference selection
     ########################################
-
-    # species="${species//:/_}"
-    # species="${species^^}"
-
 
     if [[ "$species" == "NCBITAXON:9606" ]]; then
         reference_dir=$PWD/$HUMAN_VDJ_REFDATA
@@ -125,6 +104,10 @@ function run_cellranger_workflow() {
 
     echo "Species: $species"
     echo "Using reference: $reference_dir"
+
+    ########################################
+    # Main loop over samples
+    ########################################
 
     for i in "${!FWD[@]}"; do
         ForwardPairedFile="${FWD[$i]}"
@@ -206,6 +189,10 @@ function run_cellranger_workflow() {
         # TCR
         #############################################
         if [ -f ${repertoire_id}_TCR.fasta ]; then
+            # Setup germline
+            # inefficient to do each time, but configure_igblast needs some env variables
+            setup_germline "$germline_db_TR" "$species" "TR"
+
             configure_igblast "TR" "$species" "$germline_db_TR"
 
             echo "Locus: TR"
@@ -222,6 +209,10 @@ function run_cellranger_workflow() {
         # IG
         #############################################
         if [ -f ${repertoire_id}_IG.fasta ]; then
+            # Setup germline
+            # inefficient to do each time, but configure_igblast needs some env variables
+            setup_germline "$germline_db_IG" "$species" "IG"
+
             configure_igblast "IG" "$species" "$germline_db_IG"
 
             echo "Locus: IG"
@@ -243,37 +234,27 @@ function run_cellranger_workflow() {
         $PYTHON3_EXE 10x_merge_airr.py ${repertoire_id} "${_tapisJobUUID}" #changed data_processing_id to _tapisJobUUID
 
         gzip ${repertoire_id}.10x.igblast.airr.tsv
-        # addOutputFile group0 $APP_NAME airr ${repertoire_id}.10x.igblast.airr.tsv.gz "${repertoire_id} IgBlast AIRR TSV" "tsv" null
         wasDerivedFrom "${repertoire_id}.10x.igblast.airr.tsv.gz" "${repertoire_id}.airr_rearrangement.tsv" "vdj_sequence_annotation" "IgBlast AIRR TSV" tsv
 
         # Add all of the CellRanger output files to provenance
         mkdir ${_tapisJobUUID}/${repertoire_id}
         cp -rf ${repertoire_id}/outs ${_tapisJobUUID}/${repertoire_id}
-        #TODO Need to add wasDerivedFrom/wasGeneratedBy here
-        # addOutputFile group0 $APP_NAME 10x_airr ${repertoire_id}.airr_rearrangement.tsv "${repertoire_id} 10X AIRR TSV" "tsv" null
-        # wasDerivedFrom ${repertoire_id}.airr_rearrangement.tsv "${ForwardPairedFile}" "10x_airr" "10x Airr Rearrangement TSV" tsv
 
         cp ${repertoire_id}/outs/web_summary.html ./${repertoire_id}.web_summary.html
-        # addOutputFile group0 $APP_NAME 10x_web_summary ${repertoire_id}.web_summary.html "${repertoire_id} 10X Run Summary HTML" "html" null
         wasDerivedFrom ${repertoire_id}.web_summary.html ${repertoire_id}.airr_rearrangement.tsv "10x_web_summary" "${repertoire_id} 10X Run Summary HTML" "html"
 
         cp ${repertoire_id}/outs/metrics_summary.csv ./${repertoire_id}.metrics_summary.csv
-        # addOutputFile group0 $APP_NAME 10x_metrics_summary ${repertoire_id}.metrics_summary.csv "${repertoire_id} 10X Run Summary CSV" "csv" null
         wasDerivedFrom ${repertoire_id}.metrics_summary.csv ${repertoire_id}.airr_rearrangement.tsv "10x_metrics_summary" "${repertoire_id} 10X Run Summary CSV" "csv"
 
         cp ${repertoire_id}/outs/clonotypes.csv ./${repertoire_id}.clonotypes.csv
-        # addOutputFile group0 $APP_NAME 10x_clonotypes ${repertoire_id}_.lonotypes.csv "${repertoire_id} 10X Clonotypes" "csv" null
         wasDerivedFrom ${repertoire_id}.clonotypes.csv ${repertoire_id}.airr_rearrangement.tsv "10x_clonotypes" "${repertoire_id} 10X Clonotypes" "csv"
 
         cp ${repertoire_id}/outs/consensus_annotations.csv ./${repertoire_id}.consensus_annotations.csv
-        # addOutputFile group0 $APP_NAME 10x_consensus_annotations ${repertoire_id}.consensus_annotations.csv "${repertoire_id} 10X Clonotypes Consensus Annotations" "csv" null
         wasDerivedFrom ${repertoire_id}.consensus_annotations.csv ${repertoire_id}.airr_rearrangement.tsv "10x_consensus_annotations" "${repertoire_id} 10X Clonotypes Consensus Annotations" "csv"
         cp ${repertoire_id}/outs/filtered_contig_annotations.csv ./${repertoire_id}.filtered_contig_annotations.csv
-        # addOutputFile group0 $APP_NAME 10x_filtered_contigs ${repertoire_id}.filtered_contig_annotations.csv "${repertoire_id} 10X Filtered Contigs" "csv" null
         wasDerivedFrom ${repertoire_id}.filtered_contig_annotations.csv ${repertoire_id}.airr_rearrangement.tsv "10x_filtered_contigs" "${repertoire_id} 10X Filtered Contigs" "csv"
 
         cp ${repertoire_id}/outs/vloupe.vloupe ./${repertoire_id}.vloupe.vloupe
-        # addOutputFile group0 $APP_NAME 10x_vloupe ${repertoire_id}.vloupe.vloupe "${repertoire_id} 10X Loupe V(D)J Browser file" "vloupe" null
         wasDerivedFrom ${repertoire_id}.vloupe.vloupe ${repertoire_id}.airr_rearrangement.tsv "10x_vloupe" "${repertoire_id} 10X Loupe V(D)J Browser file" "vloupe"
     done
 
@@ -316,13 +297,10 @@ function compress_and_archive() {
             cp -f $file output
         fi
     done
-    # cp -r ${germline_db_TR} ${_tapisJobUUID}
-    # cp -r ${germline_db_IG} ${_tapisJobUUID}
+
     copy_germline "$germline_db_TR"
     copy_germline "$germline_db_IG"
+
     zip ${_tapisJobUUID}.zip ${_tapisJobUUID}/*
-    
-    #addLogFile $APP_NAME log output_archive ${_tapisJobUUID}.zip "Archive of Output Files" "zip" null
     cp ${_tapisJobUUID}.zip output
-    
 }
