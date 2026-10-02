@@ -55,6 +55,7 @@ fi
 # Setup germline
 # We only use one germline per job
 ###########################################################################
+srun --ntasks-per-node=1 --nodes=${_tapisNodes} bash copy_germline.sh "$germline_db" /tmp
 setup_germline "$germline_db" "$species" "$locus"
 
 initProvenance

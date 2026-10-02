@@ -1,0 +1,35 @@
+{
+    "name": "repcalc_test_small_bcr4",
+    "appId": "repcalc2-ls6",
+    "appVersion": "0.10",
+    "maxMinutes": 30,
+    "nodeCount": 4,
+    "fileInputs":[
+      { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/e8bc1523-db4f-432f-9de8-83545d6dc577/analyses/6d2e4fb8-df32-4096-b172-91c3152a3045/analysis_document.json", "targetPath":"analysis_document.json" },
+      { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/e8bc1523-db4f-432f-9de8-83545d6dc577/analyses/6d2e4fb8-df32-4096-b172-91c3152a3045/repertoires.airr.json", "targetPath":"repertoires.airr.json" }
+    ],
+    "fileInputArrays":[
+      { "name":"JobFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/projects/e8bc1523-db4f-432f-9de8-83545d6dc577/analyses/9a463fe8-f039-44f0-a7cb-e7f2ee2eabb1/9d52f6e2-0790-4a7d-a12a-19030ca09d99-007/9d52f6e2-0790-4a7d-a12a-19030ca09d99-007.zip" ]}
+    ],
+    "parameterSet": {
+        "schedulerOptions": [
+            { "name":"allocation", "arg":"-A MCB23006" }
+        ],
+        "containerArgs": [
+        ],
+        "appArgs": [
+        ],
+        "envVariables": [
+            {"key": "JobFiles", "value": "9d52f6e2-0790-4a7d-a12a-19030ca09d99-007.zip" },
+            {"key": "species", "value": "NCBITAXON:9606" },
+            {"key": "locus", "value": "IG" },
+            {"key": "germline_db", "value": "db.2026.09.10"},
+            {"key": "GeneSegmentFlag", "value": "1" },
+            {"key": "CDR3Flag", "value": "1" },
+            {"key": "DiversityFlag", "value": "1" },
+            {"key": "ClonalFlag", "value": "1" },
+            {"key": "LineageFlag", "value": "1" },
+            {"key": "MutationalFlag", "value": "1" }
+        ]
+    }
+}

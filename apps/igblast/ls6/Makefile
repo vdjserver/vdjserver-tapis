@@ -56,6 +56,7 @@ clean:
 common-scripts:
 	mkdir ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/common_functions.sh ${BUILD_DIR}
+	cp ${SCRIPTS_DIR}/copy_germline.sh ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/provenance_functions.sh ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/airr_metadata.py ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/prov_metadata.py ${BUILD_DIR}

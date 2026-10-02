@@ -1,0 +1,108 @@
+{
+    "uuid": "abc123",
+    "associationIds": [
+        "project123"
+    ],
+    "owner": "vdj",
+    "created": "2025-08-02T10:16:03.101Z",
+    "lastUpdated": "2025-10-24T17:53:59.594Z",
+    "name": "analysis_document",
+    "value": {
+        "entity": {
+            "airr:Repertoire:1234": {
+                "airr:type": "Repertoire",
+                "vdjserver:type": "app:inputs",
+                "vdjserver:uuid": "1234"
+            },
+            "airr:Repertoire:1fea9299-a371-4c03-9dcc-26c88a884e2c": {
+                "airr:type": "Repertoire",
+                "vdjserver:type": "app:inputs",
+                "vdjserver:uuid": "1fea9299-a371-4c03-9dcc-26c88a884e2c"
+            },
+            "vdjserver:app:parameters:igblast": {
+                "vdjserver:type": "app:parameters",
+                "Workflow": "single",
+                "SequenceFileTypes": "illumina",
+                "PreFilterStatisticsFlag": true,
+                "FilterFlag": true,
+                "MinimumQuality": 25,
+                "MinimumLength": 200,
+                "PostFilterStatisticsFlag": true
+            },
+            "vdjserver:app:outputs:igblast": {
+                "vdjserver:type": "app:outputs"
+            },
+            "vdjserver:project_file:Merged_40000.fastq": {
+                "vdjserver:type": "app:inputs",
+                "SequenceFiles": "Merged_40000.fastq",
+                "vdjserver:uuid": "uuid432"
+            },
+            "vdjserver:project_file:Merged_2000.fastq": {
+                "vdjserver:type": "app:inputs",
+                "SequenceFiles": "Merged_2000.fastq",
+                "vdjserver:uuid": "uuid433"
+            },
+            "vdjserver:project_file:Merged_400000.fastq.gz": {
+                "vdjserver:type": "app:inputs",
+                "SequenceFiles": "Merged_400000.fastq.gz",
+                "airr:Repertoire": "1234",
+                "vdjserver:uuid": "uuid434"
+            }
+        },
+        "agent": {},
+        "activity": {
+            "vdjserver:activity:igblast": {
+                "vdjserver:app:name": "igblast-ls6",
+                "vdjserver:app:version": "0.11",
+                "vdjserver:app:default": true,
+                "prov:startTime": "2026-09-10T20:20:57.688Z",
+                "vdjserver:job": "job9839"
+            }
+        },
+        "used": {},
+        "wasAttributedTo": {},
+        "wasAssociatedWith": {},
+        "wasDerivedFrom": {},
+        "wasGeneratedBy": {},
+        "uses": {
+            "airr:Repertoire:1fea9299-a371-4c03-9dcc-26c88a884e2c": {
+                "prov:activity": "vdjserver:activity:igblast",
+                "prov:entity": "airr:Repertoire:1fea9299-a371-4c03-9dcc-26c88a884e2c"
+            },
+            "vdjserver:app:parameters:igblast": {
+                "prov:activity": "vdjserver:activity:igblast",
+                "prov:entity": "vdjserver:app:parameters:igblast"
+            },
+            "vdjserver:app:inputs:igblast:Merged_40000.fastq": {
+                "prov:activity": "vdjserver:activity:igblast",
+                "prov:entity": "vdjserver:project_file:Merged_40000.fastq"
+            },
+            "vdjserver:app:inputs:igblast:Merged_2000.fastq": {
+                "prov:activity": "vdjserver:activity:igblast",
+                "prov:entity": "vdjserver:project_file:Merged_2000.fastq"
+            },
+            "vdjserver:app:inputs:igblast:Merged_400000.fastq.gz": {
+                "prov:activity": "vdjserver:activity:igblast",
+                "prov:entity": "vdjserver:project_file:Merged_400000.fastq.gz"
+            }
+        },
+        "isAttributedTo": {},
+        "isAssociatedWith": {},
+        "isDerivedFrom": {},
+        "isGeneratedBy": {
+            "vdjserver:app:outputs:igblast": {
+                "prov:activity": "vdjserver:activity:igblast",
+                "prov:entity": "vdjserver:app:outputs:igblast"
+            }
+        },
+        "workflow_name": "IgBLAST",
+        "workflow_mode": "igblast",
+        "status": "FINISHED",
+        "status_message": "",
+        "prefix": {
+            "airr": "https://airr-community.org/",
+            "vdjserver": "https://vdjserver.org/"
+        }
+    }
+
+}

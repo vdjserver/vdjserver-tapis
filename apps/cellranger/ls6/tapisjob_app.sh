@@ -65,6 +65,12 @@ export LAUNCHER_BIND=0
 # Start
 printf "START at $(date)\n\n"
 
+###########################################################################
+# Copy germline
+###########################################################################
+srun --ntasks-per-node=1 --nodes=${_tapisNodes} bash copy_germline.sh "$germline_db_TR" /tmp
+srun --ntasks-per-node=1 --nodes=${_tapisNodes} bash copy_germline.sh "$germline_db_IG" /tmp
+
 initProvenance
 print_parameters
 print_versions
