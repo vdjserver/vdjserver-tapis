@@ -19,7 +19,7 @@ if (__name__=="__main__"):
 
     if args:
         input_data = airr.read_rearrangement(args.input_airr)
-        output_data = airr.derive_rearrangement(args.output_airr, args.input_airr, fields=['duplicate_count', 'consensus_count'])
+        output_data = airr.derive_rearrangement(args.output_airr, args.input_airr, fields=['duplicate_count', 'consensus_count', 'cell_id'])
 
         print('Processing pRESTO annotations for ' + args.input_airr)
         for row in input_data:
@@ -33,5 +33,7 @@ if (__name__=="__main__"):
                             row['duplicate_count'] = int(ann[1])
                         elif ann[0] == 'CONSCOUNT':
                             row['consensus_count'] = int(ann[1])
+                        elif ann[0] == 'CELL_ID':
+                            row['cell_id'] = ann[1]
             output_data.write(row)
         output_data.close()
