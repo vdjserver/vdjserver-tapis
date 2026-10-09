@@ -208,6 +208,7 @@ function run_igblast_workflow() {
     # ----------------------------------------------------------------------------
     # and now to knit smallFiles back together
 
+    echo "Starting post annotation on $(date)"
     seqMetadata=($repertoires)
     query_files=($query)
     count=0
@@ -462,6 +463,7 @@ function run_assign_clones() {
     fi
 
     # run launcher
+    echo "Starting clonal assignment on $(date)"
     $LAUNCHER_DIR/paramrun
 
     # generate clone report

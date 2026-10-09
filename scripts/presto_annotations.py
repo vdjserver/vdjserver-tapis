@@ -22,9 +22,11 @@ if (__name__=="__main__"):
         output_data = airr.derive_rearrangement(args.output_airr, args.input_airr, fields=['duplicate_count', 'consensus_count', 'cell_id'])
 
         print('Processing pRESTO annotations for ' + args.input_airr)
+        first = True
         for row in input_data:
             fields = row['sequence_id'].split('|')
             if len(fields) > 1:
+                first = False
                 row['sequence_id'] = fields[0]
                 for i in range(1,len(fields)):
                     ann = fields[i].split('=')
@@ -35,5 +37,14 @@ if (__name__=="__main__"):
                             row['consensus_count'] = int(ann[1])
                         elif ann[0] == 'CELL_ID':
                             row['cell_id'] = ann[1]
+            else:
+                # if annotations are not found on first line, assume none in file and abort processing
+                # if we have already processed some lines, then continue
+                if first:
+                    print('Aborting: no pRESTO annotations found for ' + args.input_airr)
+                    output_data.close()
+                    os.remove(args.output_airr)
+                    sys.exit(0)
+
             output_data.write(row)
         output_data.close()
