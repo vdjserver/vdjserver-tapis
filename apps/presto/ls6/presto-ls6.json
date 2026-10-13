@@ -10,10 +10,9 @@
         "description": "default job description",
         "execSystemId": "test-ls6.tacc.utexas.edu",
         "fileInputs":[
-            { "name":"singularity_image", "inputMode": "FIXED", "envKey":"singularity_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/repcalc-v2.1-imm4.4.sif", "targetPath":"repcalc-v2.1-imm4.4.sif" },
+            { "name":"singularity_image", "inputMode": "FIXED", "envKey":"singularity_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/repcalc-v2.3.4-imm4.4.sif", "targetPath":"repcalc-v2.3.4-imm4.4.sif" },
             { "name":"vdj_pipe_image", "inputMode": "FIXED", "envKey":"vdj_pipe_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/vdj_pipe-v0.1.7.sif", "targetPath":"vdj_pipe-v0.1.7.sif" },
             { "name":"analysis_provenance", "inputMode": "REQUIRED", "envKey":"analysis_provenance", "targetPath":"." },
-            { "name":"StudyMetadata", "inputMode": "OPTIONAL", "envKey":"StudyMetadata", "targetPath":"." },
             { "name":"ForwardPrimerFile", "inputMode": "OPTIONAL", "envKey":"ForwardPrimerFile", "targetPath":"." },
             { "name":"ReversePrimerFile", "inputMode": "OPTIONAL", "envKey":"ReversePrimerFile", "targetPath":"." },
             { "name":"BarcodeFile", "inputMode": "OPTIONAL", "envKey":"BarcodeFile", "targetPath":"." }

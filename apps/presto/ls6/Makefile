@@ -53,7 +53,6 @@ common-scripts:
 	cp ${SCRIPTS_DIR}/common_functions.sh ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/provenance_functions.sh ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/prov_metadata.py ${BUILD_DIR}
-	cp ${SCRIPTS_DIR}/process_metadata.py ${BUILD_DIR}
 
 build: clean common-scripts
 	cp ${APP_JSON} ${BUILD_DIR}
@@ -77,3 +76,4 @@ test-all:
 	vdjserver-tools jobs submit test/test-names2.json
 	vdjserver-tools jobs submit test/test-roche-presto.json
 	vdjserver-tools jobs submit test/test-stern-presto.json
+	vdjserver-tools jobs submit test/test-takara-tcr-v2.json
