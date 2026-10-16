@@ -54,7 +54,7 @@ function print_parameters() {
     echo "germline_db=$germline_db"
     echo "germline_db_file=${germline_db_file}"
     echo "germline_fasta=${germline_fasta}"
-    echo "domain_system=$domain_system"
+    echo "clonal_assignment=$clonal_assignment"
     echo "ClonalTool=$ClonalTool"
 }
 
