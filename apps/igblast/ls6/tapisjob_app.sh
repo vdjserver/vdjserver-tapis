@@ -62,7 +62,9 @@ initProvenance
 print_parameters
 print_versions
 run_igblast_workflow
-run_assign_clones
+if [[ $clonal_assignment -eq 1 ]]; then
+    run_assign_clones
+fi
 compress_and_archive
 
 # End

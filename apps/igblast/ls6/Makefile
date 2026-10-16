@@ -1,7 +1,7 @@
 # helper commands for tapis v3 apps
 
 APP_NAME=igblast
-APP_VERSION=0.11
+APP_VERSION=0.12
 APP_SYSTEM=ls6
 
 APP_ID=${APP_NAME}-${APP_SYSTEM}
@@ -35,6 +35,8 @@ help:
 	@echo "make test-bcr-old     -- Submit test BCR job with old germline"
 	@echo "make test-mouse-ig    -- Submit test mouse BCR job"
 	@echo "make test-sol-multi   -- Submit test sol TCR job for multiple samples"
+	@echo "make test-noclones    -- Submit test TCR and BCR jobs with no clonal assignment"
+	@echo ""
 	@echo "make test-all         -- Submit all basic test jobs"
 	@echo "make test-all-big     -- Submit all big test jobs"
 	@echo ""
@@ -102,6 +104,10 @@ test-sol-multi:
 
 test-tcr:
 	vdjserver-tools jobs submit test/test-tcr.json
+
+test-noclones:
+	vdjserver-tools jobs submit test/test-tcr-noclones.json
+	vdjserver-tools jobs submit test/test-bcr-noclones.json
 
 test-all:
 	vdjserver-tools jobs submit test/test-bcr.json
