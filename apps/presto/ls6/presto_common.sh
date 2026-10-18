@@ -128,6 +128,7 @@ function takara_bio_umi_workflow() {
     R1_READS=$2
     OUTNAME=$(basename ${R1_READS} | sed 's/\.[^.]*$//; s/_R[0-9]_[0-9]*//')
     count=$3
+    prov_file=$4
 
     # Argument defaults
     ALIGN_BARCODE=false
@@ -325,8 +326,8 @@ function takara_bio_umi_workflow() {
         return 1
     fi
     # addOutputFile $group $APP_NAME processed_sequence "${OUTNAME}-final_total.fastq" "Total Post-Filter Sequences (${OUTNAME})" "fastq" null
-    wasDerivedFrom "${OUTNAME}-final_total.fastq" "${R1_READS}" "sequence_reads,sequence_quality" "Total Post-Filter Sequences (${OUTNAME})" "fastq"
-    wasDerivedFrom "${OUTNAME}-final_total.fastq" "${R2_READS}" "sequence_reads,sequence_quality" "Total Post-Filter Sequences (${OUTNAME})" "fastq"
+    wasDerivedFrom "${OUTNAME}-final_total.fastq" "${prov_file}" "sequence_reads,sequence_quality" "Total Post-Filter Sequences (${OUTNAME})" "fastq"
+    #wasDerivedFrom "${OUTNAME}-final_total.fastq" "${R2_READS}" "sequence_reads,sequence_quality" "Total Post-Filter Sequences (${OUTNAME})" "fastq"
     
     # Remove duplicate sequences
     printf "  %2d: %-*s $(date +'%H:%M %D')\n" $((++STEP)) 24 "CollapseSeq"
@@ -840,6 +841,7 @@ function run_presto_workflow() {
                 rfile=$file
 
                 file=${forwardReads[count]}
+                prov_file=$file
                 expandfile $file
 
                 # presto needs extension to be fastq
@@ -879,12 +881,11 @@ function run_presto_workflow() {
                     # after merge, do the single workflow
                     DO_SINGLE=1
                     SequenceFiles="$SequenceFiles ${OutputName}_assemble-pass.${fileExtension}"
-                    cp ${OutputName}_assemble-pass.${fileExtension} ${OutputPrefix}_assemble.${fileExtension}
+                    # cp ${OutputName}_assemble-pass.${fileExtension} ${OutputPrefix}_assemble.${fileExtension}
                     # addOutputFile $group $APP_NAME merged_sequence "${OutputPrefix}_assemble.${fileExtension}" "Merged Pre-Filter Sequences (${OutputPrefix})" "read" null
-                    wasDerivedFrom "${OutputPrefix}_assemble.${fileExtension}" "${file}" "sequence_reads" "Merged Pre-Filter Sequences (${OutputPrefix})" "fastq"
-                    wasDerivedFrom "${OutputPrefix}_assemble.${fileExtension}" "${rfile}" "sequence_reads" "Merged Pre-Filter Sequences (${OutputPrefix})" "fastq"
+                    wasDerivedFrom "${OutputPrefix}_assemble-pass.${fileExtension}" "${prov_file}" "sequence_reads" "Merged Pre-Filter Sequences (${OutputPrefix})" "fastq"
                 else
-                    takara_bio_umi_workflow $file $rfile $count
+                    takara_bio_umi_workflow $file $rfile $count $prov_file
                 fi
 
                 count=$(( $count + 1 ))
