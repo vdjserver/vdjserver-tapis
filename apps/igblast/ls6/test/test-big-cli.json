@@ -1,13 +1,15 @@
 {
     "name": "igblast_big_test",
     "appId": "igblast-ls6",
-    "appVersion": "0.1",
+    "appVersion": "0.12",
     "maxMinutes": 120,
     "nodeCount": 1,
     "fileInputs":[
+        { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_igblast_mouse_tcr.json", "targetPath":"analysis_document_igblast_mouse_tcr.json" },
+        { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/repertoire_metadata_tcr.airr.json", "targetPath":"repertoire_metadata_tcr.airr.json" }
     ],
     "fileInputArrays":[
-      { "name":"query", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/Merged_400000.fastq.gz" ]}
+        { "name":"query", "sourceUrls": [ "tapis://data-storage.vdjserver.org/apps/data/test/Merged_400000.fastq.gz" ]}
     ],
     "parameterSet": {
         "schedulerOptions": [
@@ -19,10 +21,9 @@
         ],
         "envVariables": [
             {"key": "query", "value": "Merged_400000.fastq.gz" },
-            {"key": "QueryFilesMetadata", "value": "1234" },
-            {"key": "species", "value": "mouse" },
-            {"key": "ig_seqtype", "value": "TCR" },
-            {"key": "ClonalTool", "value": "repcalc" }
+            {"key": "species", "value": "NCBITAXON:10090" },
+            {"key": "locus", "value": "TR" },
+            {"key": "germline_db", "value": "db.2019.01.23" }
         ]
     }
 }
