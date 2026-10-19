@@ -1,10 +1,10 @@
 {
     "id":"cellranger-ls6",
-    "version":"0.2",
+    "version":"0.3",
     "description":"CellRanger on Lonestar6",
     "runtime":"ZIP",
     "runtimeOptions": ["NONE"],
-    "containerImage":"tapis://data-storage.vdjserver.org/apps/cellranger-ls6-0.2.tgz",
+    "containerImage":"tapis://data-storage.vdjserver.org/apps/cellranger-ls6-0.3.tgz",
     "jobType":"BATCH",
     "jobAttributes": {
         "description": "default job description",
@@ -36,8 +36,8 @@
             "envVariables": [
                 {"key": "species", "inputMode": "REQUIRED"},
                 {"key": "strain", "inputMode": "INCLUDE_BY_DEFAULT" },
-                {"key": "germline_db_TR", "inputMode": "REQUIRED" },
-                {"key": "germline_db_IG", "inputMode": "REQUIRED" },
+                {"key": "locus", "inputMode": "REQUIRED" },
+                {"key": "germline_db", "inputMode": "REQUIRED" },
                 {"key": "ForwardPairedFiles", "inputMode": "INCLUDE_BY_DEFAULT" },
                 {"key": "ReversePairedFiles", "inputMode": "INCLUDE_BY_DEFAULT" }
             ]

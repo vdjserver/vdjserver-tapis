@@ -1,7 +1,7 @@
 # helper commands for tapis v3 apps
 
 APP_NAME=cellranger
-APP_VERSION=0.2
+APP_VERSION=0.3
 APP_SYSTEM=ls6
 
 APP_ID=${APP_NAME}-${APP_SYSTEM}
@@ -33,8 +33,9 @@ help:
 	@echo "make deploy    -- Deploy app assets"
 	@echo ""
 	@echo "Testing:"
-	@echo "make test-cli  -- Submit test  job"
-	@echo "make test-multi -- Submit test  with multiple files job"
+	@echo "make test-cli   -- Submit test TCR job"
+	@echo "make test-multi -- Submit test TCR with multiple files job"
+	@echo "make test-bcr   -- Submit test BCR job"
 	@echo ""
 
 docker:
@@ -62,6 +63,7 @@ common-scripts:
 	cp ${SCRIPTS_DIR}/airr_metadata.py ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/airr_extract_fasta.py ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/10x_merge_airr.py ${BUILD_DIR}
+	cp ${SCRIPTS_DIR}/do_airr_makedb.sh ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/prov_metadata.py ${BUILD_DIR}
 	cp ${SCRIPTS_DIR}/igblast_config.sh ${BUILD_DIR}
 	
@@ -81,3 +83,5 @@ test-cli:
 	vdjserver-tools jobs submit test/test-cli.json
 test-multi:
 	vdjserver-tools jobs submit test/test-multi.json
+test-bcr:
+	vdjserver-tools jobs submit test/test-bcr.json

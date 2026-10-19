@@ -50,8 +50,10 @@ function print_parameters() {
     echo "Application parameters:"
     echo "species=$species"
     echo "strain=$strain"
-    echo "germline_db_TR=${germline_db_TR}"
-    echo "germline_db_IG=${germline_db_IG}"
+    echo "locus=$locus"
+    echo "germline_db=${germline_db}"
+    echo "germline_db_file=${germline_db_file}"
+    echo "germline_fasta=${germline_fasta}"
 }
 
 function run_cellranger_workflow() {
@@ -124,22 +126,6 @@ function run_cellranger_workflow() {
         repertoire_id=$(getRepertoireForFile "$ForwardPairedFile")
         echo "Repertoire ID: $repertoire_id"
 
-        # ######################################################
-        # # Find chain type for the study
-        # ######################################################
-
-        if ! chain_type=$(python3 airr_metadata.py "$AIRRMetadata" --chain_type "$repertoire_id"); then
-            echo "ERROR: Failed to get chain type for repertoire $repertoire_id"
-            exit 1
-        fi
-
-        if [[ "$chain_type" != "TR" && "$chain_type" != "IG" && "$chain_type" != "auto" ]]; then
-            echo "ERROR: Invalid chain type: $chain_type"
-            exit 1
-        fi
-        echo "Repertoire ID: $repertoire_id"
-        echo "Chain type: $chain_type"
-
         ##################################################################
         # Rename sequence files to match what cellranger format
         ##################################################################
@@ -155,11 +141,12 @@ function run_cellranger_workflow() {
 
         ####################################
         # Run Cell Ranger VDJ
+        # With the chain parameter, cellranger should only produce output for one locus
         ####################################
         echo "Starting cellranger for $repertoire_id at $(date)"
 
-        echo cellranger vdj --id "${repertoire_id}" --reference "${reference_dir}" --fastqs $PWD --sample "${repertoire_id}" --chain "$chain_type" --localmem $CELLRANGER_MEM 
-        $CELLRANGER_EXE vdj --id "${repertoire_id}" --reference "${reference_dir}" --fastqs $PWD --sample "${repertoire_id}" --chain "$chain_type" --localmem $CELLRANGER_MEM 
+        echo cellranger vdj --id "${repertoire_id}" --reference "${reference_dir}" --fastqs $PWD --sample "${repertoire_id}" --chain "$locus" --localmem $CELLRANGER_MEM 
+        $CELLRANGER_EXE vdj --id "${repertoire_id}" --reference "${reference_dir}" --fastqs $PWD --sample "${repertoire_id}" --chain "$locus" --localmem $CELLRANGER_MEM 
 
         # check number of jobs to be run
         export LAUNCHER_PPN=$LAUNCHER_MAX_PPN
@@ -168,73 +155,62 @@ function run_cellranger_workflow() {
             export LAUNCHER_PPN=$numJobs
         fi
 
-        # We want more annotations than cellranger gives, so run igblast on the output
-        # scripts will separate TCR and IG
+        # cellranger AIRR TSV
         cp "${repertoire_id}/outs/airr_rearrangement.tsv" "./${repertoire_id}.airr_rearrangement.tsv"
         wasDerivedFrom ${repertoire_id}.airr_rearrangement.tsv "${ForwardPairedFile}" "10x_airr_rearrangement" "10x Airr Rearrangement TSV" tsv
 
         #######################################################################
-        # Extract TCR and IG for IGBlast from 10x airr rearrnagement file
+        # Extract sequence for IGBlast from 10x AIRR TSV
         #######################################################################
 
         $PYTHON3_EXE airr_extract_fasta.py ${repertoire_id}.airr_rearrangement.tsv ${repertoire_id}
 
         #############################################
-        # Run IGBlast on TCR and IG Separately
+        # We want more annotations than cellranger gives, so run igblast on the output
         #############################################
+        if [ -f ${repertoire_id}.fasta ]; then
+            configure_igblast "$locus" "$species" "$germline_db"
 
-        AIRR_MERGE=""
-
-        #############################################
-        # TCR
-        #############################################
-        if [ -f ${repertoire_id}_TCR.fasta ]; then
-            # Setup germline
-            # inefficient to do each time, but configure_igblast needs some env variables
-            setup_germline "$germline_db_TR" "$species" "TR"
-
-            configure_igblast "TR" "$species" "$germline_db_TR"
-
-            echo "Locus: TR"
-            echo "ClonalTool: $ClonalTool"
+            echo "Locus: $locus"
             echo "IgBLAST params: $IGBLAST_PARAMS"
 
-            AIRR_ARGS="-query ${repertoire_id}_TCR.fasta $IGBLAST_PARAMS -outfmt 19"
-            echo "$IGBLASTN_EXE $AIRR_ARGS > ${repertoire_id}.TCR.igblast.airr.tsv"
-            $IGBLASTN_EXE $AIRR_ARGS > "${repertoire_id}.TCR.igblast.airr.tsv"
+            # igblast job with AIRR output
+            AIRR_ARGS="-query ${repertoire_id}.fasta $IGBLAST_PARAMS -outfmt 19"
+            echo "$IGBLASTN_EXE $AIRR_ARGS > ${repertoire_id}.10x.igblast.airr.tsv"
+            $IGBLASTN_EXE $AIRR_ARGS > "${repertoire_id}.10x.igblast.airr.tsv"
 
-            AIRR_MERGE="$AIRR_MERGE ${repertoire_id}.TCR.igblast.airr.tsv"
-        fi
-        #############################################
-        # IG
-        #############################################
-        if [ -f ${repertoire_id}_IG.fasta ]; then
-            # Setup germline
-            # inefficient to do each time, but configure_igblast needs some env variables
-            setup_germline "$germline_db_IG" "$species" "IG"
+            # igblast job with ChangeO output
+            CO_ARGS="-query ${repertoire_id}.fasta $IGBLAST_PARAMS -outfmt"
+            OUTFMT="7 qseqid qgi qacc qaccver qlen sseqid sallseqid sgi sallgi sacc saccver sallacc slen qstart qend sstart send qseq sseq evalue bitscore score length pident nident mismatch positive gapopen gaps ppos frames qframe sframe btop"
+            echo "$IGBLASTN_EXE $CO_ARGS \"$OUTFMT\" > ${repertoire_id}.10x.igblast.makedb.airr.tsv"
+            $IGBLASTN_EXE $CO_ARGS "$OUTFMT" > ${repertoire_id}.10x.igblast.txt
 
-            configure_igblast "IG" "$species" "$germline_db_IG"
+            ###########################################################################
+            # Makedb parsing and processing
+            ###########################################################################
 
-            echo "Locus: IG"
-            echo "ClonalTool: $ClonalTool"
-            echo "IgBLAST params: $IGBLAST_PARAMS"
+            MDARGS=""
+            MDARGS="$MDARGS ${repertoire_id}.fasta"
+            MDARGS="$MDARGS ${repertoire_id}.10x.igblast.txt"
+            MDARGS="$MDARGS $locus"
+            MDARGS="$MDARGS $species"
+            MDARGS="$MDARGS $germline_db"
 
-            AIRR_ARGS="-query ${repertoire_id}_IG.fasta $IGBLAST_PARAMS -outfmt 19"
-            echo "$IGBLASTN_EXE $AIRR_ARGS > ${repertoire_id}.IG.igblast.airr.tsv"
-            $IGBLASTN_EXE $AIRR_ARGS > "${repertoire_id}.IG.igblast.airr.tsv"
-
-            AIRR_MERGE="$AIRR_MERGE ${repertoire_id}.IG.igblast.airr.tsv"
+            # the post processing jobs
+            apptainer exec ${repcalc_image} bash ./do_airr_makedb.sh $MDARGS
         fi
 
         #############################################
         # Merge with 10x annotations into one file
         #############################################
         
-        $AIRR_TOOLS_EXE merge -a $AIRR_MERGE -o ${repertoire_id}.igblast.airr.tsv
-        $PYTHON3_EXE 10x_merge_airr.py ${repertoire_id} "${_tapisJobUUID}" #changed data_processing_id to _tapisJobUUID
+        $PYTHON3_EXE 10x_merge_airr.py ${repertoire_id} "${_tapisJobUUID}" "igblast" #changed data_processing_id to _tapisJobUUID
+        $PYTHON3_EXE 10x_merge_airr.py ${repertoire_id} "${_tapisJobUUID}" "igblast.makedb" #changed data_processing_id to _tapisJobUUID
 
-        gzip ${repertoire_id}.10x.igblast.airr.tsv
-        wasDerivedFrom "${repertoire_id}.10x.igblast.airr.tsv.gz" "${repertoire_id}.airr_rearrangement.tsv" "vdj_sequence_annotation" "IgBlast AIRR TSV" tsv
+        gzip ${repertoire_id}.igblast.airr.tsv
+        wasDerivedFrom "${repertoire_id}.igblast.airr.tsv.gz" "${repertoire_id}.airr_rearrangement.tsv" "vdj_sequence_annotation" "IgBlast AIRR TSV" tsv
+        gzip ${repertoire_id}.igblast.makedb.airr.tsv
+        wasDerivedFrom "${repertoire_id}.igblast.makedb.airr.tsv.gz" "${repertoire_id}.airr_rearrangement.tsv" "makedb_parse,vdj_sequence_annotation" "Change-O MakeDb AIRR TSV" tsv
 
         # Add all of the CellRanger output files to provenance
         mkdir ${_tapisJobUUID}/${repertoire_id}
@@ -258,20 +234,6 @@ function run_cellranger_workflow() {
         wasDerivedFrom ${repertoire_id}.vloupe.vloupe ${repertoire_id}.airr_rearrangement.tsv "10x_vloupe" "${repertoire_id} 10X Loupe V(D)J Browser file" "vloupe"
     done
 
-}
-
-copy_germline () {
-    local x="$1"
-
-    if [ -d "$x" ]; then
-        cp -r "$x" "${_tapisJobUUID}/"
-    elif [ -f "$x.tgz" ]; then
-        cp "$x.tgz" "${_tapisJobUUID}/"
-    elif [ -f "$x.tar.gz" ]; then
-        cp "$x.tar.gz" "${_tapisJobUUID}/"
-    else
-        echo "WARNING: Germline not found: $x"
-    fi
 }
 
 function compress_and_archive() {
@@ -298,9 +260,7 @@ function compress_and_archive() {
         fi
     done
 
-    copy_germline "$germline_db_TR"
-    copy_germline "$germline_db_IG"
-
+    cp -f ${germline_db_file} ${_tapisJobUUID}
     zip ${_tapisJobUUID}.zip ${_tapisJobUUID}/*
     cp ${_tapisJobUUID}.zip output
 }

@@ -1,0 +1,32 @@
+{
+    "name": "cellranger-test-bcr",
+    "appId": "cellranger-ls6",
+    "appVersion": "0.3",
+    "maxMinutes":120,
+    "nodeCount": 1,
+    "fileInputs":[
+        { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/apps/data/test/analysis_document_cellranger_ig.json", "targetPath":"analysis_document_cellranger_ig.json" },
+        { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/1cae5839-fdde-460d-a61d-5ecbd244efe7/files/repertoires.airr.json", "targetPath":"repertoires.airr.json" }
+    ],
+    "fileInputArrays":[
+        { "name":"ForwardPairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/projects/1cae5839-fdde-460d-a61d-5ecbd244efe7/files/SRR12113363_2.fastq.gz" ]},
+        { "name":"ReversePairedFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/projects/1cae5839-fdde-460d-a61d-5ecbd244efe7/files/SRR12113363_3.fastq.gz" ]}
+    ],
+    "parameterSet": {
+        "schedulerOptions": [
+            { "name":"allocation", "arg":"-A MCB23006" }
+        ],
+        "containerArgs": [
+        ],
+        "appArgs": [
+        ],
+        "envVariables": [
+            {"key": "species", "value": "NCBITAXON:9606" },
+            {"key": "strain", "value": "" },
+            {"key": "locus", "value": "IG" },
+            {"key": "germline_db", "value": "db.2026.09.10"},
+            {"key": "ForwardPairedFiles", "value": "SRR12113363_2.fastq.gz" },
+            {"key": "ReversePairedFiles", "value": "SRR12113363_3.fastq.gz" }
+        ]
+    }
+}

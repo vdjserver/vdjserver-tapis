@@ -22,6 +22,7 @@ if (__name__=="__main__"):
     parser = argparse.ArgumentParser(description='Merge 10x AIRR field with IgBlast AIRR TSV.')
     parser.add_argument('repertoire_id', type=str, help='AIRR repertoire_id')
     parser.add_argument('data_processing_id', type=str, help='AIRR data_processing_id')
+    parser.add_argument('processing_stage', type=str, help='VDJServer processing stage')
     args = parser.parse_args()
 
     data_processing_id = args.data_processing_id
@@ -34,9 +35,9 @@ if (__name__=="__main__"):
     if args:
         # We infer input/output file names based upon repertoire_id
         file_input_10x = args.repertoire_id + '.airr_rearrangement.tsv'
-        file_input_igblast = args.repertoire_id + '.igblast.airr.tsv'
-        file_output_airr_tsv = args.repertoire_id + '.10x.igblast.airr.tsv'
-        file_output_airr_json = args.repertoire_id + '.10x.igblast.airr.json'
+        file_input_igblast = args.repertoire_id + '.10x.' + args.processing_stage + '.airr.tsv'
+        file_output_airr_tsv = args.repertoire_id + '.' + args.processing_stage + '.airr.tsv'
+        file_output_airr_json = args.repertoire_id + '.' + args.processing_stage + '.airr.json'
 
         print('Processing 10x AIRR file ' + file_input_10x)
         input_10x = airr.read_rearrangement(file_input_10x)

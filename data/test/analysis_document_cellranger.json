@@ -24,8 +24,8 @@
                     "JobFiles": "",
                     "species":"human",
                     "strain": "",
-                    "germline_db_TR": "db.2019.01.23",
-                    "germline_db_IG": "db.2026.01.12",
+                    "locus": "TR",
+                    "germline_db": "db.2019.01.23",
                     "ForwardPairedFiles": "",
                     "ReversePairedFiles": ""
                 },
