@@ -1,0 +1,23 @@
+{
+    "name": "sra_spot_1_2",
+    "appId": "sra-download-vm",
+    "appVersion": "0.3",
+    "maxMinutes": 240,
+    "fileInputs":[
+    ],
+    "fileInputArrays":[
+    ],
+    "parameterSet": {
+        "containerArgs": [
+        ],
+        "appArgs": [
+        ],
+        "envVariables": [
+            {"key": "SRA_run_ids", "value": "SRR32457848" },
+            {"key": "project_id", "value": "b9359d4c-bb67-4232-b3bc-68e5ad522a71" },
+            {"key": "split_flag", "value": "1" },
+            {"key": "spots", "value":"1 2"},
+            {"key": "vdj_default_host", "value": "vdj-dev.tacc.utexas.edu" }
+        ]
+    }
+}

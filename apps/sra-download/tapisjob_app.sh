@@ -5,8 +5,8 @@
 # VDJServer Tapis applications
 # https://vdjserver.org
 #
-# Author: Scott Christley
-# Copyright (C) 2025 The University of Texas Southwestern Medical Center
+# Author: Scott Christley & Tanzira Najnin
+# Copyright (C) 2026 The University of Texas Southwestern Medical Center
 #
 
 # ----------------------------------------------------------------------------
@@ -19,10 +19,11 @@ echo "Application parameters:"
 echo SRA_run_ids="${SRA_run_ids}"
 echo project_id="${project_id}"
 echo split_flag="${split_flag}"
+echo spots="${spots}"
 echo vdj_default_host="${vdj_default_host}"
 
 if [ "${split_flag}" -eq 1 ]; then
-    split_option="--split-files"
+    split_option="--split-files --include-technical"
 else
     split_option=""
 fi
@@ -41,32 +42,41 @@ for SRA_run_id in $SRA_run_ids; do
         echo "ERROR: fasterq-dump failed for ${SRA_run_id}. Skipping."
         continue
     fi
-    # Compress and remove .fastq files
+
+    # Compress and attach FASTQ files
     if [ "${split_flag}" -eq 1 ]; then
-        f1="/vdjZ/${dest_folder}${SRA_run_id}_1.fastq"
-        f2="/vdjZ/${dest_folder}${SRA_run_id}_2.fastq"
-        if [ ! -f "$f1" ] || [ ! -f "$f2" ]; then
-            echo "ERROR: Expected files not found for paired-end ${SRA_run_id}. Skipping"
-            continue
-        fi
-        echo "Compressing and cleaning up paired-end FASTQ files..."
-        gzip -f "$f1"
-        gzip -f "$f2"
-        for i in 1 2; do
-            file="${SRA_run_id}_${i}.fastq.gz"
-            vdjserver-tools project file-attach ${project_id} ${file} --file-type 2
+        echo "Checking paired-end FASTQ files..."
+
+        # Check that all expected files exist before compressing
+        for i in ${spots}; do
+            f="/vdjZ/${dest_folder}${SRA_run_id}_${i}.fastq"
+            if [ ! -f "$f" ]; then
+                echo "ERROR: Expected file not found: $f. Skipping."
+                continue 2
+            fi
         done
+
+        echo "Compressing and cleaning up paired-end FASTQ files..."
+        for i in ${spots}; do
+            f="/vdjZ/${dest_folder}${SRA_run_id}_${i}.fastq"
+            gzip -f "$f"
+
+            file="${SRA_run_id}_${i}.fastq.gz"
+            vdjserver-tools project file-attach "${project_id}" "${file}" --file-type 2
+        done
+        
     else
         echo "Compressing and cleaning up single-end FASTQ file..."
         f="/vdjZ/${dest_folder}${SRA_run_id}.fastq"
+
         if [ ! -f "$f" ]; then
-            echo "ERROR: Expected single end file not found for ${SRA_run_id}. Skipping."
+            echo "ERROR: Expected single-end file not found for ${SRA_run_id}. Skipping."
             continue
         fi
-        echo "Compressing and cleaning up single-end FASTQ file..."
+
         gzip -f "$f"
         file="${SRA_run_id}.fastq.gz"
-        vdjserver-tools project file-attach ${project_id} ${file} --file-type 2
+        vdjserver-tools project file-attach "${project_id}" "${file}" --file-type 2
     fi
 
     echo "Done for ${SRA_run_id}"
