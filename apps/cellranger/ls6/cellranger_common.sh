@@ -198,6 +198,7 @@ function run_cellranger_workflow() {
 
             # the post processing jobs
             apptainer exec ${repcalc_image} bash ./do_airr_makedb.sh $MDARGS
+            mv ${repertoire_id}.10x.igblast.makedb.airr.tsv ${repertoire_id}.10x.igblast.makedb.gene.clone.airr.tsv
         fi
 
         #############################################
@@ -205,12 +206,12 @@ function run_cellranger_workflow() {
         #############################################
         
         $PYTHON3_EXE 10x_merge_airr.py ${repertoire_id} "${_tapisJobUUID}" "igblast" #changed data_processing_id to _tapisJobUUID
-        $PYTHON3_EXE 10x_merge_airr.py ${repertoire_id} "${_tapisJobUUID}" "igblast.makedb" #changed data_processing_id to _tapisJobUUID
+        $PYTHON3_EXE 10x_merge_airr.py ${repertoire_id} "${_tapisJobUUID}" "igblast.makedb.gene.clone" #changed data_processing_id to _tapisJobUUID
 
         gzip ${repertoire_id}.igblast.airr.tsv
         wasDerivedFrom "${repertoire_id}.igblast.airr.tsv.gz" "${repertoire_id}.airr_rearrangement.tsv" "vdj_sequence_annotation" "IgBlast AIRR TSV" tsv
-        gzip ${repertoire_id}.igblast.makedb.airr.tsv
-        wasDerivedFrom "${repertoire_id}.igblast.makedb.airr.tsv.gz" "${repertoire_id}.airr_rearrangement.tsv" "makedb_parse,vdj_sequence_annotation" "Change-O MakeDb AIRR TSV" tsv
+        gzip ${repertoire_id}.igblast.makedb.gene.clone.airr.tsv
+        wasDerivedFrom "${repertoire_id}.igblast.makedb.gene.clone.airr.tsv.gz" "${repertoire_id}.airr_rearrangement.tsv" "makedb_parse,vdj_sequence_annotation,assigned_clones,gene_clones" "Change-O MakeDb AIRR TSV" tsv
 
         # Add all of the CellRanger output files to provenance
         mkdir ${_tapisJobUUID}/${repertoire_id}
