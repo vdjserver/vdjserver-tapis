@@ -52,6 +52,7 @@ function print_parameters() {
     echo "Application parameters:"
     echo "species=${species}"
     echo "locus=${locus}"
+    echo "split_locus=${split_locus}"
     echo "germline_db_file=${germline_db_file}"
     echo "germline_fasta=${germline_fasta}"
     echo "GeneSegmentFlag=${GeneSegmentFlag}"
@@ -117,6 +118,147 @@ function run_repcalc_workflow() {
     fi
     echo has_gene_clone=$has_gene_clone
 
+    # Split AIRR TSV into separate files by locus
+    igblast_locus=""
+    makedb_locus=""
+    igblast_clone_locus=""
+    makedb_clone_locus=""
+    gene_clone_locus=""
+    if [[ $split_locus -eq 1 ]]; then
+        echo "Split AIRR TSV into separate files by locus"
+        if [[ $has_igblast -eq 1 ]]; then
+            processing_stage=igblast
+            $PYTHON split_locus.py ${AIRRMetadata} ${processing_stage}
+
+            # check which loci
+            for locus_name in TRA TRB TRG TRD IGH IGK IGL; do
+                if ls *.${locus_name}.${processing_stage}.airr.tsv 1> /dev/null 2>&1; then
+                    igblast_locus="${igblast_locus} ${locus_name}"
+                fi
+            done
+            echo igblast_locus=$igblast_locus
+
+            # make sure each repertoire has a file otherwise repcalc will complain
+            # create empty file with AIRR TSV header
+            count=0
+            while [ "x${repertoires[count]}" != "x" ]
+            do
+                rep_id=${repertoires[count]}
+                for locus_name in $igblast_locus; do
+                    if [[ ! -f "${rep_id}.${locus_name}.${processing_stage}.airr.tsv" ]]; then
+                        echo Creating empty AIRR TSV: ${rep_id}.${locus_name}.${processing_stage}.airr.tsv
+                        head -n 1 ${rep_id}.${processing_stage}.airr.tsv > ${rep_id}.${locus_name}.${processing_stage}.airr.tsv
+                    fi
+                done
+                count=$(( $count + 1 ))
+            done
+        fi
+        if [[ $has_makedb -eq 1 ]]; then
+            processing_stage=igblast.makedb
+            $PYTHON split_locus.py ${AIRRMetadata} ${processing_stage} 
+
+            for locus_name in TRA TRB TRG TRD IGH IGK IGL; do
+                if ls *.${locus_name}.${processing_stage}.airr.tsv 1> /dev/null 2>&1; then
+                    makedb_locus="${makedb_locus} ${locus_name}"
+                fi
+            done
+            echo makedb_locus=$makedb_locus
+
+            # make sure each repertoire has a file otherwise repcalc will complain
+            # create empty file with AIRR TSV header
+            count=0
+            while [ "x${repertoires[count]}" != "x" ]
+            do
+                rep_id=${repertoires[count]}
+                for locus_name in $makedb_locus; do
+                    if [[ ! -f "${rep_id}.${locus_name}.${processing_stage}.airr.tsv" ]]; then
+                        echo Creating empty AIRR TSV: ${rep_id}.${locus_name}.${processing_stage}.airr.tsv
+                        head -n 1 ${rep_id}.${processing_stage}.airr.tsv > ${rep_id}.${locus_name}.${processing_stage}.airr.tsv
+                    fi
+                done
+                count=$(( $count + 1 ))
+            done
+        fi
+        if [[ $has_igblast_clone -eq 1 ]]; then
+            processing_stage=igblast.allele.clone
+            $PYTHON split_locus.py ${AIRRMetadata} ${processing_stage} 
+
+            for locus_name in TRA TRB TRG TRD IGH IGK IGL; do
+                if ls *.${locus_name}.${processing_stage}.airr.tsv 1> /dev/null 2>&1; then
+                    igblast_clone_locus="${igblast_clone_locus} ${locus_name}"
+                fi
+            done
+            echo igblast_clone_locus=$igblast_clone_locus
+
+            # make sure each repertoire has a file otherwise repcalc will complain
+            # create empty file with AIRR TSV header
+            count=0
+            while [ "x${repertoires[count]}" != "x" ]
+            do
+                rep_id=${repertoires[count]}
+                for locus_name in $igblast_clone_locus; do
+                    if [[ ! -f "${rep_id}.${locus_name}.${processing_stage}.airr.tsv" ]]; then
+                        echo Creating empty AIRR TSV: ${rep_id}.${locus_name}.${processing_stage}.airr.tsv
+                        head -n 1 ${rep_id}.${processing_stage}.airr.tsv > ${rep_id}.${locus_name}.${processing_stage}.airr.tsv
+                    fi
+                done
+                count=$(( $count + 1 ))
+            done
+        fi
+        if [[ $has_makedb_clone -eq 1 ]]; then
+            processing_stage=igblast.makedb.allele.clone
+            $PYTHON split_locus.py ${AIRRMetadata} ${processing_stage} 
+
+            for locus_name in TRA TRB TRG TRD IGH IGK IGL; do
+                if ls *.${locus_name}.${processing_stage}.airr.tsv 1> /dev/null 2>&1; then
+                    makedb_clone_locus="${makedb_clone_locus} ${locus_name}"
+                fi
+            done
+            echo makedb_clone_locus=$makedb_clone_locus
+
+            # make sure each repertoire has a file otherwise repcalc will complain
+            # create empty file with AIRR TSV header
+            count=0
+            while [ "x${repertoires[count]}" != "x" ]
+            do
+                rep_id=${repertoires[count]}
+                for locus_name in $makedb_clone_locus; do
+                    if [[ ! -f "${rep_id}.${locus_name}.${processing_stage}.airr.tsv" ]]; then
+                        echo Creating empty AIRR TSV: ${rep_id}.${locus_name}.${processing_stage}.airr.tsv
+                        head -n 1 ${rep_id}.${processing_stage}.airr.tsv > ${rep_id}.${locus_name}.${processing_stage}.airr.tsv
+                    fi
+                done
+                count=$(( $count + 1 ))
+            done
+        fi
+        if [[ $has_gene_clone -eq 1 ]]; then
+            processing_stage=igblast.makedb.gene.clone
+            $PYTHON split_locus.py ${AIRRMetadata} ${processing_stage} 
+
+            for locus_name in TRA TRB TRG TRD IGH IGK IGL; do
+                if ls *.${locus_name}.${processing_stage}.airr.tsv 1> /dev/null 2>&1; then
+                    gene_clone_locus="${gene_clone_locus} ${locus_name}"
+                fi
+            done
+            echo gene_clone_locus=$gene_clone_locus
+
+            # make sure each repertoire has a file otherwise repcalc will complain
+            # create empty file with AIRR TSV header
+            count=0
+            while [ "x${repertoires[count]}" != "x" ]
+            do
+                rep_id=${repertoires[count]}
+                for locus_name in $gene_clone_locus; do
+                    if [[ ! -f "${rep_id}.${locus_name}.${processing_stage}.airr.tsv" ]]; then
+                        echo Creating empty AIRR TSV: ${rep_id}.${locus_name}.${processing_stage}.airr.tsv
+                        head -n 1 ${rep_id}.${processing_stage}.airr.tsv > ${rep_id}.${locus_name}.${processing_stage}.airr.tsv
+                    fi
+                done
+                count=$(( $count + 1 ))
+            done
+        fi
+    fi
+
     # Gene segment usage
     if [[ $GeneSegmentFlag -eq 1 ]]; then
         echo "Calculate gene segment and combo usage"
@@ -129,84 +271,179 @@ function run_repcalc_workflow() {
         touch joblist-gene
 
         if [[ $has_igblast -eq 1 ]]; then
-            processing_stage=igblast
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+            if [[ $split_locus -eq 1 ]]; then
+                for locus_name in $igblast_locus; do
+                    processing_stage=${locus_name}.igblast
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                    else
+                        python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                    fi
+                    echo "$REPCALC_EXE gene_usage_config.${processing_stage}.json" >> joblist-gene
+        
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                    else
+                        python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                    fi
+                    echo "$REPCALC_EXE gene_combo_config.${processing_stage}.json" >> joblist-gene
+                done
             else
-                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                processing_stage=igblast
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                else
+                    python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                fi
+                echo "$REPCALC_EXE gene_usage_config.${processing_stage}.json" >> joblist-gene
+    
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                else
+                    python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                fi
+                echo "$REPCALC_EXE gene_combo_config.${processing_stage}.json" >> joblist-gene
             fi
-            echo "$REPCALC_EXE gene_usage_config.${processing_stage}.json" >> joblist-gene
-
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
-            else
-                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
-            fi
-            echo "$REPCALC_EXE gene_combo_config.${processing_stage}.json" >> joblist-gene
         fi
         if [[ $has_makedb -eq 1 ]]; then
-            processing_stage=igblast.makedb
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+            if [[ $split_locus -eq 1 ]]; then
+                for locus_name in $makedb_locus; do
+                    processing_stage=${locus_name}.igblast.makedb
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                    else
+                        python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                    fi
+                    echo "$REPCALC_EXE gene_usage_config.${processing_stage}.json" >> joblist-gene
+        
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                    else
+                        python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                    fi
+                    echo "$REPCALC_EXE gene_combo_config.${processing_stage}.json" >> joblist-gene
+                done
             else
-                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                processing_stage=igblast.makedb
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                else
+                    python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                fi
+                echo "$REPCALC_EXE gene_usage_config.${processing_stage}.json" >> joblist-gene
+    
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                else
+                    python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                fi
+                echo "$REPCALC_EXE gene_combo_config.${processing_stage}.json" >> joblist-gene
             fi
-            echo "$REPCALC_EXE gene_usage_config.${processing_stage}.json" >> joblist-gene
-
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
-            else
-                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
-            fi
-            echo "$REPCALC_EXE gene_combo_config.${processing_stage}.json" >> joblist-gene
         fi
         if [[ $has_igblast_clone -eq 1 ]]; then
-            processing_stage=igblast.allele.clone
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+            if [[ $split_locus -eq 1 ]]; then
+                for locus_name in $igblast_clone_locus; do
+                    processing_stage=${locus_name}.igblast.allele.clone
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                    else
+                        python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                    fi
+                    echo "$REPCALC_EXE gene_usage_config.${processing_stage}.json" >> joblist-gene
+        
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                    else
+                        python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                    fi
+                    echo "$REPCALC_EXE gene_combo_config.${processing_stage}.json" >> joblist-gene
+                done
             else
-                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                processing_stage=igblast.allele.clone
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                else
+                    python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                fi
+                echo "$REPCALC_EXE gene_usage_config.${processing_stage}.json" >> joblist-gene
+    
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                else
+                    python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                fi
+                echo "$REPCALC_EXE gene_combo_config.${processing_stage}.json" >> joblist-gene
             fi
-            echo "$REPCALC_EXE gene_usage_config.${processing_stage}.json" >> joblist-gene
-
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
-            else
-                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
-            fi
-            echo "$REPCALC_EXE gene_combo_config.${processing_stage}.json" >> joblist-gene
         fi
         if [[ $has_makedb_clone -eq 1 ]]; then
-            processing_stage=igblast.makedb.allele.clone
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+            if [[ $split_locus -eq 1 ]]; then
+                for locus_name in $makedb_clone_locus; do
+                    processing_stage=${locus_name}.igblast.makedb.allele.clone
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                    else
+                        python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                    fi
+                    echo "$REPCALC_EXE gene_usage_config.${processing_stage}.json" >> joblist-gene
+        
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                    else
+                        python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                    fi
+                    echo "$REPCALC_EXE gene_combo_config.${processing_stage}.json" >> joblist-gene
+                done
             else
-                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                processing_stage=igblast.makedb.allele.clone
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                else
+                    python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                fi
+                echo "$REPCALC_EXE gene_usage_config.${processing_stage}.json" >> joblist-gene
+    
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                else
+                    python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                fi
+                echo "$REPCALC_EXE gene_combo_config.${processing_stage}.json" >> joblist-gene
             fi
-            echo "$REPCALC_EXE gene_usage_config.${processing_stage}.json" >> joblist-gene
-
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
-            else
-                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
-            fi
-            echo "$REPCALC_EXE gene_combo_config.${processing_stage}.json" >> joblist-gene
         fi
         if [[ $has_gene_clone -eq 1 ]]; then
-            processing_stage=igblast.makedb.gene.clone
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+            if [[ $split_locus -eq 1 ]]; then
+                for locus_name in $gene_clone_locus; do
+                    processing_stage=${locus_name}.igblast.makedb.gene.clone
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                    else
+                        python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                    fi
+                    echo "$REPCALC_EXE gene_usage_config.${processing_stage}.json" >> joblist-gene
+        
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                    else
+                        python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                    fi
+                    echo "$REPCALC_EXE gene_combo_config.${processing_stage}.json" >> joblist-gene
+                done
             else
-                python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                processing_stage=igblast.makedb.gene.clone
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                else
+                    python3 repcalc_create_config.py --init gene_usage_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_usage_config.${processing_stage}.json
+                fi
+                echo "$REPCALC_EXE gene_usage_config.${processing_stage}.json" >> joblist-gene
+    
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                else
+                    python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
+                fi
+                echo "$REPCALC_EXE gene_combo_config.${processing_stage}.json" >> joblist-gene
             fi
-            echo "$REPCALC_EXE gene_usage_config.${processing_stage}.json" >> joblist-gene
-
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
-            else
-                python3 repcalc_create_config.py --init gene_combo_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} gene_combo_config.${processing_stage}.json
-            fi
-            echo "$REPCALC_EXE gene_combo_config.${processing_stage}.json" >> joblist-gene
         fi
 
         # check number of jobs to be run
@@ -231,63 +468,138 @@ function run_repcalc_workflow() {
             rep_id=${repertoires[count]}
 
             if [[ $has_igblast -eq 1 ]]; then
-                processing_stage=igblast
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.v_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} V Gene Usage (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.d_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} D Gene Usage (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.j_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} J Gene Usage (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.c_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} C Gene Usage (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VJ Gene Combo (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vd_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VD Gene Combo (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vdj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VDJ Gene Combo (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.dj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} DJ Gene Combo (${processing_stage})" "tsv"
+                orig_processing_stage=igblast
+                if [[ $split_locus -eq 1 ]]; then
+                    for locus_name in $igblast_locus; do
+                        processing_stage=${locus_name}.igblast
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.v_call.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} V Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.d_call.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} D Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.j_call.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} J Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.c_call.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} C Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vj_combo.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VJ Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vd_combo.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VD Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vdj_combo.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VDJ Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.dj_combo.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} DJ Gene Combo (${processing_stage})" "tsv"
+                    done
+                else
+                    processing_stage=igblast
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.v_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} V Gene Usage (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.d_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} D Gene Usage (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.j_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} J Gene Usage (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.c_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} C Gene Usage (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VJ Gene Combo (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vd_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VD Gene Combo (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vdj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VDJ Gene Combo (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.dj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} DJ Gene Combo (${processing_stage})" "tsv"
+                fi
             fi
 
             if [[ $has_makedb -eq 1 ]]; then
-                processing_stage=igblast.makedb
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.v_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} V Gene Usage (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.d_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} D Gene Usage (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.j_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} J Gene Usage (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.c_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} C Gene Usage (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VJ Gene Combo (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vd_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VD Gene Combo (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vdj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VDJ Gene Combo (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.dj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} DJ Gene Combo (${processing_stage})" "tsv"
+                orig_processing_stage=igblast.makedb
+                if [[ $split_locus -eq 1 ]]; then
+                    for locus_name in $makedb_locus; do
+                        processing_stage=${locus_name}.igblast.makedb
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.v_call.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} V Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.d_call.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} D Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.j_call.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} J Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.c_call.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} C Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vj_combo.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VJ Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vd_combo.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VD Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vdj_combo.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VDJ Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.dj_combo.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} DJ Gene Combo (${processing_stage})" "tsv"
+                    done
+                else
+                    processing_stage=igblast.makedb
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.v_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} V Gene Usage (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.d_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} D Gene Usage (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.j_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} J Gene Usage (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.c_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} C Gene Usage (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VJ Gene Combo (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vd_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VD Gene Combo (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vdj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VDJ Gene Combo (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.dj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} DJ Gene Combo (${processing_stage})" "tsv"
+                fi
             fi
 
             if [[ $has_igblast_clone -eq 1 ]]; then
-                processing_stage=igblast.allele.clone
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.v_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} V Gene Usage (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.d_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} D Gene Usage (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.j_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} J Gene Usage (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.c_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} C Gene Usage (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VJ Gene Combo (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vd_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VD Gene Combo (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vdj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VDJ Gene Combo (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.dj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} DJ Gene Combo (${processing_stage})" "tsv"
+                orig_processing_stage=igblast.allele.clone
+                if [[ $split_locus -eq 1 ]]; then
+                    for locus_name in $igblast_clone_locus; do
+                        processing_stage=${locus_name}.igblast.allele.clone
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.v_call.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} V Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.d_call.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} D Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.j_call.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} J Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.c_call.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} C Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vj_combo.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VJ Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vd_combo.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VD Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vdj_combo.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VDJ Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.dj_combo.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} DJ Gene Combo (${processing_stage})" "tsv"
+                    done
+                else
+                    processing_stage=igblast.allele.clone
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.v_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} V Gene Usage (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.d_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} D Gene Usage (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.j_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} J Gene Usage (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.c_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} C Gene Usage (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VJ Gene Combo (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vd_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VD Gene Combo (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vdj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VDJ Gene Combo (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.dj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} DJ Gene Combo (${processing_stage})" "tsv"
+                fi
             fi
 
             if [[ $has_makedb_clone -eq 1 ]]; then
-                processing_stage=igblast.makedb.allele.clone
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.v_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} V Gene Usage (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.d_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} D Gene Usage (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.j_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} J Gene Usage (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.c_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} C Gene Usage (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VJ Gene Combo (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vd_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VD Gene Combo (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vdj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VDJ Gene Combo (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.dj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} DJ Gene Combo (${processing_stage})" "tsv"
+                orig_processing_stage=igblast.makedb.allele.clone
+                if [[ $split_locus -eq 1 ]]; then
+                    for locus_name in $makedb_clone_locus; do
+                        processing_stage=${locus_name}.igblast.makedb.allele.clone
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.v_call.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} V Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.d_call.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} D Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.j_call.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} J Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.c_call.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} C Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vj_combo.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VJ Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vd_combo.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VD Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vdj_combo.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VDJ Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.dj_combo.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} DJ Gene Combo (${processing_stage})" "tsv"
+                    done
+                else
+                    processing_stage=igblast.makedb.allele.clone
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.v_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} V Gene Usage (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.d_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} D Gene Usage (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.j_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} J Gene Usage (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.c_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} C Gene Usage (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VJ Gene Combo (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vd_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VD Gene Combo (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vdj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VDJ Gene Combo (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.dj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} DJ Gene Combo (${processing_stage})" "tsv"
+                fi
             fi
 
             if [[ $has_gene_clone -eq 1 ]]; then
-                processing_stage=igblast.makedb.gene.clone
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.v_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} V Gene Usage (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.d_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} D Gene Usage (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.j_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} J Gene Usage (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.c_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} C Gene Usage (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VJ Gene Combo (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vd_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VD Gene Combo (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vdj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VDJ Gene Combo (${processing_stage})" "tsv"
-                addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.dj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} DJ Gene Combo (${processing_stage})" "tsv"
+                orig_processing_stage=igblast.makedb.gene.clone
+                if [[ $split_locus -eq 1 ]]; then
+                    for locus_name in $gene_clone_locus; do
+                        processing_stage=${locus_name}.igblast.makedb.gene.clone
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.v_call.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} V Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.d_call.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} D Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.j_call.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} J Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.c_call.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} C Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vj_combo.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VJ Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vd_combo.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VD Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vdj_combo.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VDJ Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.dj_combo.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} DJ Gene Combo (${processing_stage})" "tsv"
+                    done
+                else
+                    processing_stage=igblast.makedb.gene.clone
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.v_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} V Gene Usage (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.d_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} D Gene Usage (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.j_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} J Gene Usage (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.c_call.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_usage "${rep_id} C Gene Usage (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VJ Gene Combo (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vd_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VD Gene Combo (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.vdj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} VDJ Gene Combo (${processing_stage})" "tsv"
+                    addEntryToFile gene_segment_entries.csv output ${rep_id}.${processing_stage}.dj_combo.tsv ${rep_id}.${processing_stage}.airr.tsv.gz gene_segment_combos "${rep_id} DJ Gene Combo (${processing_stage})" "tsv"
+                fi
             fi
 
             count=$(( $count + 1 ))
@@ -301,63 +613,133 @@ function run_repcalc_workflow() {
                 rep_group_id=${repertoire_groups[grpcnt]}
 
                 if [[ $has_igblast -eq 1 ]]; then
-                    processing_stage=igblast
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.v_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} V Gene Usage (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.d_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} D Gene Usage (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.j_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} J Gene Usage (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.c_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} C Gene Usage (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VJ Gene Combo (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vd_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VD Gene Combo (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vdj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VDJ Gene Combo (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.dj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} DJ Gene Combo (${processing_stage})" "tsv"
+                    if [[ $split_locus -eq 1 ]]; then
+                        for locus_name in $igblast_locus; do
+                            processing_stage=${locus_name}.igblast
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.v_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} V Gene Usage (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.d_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} D Gene Usage (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.j_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} J Gene Usage (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.c_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} C Gene Usage (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VJ Gene Combo (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vd_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VD Gene Combo (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vdj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VDJ Gene Combo (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.dj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} DJ Gene Combo (${processing_stage})" "tsv"
+                        done
+                    else
+                        processing_stage=igblast
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.v_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} V Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.d_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} D Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.j_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} J Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.c_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} C Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VJ Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vd_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VD Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vdj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VDJ Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.dj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} DJ Gene Combo (${processing_stage})" "tsv"
+                    fi
                 fi
 
                 if [[ $has_makedb -eq 1 ]]; then
-                    processing_stage=igblast.makedb
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.v_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} V Gene Usage (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.d_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} D Gene Usage (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.j_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} J Gene Usage (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.c_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} C Gene Usage (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VJ Gene Combo (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vd_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VD Gene Combo (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vdj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VDJ Gene Combo (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.dj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} DJ Gene Combo (${processing_stage})" "tsv"
+                    if [[ $split_locus -eq 1 ]]; then
+                        for locus_name in $makedb_locus; do
+                            processing_stage=${locus_name}.igblast.makedb
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.v_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} V Gene Usage (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.d_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} D Gene Usage (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.j_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} J Gene Usage (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.c_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} C Gene Usage (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VJ Gene Combo (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vd_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VD Gene Combo (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vdj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VDJ Gene Combo (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.dj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} DJ Gene Combo (${processing_stage})" "tsv"
+                        done
+                    else
+                        processing_stage=igblast.makedb
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.v_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} V Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.d_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} D Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.j_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} J Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.c_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} C Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VJ Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vd_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VD Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vdj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VDJ Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.dj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} DJ Gene Combo (${processing_stage})" "tsv"
+                    fi
                 fi
 
                 if [[ $has_igblast_clone -eq 1 ]]; then
-                    processing_stage=igblast.allele.clone
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.v_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} V Gene Usage (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.d_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} D Gene Usage (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.j_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} J Gene Usage (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.c_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} C Gene Usage (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VJ Gene Combo (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vd_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VD Gene Combo (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vdj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VDJ Gene Combo (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.dj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} DJ Gene Combo (${processing_stage})" "tsv"
+                    if [[ $split_locus -eq 1 ]]; then
+                        for locus_name in $igblast_clone_locus; do
+                            processing_stage=${locus_name}.igblast.allele.clone
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.v_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} V Gene Usage (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.d_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} D Gene Usage (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.j_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} J Gene Usage (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.c_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} C Gene Usage (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VJ Gene Combo (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vd_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VD Gene Combo (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vdj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VDJ Gene Combo (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.dj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} DJ Gene Combo (${processing_stage})" "tsv"
+                        done
+                    else
+                        processing_stage=igblast.allele.clone
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.v_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} V Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.d_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} D Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.j_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} J Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.c_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} C Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VJ Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vd_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VD Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vdj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VDJ Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.dj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} DJ Gene Combo (${processing_stage})" "tsv"
+                    fi
                 fi
 
                 if [[ $has_makedb_clone -eq 1 ]]; then
-                    processing_stage=igblast.makedb.allele.clone
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.v_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} V Gene Usage (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.d_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} D Gene Usage (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.j_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} J Gene Usage (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.c_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} C Gene Usage (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VJ Gene Combo (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vd_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VD Gene Combo (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vdj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VDJ Gene Combo (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.dj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} DJ Gene Combo (${processing_stage})" "tsv"
+                    if [[ $split_locus -eq 1 ]]; then
+                        for locus_name in $makedb_clone_locus; do
+                            processing_stage=${locus_name}.igblast.makedb.allele.clone
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.v_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} V Gene Usage (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.d_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} D Gene Usage (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.j_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} J Gene Usage (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.c_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} C Gene Usage (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VJ Gene Combo (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vd_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VD Gene Combo (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vdj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VDJ Gene Combo (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.dj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} DJ Gene Combo (${processing_stage})" "tsv"
+                        done
+                    else
+                        processing_stage=igblast.makedb.allele.clone
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.v_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} V Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.d_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} D Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.j_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} J Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.c_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} C Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VJ Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vd_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VD Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vdj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VDJ Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.dj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} DJ Gene Combo (${processing_stage})" "tsv"
+                    fi
                 fi
 
                 if [[ $has_gene_clone -eq 1 ]]; then
-                    processing_stage=igblast.makedb.gene.clone
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.v_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} V Gene Usage (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.d_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} D Gene Usage (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.j_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} J Gene Usage (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.c_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} C Gene Usage (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VJ Gene Combo (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vd_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VD Gene Combo (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vdj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VDJ Gene Combo (${processing_stage})" "tsv"
-                    addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.dj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} DJ Gene Combo (${processing_stage})" "tsv"
+                    if [[ $split_locus -eq 1 ]]; then
+                        for locus_name in $gene_clone_locus; do
+                            processing_stage=${locus_name}.igblast.makedb.gene.clone
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.v_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} V Gene Usage (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.d_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} D Gene Usage (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.j_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} J Gene Usage (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.c_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} C Gene Usage (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VJ Gene Combo (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vd_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VD Gene Combo (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vdj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VDJ Gene Combo (${processing_stage})" "tsv"
+                            addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.dj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} DJ Gene Combo (${processing_stage})" "tsv"
+                        done
+                    else
+                        processing_stage=igblast.makedb.gene.clone
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.v_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} V Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.d_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} D Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.j_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} J Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.c_call.tsv $ACTIVITY_NAME gene_segment_usage "${rep_group_id} C Gene Usage (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VJ Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vd_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VD Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.vdj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} VDJ Gene Combo (${processing_stage})" "tsv"
+                        addEntryToFile group_gene_segment_entries.csv output ${rep_group_id}.${processing_stage}.group.dj_combo.tsv $ACTIVITY_NAME gene_segment_combos "${rep_group_id} DJ Gene Combo (${processing_stage})" "tsv"
+                    fi
                 fi
 
                 grpcnt=$(( $grpcnt + 1 ))
@@ -392,42 +774,89 @@ function run_repcalc_workflow() {
         touch joblist-cdr3
 
         if [[ $has_igblast -eq 1 ]]; then
-            processing_stage=igblast
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+            if [[ $split_locus -eq 1 ]]; then
+                for locus_name in $igblast_locus; do
+                    processing_stage=${locus_name}.igblast
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                    else
+                        python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                    fi
+                    echo "$REPCALC_EXE junction_length_config.${processing_stage}.json" >> joblist-cdr3
+                done
             else
-                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                processing_stage=igblast
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                else
+                    python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                fi
+                echo "$REPCALC_EXE junction_length_config.${processing_stage}.json" >> joblist-cdr3
             fi
-            echo "$REPCALC_EXE junction_length_config.${processing_stage}.json" >> joblist-cdr3
         fi
         if [[ $has_makedb -eq 1 ]]; then
-            processing_stage=igblast.makedb
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+            if [[ $split_locus -eq 1 ]]; then
+                for locus_name in $makedb_locus; do
+                    processing_stage=${locus_name}.igblast.makedb
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                    else
+                        python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                    fi
+                    echo "$REPCALC_EXE junction_length_config.${processing_stage}.json" >> joblist-cdr3
+                done
             else
-                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                processing_stage=igblast.makedb
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                else
+                    python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                fi
+                echo "$REPCALC_EXE junction_length_config.${processing_stage}.json" >> joblist-cdr3
             fi
-            echo "$REPCALC_EXE junction_length_config.${processing_stage}.json" >> joblist-cdr3
         fi
         if [[ $has_igblast_clone -eq 1 ]]; then
+            if [[ $split_locus -eq 1 ]]; then
+                for locus_name in $igblast_clone_locus; do
+                    processing_stage=${locus_name}.igblast.allele.clone
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                    else
+                        python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                    fi
+                    echo "$REPCALC_EXE junction_length_config.${processing_stage}.json" >> joblist-cdr3
+        
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
+                    else
+                        python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
+                    fi
+                    echo "$REPCALC_EXE junction_distribution_config.${processing_stage}.json" >> joblist-cdr3
+        
+                    python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
+                    echo "$REPCALC_EXE junction_shared_config.${processing_stage}.json" >> joblist-cdr3
+                done
+            else
+                processing_stage=igblast.allele.clone
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                else
+                    python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                fi
+                echo "$REPCALC_EXE junction_length_config.${processing_stage}.json" >> joblist-cdr3
+    
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
+                else
+                    python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
+                fi
+                echo "$REPCALC_EXE junction_distribution_config.${processing_stage}.json" >> joblist-cdr3
+    
+                python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
+                echo "$REPCALC_EXE junction_shared_config.${processing_stage}.json" >> joblist-cdr3
+            fi
+    
             processing_stage=igblast.allele.clone
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
-            else
-                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
-            fi
-            echo "$REPCALC_EXE junction_length_config.${processing_stage}.json" >> joblist-cdr3
-
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
-            else
-                python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
-            fi
-            echo "$REPCALC_EXE junction_distribution_config.${processing_stage}.json" >> joblist-cdr3
-
-            python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
-            echo "$REPCALC_EXE junction_shared_config.${processing_stage}.json" >> joblist-cdr3
-
             count=0
             while [ "x${repertoires[count]}" != "x" ]
             do
@@ -437,28 +866,55 @@ function run_repcalc_workflow() {
             done
         fi
         if [[ $has_makedb_clone -eq 1 ]]; then
+            if [[ $split_locus -eq 1 ]]; then
+                for locus_name in $makedb_clone_locus; do
+                    processing_stage=${locus_name}.igblast.makedb.allele.clone
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                    else
+                        python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                    fi
+                    echo "$REPCALC_EXE junction_length_config.${processing_stage}.json" >> joblist-cdr3
+        
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
+                    else
+                        python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
+                    fi
+                    echo "$REPCALC_EXE junction_distribution_config.${processing_stage}.json" >> joblist-cdr3
+        
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
+                    else
+                        python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
+                    fi
+                    echo "$REPCALC_EXE junction_shared_config.${processing_stage}.json" >> joblist-cdr3
+                done
+            else
+                processing_stage=igblast.makedb.allele.clone
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                else
+                    python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                fi
+                echo "$REPCALC_EXE junction_length_config.${processing_stage}.json" >> joblist-cdr3
+    
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
+                else
+                    python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
+                fi
+                echo "$REPCALC_EXE junction_distribution_config.${processing_stage}.json" >> joblist-cdr3
+    
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
+                else
+                    python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
+                fi
+                echo "$REPCALC_EXE junction_shared_config.${processing_stage}.json" >> joblist-cdr3
+            fi
+
             processing_stage=igblast.makedb.allele.clone
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
-            else
-                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
-            fi
-            echo "$REPCALC_EXE junction_length_config.${processing_stage}.json" >> joblist-cdr3
-
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
-            else
-                python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
-            fi
-            echo "$REPCALC_EXE junction_distribution_config.${processing_stage}.json" >> joblist-cdr3
-
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
-            else
-                python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
-            fi
-            echo "$REPCALC_EXE junction_shared_config.${processing_stage}.json" >> joblist-cdr3
-
             count=0
             while [ "x${repertoires[count]}" != "x" ]
             do
@@ -468,28 +924,55 @@ function run_repcalc_workflow() {
             done
         fi
         if [[ $has_gene_clone -eq 1 ]]; then
+            if [[ $split_locus -eq 1 ]]; then
+                for locus_name in $gene_clone_locus; do
+                    processing_stage=${locus_name}.igblast.makedb.gene.clone
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                    else
+                        python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                    fi
+                    echo "$REPCALC_EXE junction_length_config.${processing_stage}.json" >> joblist-cdr3
+        
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
+                    else
+                        python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
+                    fi
+                    echo "$REPCALC_EXE junction_distribution_config.${processing_stage}.json" >> joblist-cdr3
+        
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
+                    else
+                        python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
+                    fi
+                    echo "$REPCALC_EXE junction_shared_config.${processing_stage}.json" >> joblist-cdr3
+                done
+            else
+                processing_stage=igblast.makedb.gene.clone
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                else
+                    python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
+                fi
+                echo "$REPCALC_EXE junction_length_config.${processing_stage}.json" >> joblist-cdr3
+    
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
+                else
+                    python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
+                fi
+                echo "$REPCALC_EXE junction_distribution_config.${processing_stage}.json" >> joblist-cdr3
+    
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
+                else
+                    python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
+                fi
+                echo "$REPCALC_EXE junction_shared_config.${processing_stage}.json" >> joblist-cdr3
+            fi
+
             processing_stage=igblast.makedb.gene.clone
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
-            else
-                python3 repcalc_create_config.py --init junction_length_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_length_config.${processing_stage}.json
-            fi
-            echo "$REPCALC_EXE junction_length_config.${processing_stage}.json" >> joblist-cdr3
-
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
-            else
-                python3 repcalc_create_config.py --init junction_distribution_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_distribution_config.${processing_stage}.json
-            fi
-            echo "$REPCALC_EXE junction_distribution_config.${processing_stage}.json" >> joblist-cdr3
-
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
-            else
-                python3 repcalc_create_config.py --init junction_shared_template.json ${AIRRMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_shared_config.${processing_stage}.json
-            fi
-            echo "$REPCALC_EXE junction_shared_config.${processing_stage}.json" >> joblist-cdr3
-
             count=0
             while [ "x${repertoires[count]}" != "x" ]
             do
@@ -521,72 +1004,148 @@ function run_repcalc_workflow() {
             rep_id=${repertoires[count]}
 
             if [[ $has_igblast -eq 1 ]]; then
-                processing_stage=igblast
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
-                
+                orig_processing_stage=igblast
+                if [[ $split_locus -eq 1 ]]; then
+                    for locus_name in $igblast_locus; do
+                        processing_stage=${locus_name}.igblast
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                    done
+                else
+                    processing_stage=igblast
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                fi
             fi
 
             if [[ $has_makedb -eq 1 ]]; then
-                processing_stage=igblast.makedb
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                orig_processing_stage=igblast.makedb
+                if [[ $split_locus -eq 1 ]]; then
+                    for locus_name in $makedb_locus; do
+                        processing_stage=${locus_name}.igblast.makedb
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                    done
+                else
+                    processing_stage=igblast.makedb
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                fi
             fi
 
             if [[ $has_igblast_clone -eq 1 ]]; then
-                processing_stage=igblast.allele.clone
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                orig_processing_stage=igblast.allele.clone
+                if [[ $split_locus -eq 1 ]]; then
+                    for locus_name in $igblast_clone_locus; do
+                        processing_stage=${locus_name}.igblast.allele.clone
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                    done
+                else
+                    processing_stage=igblast.allele.clone
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                fi
 
+                processing_stage=igblast.allele.clone
                 gzipFile ${rep_id}.${processing_stage}.aa_properties.airr.tsv
                 addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.aa_properties.airr.tsv.gz ${rep_id}.${processing_stage}.airr.tsv.gz aa_properties "${rep_id} CDR3 AA Properties (${processing_stage})" "tsv"
             fi
 
             if [[ $has_makedb_clone -eq 1 ]]; then
-                processing_stage=igblast.makedb.allele.clone
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                orig_processing_stage=igblast.makedb.allele.clone
+                if [[ $split_locus -eq 1 ]]; then
+                    for locus_name in $makedb_clone_locus; do
+                        processing_stage=${locus_name}.igblast.makedb.allele.clone
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                    done
+                else
+                    processing_stage=igblast.makedb.allele.clone
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                fi
 
+                processing_stage=igblast.makedb.allele.clone
                 gzipFile ${rep_id}.${processing_stage}.aa_properties.airr.tsv
                 addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.aa_properties.airr.tsv.gz ${rep_id}.${processing_stage}.airr.tsv.gz aa_properties "${rep_id} CDR3 AA Properties (${processing_stage})" "tsv"
             fi
 
             if [[ $has_gene_clone -eq 1 ]]; then
+                orig_processing_stage=igblast.makedb.gene.clone
+                if [[ $split_locus -eq 1 ]]; then
+                    for locus_name in $gene_clone_locus; do
+                        processing_stage=${locus_name}.igblast.makedb.gene.clone
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                    done
+                else
+                    processing_stage=igblast.makedb.gene.clone
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                    addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                fi
+
                 processing_stage=igblast.makedb.gene.clone
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction AA Length (productive, ${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
-                addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv ${rep_id}.${processing_stage}.airr.tsv.gz cdr3_length "${rep_id} Junction NT Length (productive, ${processing_stage})" "tsv"
-
-
                 gzipFile ${rep_id}.${processing_stage}.aa_properties.airr.tsv
                 addEntryToFile cdr3_entries.csv output ${rep_id}.${processing_stage}.aa_properties.airr.tsv.gz ${rep_id}.${processing_stage}.airr.tsv.gz aa_properties "${rep_id} CDR3 AA Properties (${processing_stage})" "tsv"
             fi
@@ -602,63 +1161,133 @@ function run_repcalc_workflow() {
                 rep_group_id=${repertoire_groups[grpcnt]}
 
                 if [[ $has_igblast -eq 1 ]]; then
-                    processing_stage=igblast
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                    if [[ $split_locus -eq 1 ]]; then
+                        for locus_name in $igblast_locus; do
+                            processing_stage=${locus_name}.igblast
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                        done
+                    else
+                        processing_stage=igblast
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                    fi
                 fi
 
                 if [[ $has_makedb -eq 1 ]]; then
-                    processing_stage=igblast.makedb
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                    if [[ $split_locus -eq 1 ]]; then
+                        for locus_name in $makedb_locus; do
+                            processing_stage=${locus_name}.igblast.makedb
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                        done
+                    else
+                        processing_stage=igblast.makedb
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                    fi
                 fi
 
                 if [[ $has_igblast_clone -eq 1 ]]; then
-                    processing_stage=igblast.allele.clone
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                    if [[ $split_locus -eq 1 ]]; then
+                        for locus_name in $igblast_clone_locus; do
+                            processing_stage=${locus_name}.igblast.allele.clone
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                        done
+                    else
+                        processing_stage=igblast.allele.clone
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                    fi
                 fi
 
                 if [[ $has_makedb_clone -eq 1 ]]; then
-                    processing_stage=igblast.makedb.allele.clone
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                    if [[ $split_locus -eq 1 ]]; then
+                        for locus_name in $makedb_clone_locus; do
+                            processing_stage=${locus_name}.igblast.makedb.allele.clone
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                        done
+                    else
+                        processing_stage=igblast.makedb.allele.clone
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                    fi
                 fi
 
                 if [[ $has_gene_clone -eq 1 ]]; then
-                    processing_stage=igblast.makedb.gene.clone
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
-                    addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                    if [[ $split_locus -eq 1 ]]; then
+                        for locus_name in $gene_clone_locus; do
+                            processing_stage=${locus_name}.igblast.makedb.gene.clone
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                            addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                        done
+                    else
+                        processing_stage=igblast.makedb.gene.clone
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_aa_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction AA Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                        addEntryToFile group_cdr3_entries.csv output ${rep_group_id}.${processing_stage}.productive.junction_nucleotide_wo_duplicates_length.tsv $ACTIVITY_NAME cdr3_length "${rep_group_id} Junction NT Length (productive, ${processing_stage})" "tsv"
+                    fi
                 fi
 
                 grpcnt=$(( $grpcnt + 1 ))
@@ -669,10 +1298,20 @@ function run_repcalc_workflow() {
 
         # junction comparison
         if [[ $has_makedb_clone -eq 1 ]]; then
-            processing_stage=igblast.makedb.allele.clone
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init junction_compare_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_compare_config.${processing_stage}.json
-                $REPCALC_EXE junction_compare_config.${processing_stage}.json
+            if [[ $split_locus -eq 1 ]]; then
+                for locus_name in $makedb_clone_locus; do
+                    processing_stage=${locus_name}.igblast.makedb.allele.clone
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        python3 repcalc_create_config.py --init junction_compare_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_compare_config.${processing_stage}.json
+                        $REPCALC_EXE junction_compare_config.${processing_stage}.json
+                    fi
+                done
+            else
+                processing_stage=igblast.makedb.allele.clone
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    python3 repcalc_create_config.py --init junction_compare_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --germline ${germline_db_file} --stage ${processing_stage} junction_compare_config.${processing_stage}.json
+                    $REPCALC_EXE junction_compare_config.${processing_stage}.json
+                fi
             fi
         fi
 
@@ -704,60 +1343,123 @@ function run_repcalc_workflow() {
         touch joblist-clones
 
         if [[ $has_igblast_clone -eq 1 ]]; then
-            processing_stage=igblast.allele.clone
-            fileList=($(ls *.${processing_stage}.airr.tsv))
-
-            count=0
-            while [ "x${fileList[count]}" != "x" ]
-            do
-                file=${fileList[count]}
-                # assume and strip airr.tsv
-                fileOutname="${file##*/}"
-                fileBasename="${fileOutname%.*}"
-                fileBasename="${fileBasename%.*}"
-
-                echo "$RSCRIPT clonal_abundance.R -d $file -o $fileBasename" >> joblist-clones
-
-                count=$(( $count + 1 ))
-            done
+            if [[ $split_locus -eq 1 ]]; then
+                for locus_name in $igblast_clone_locus; do
+                    processing_stage=${locus_name}.igblast.allele.clone
+                    fileList=($(ls *.${processing_stage}.airr.tsv))
+        
+                    count=0
+                    while [ "x${fileList[count]}" != "x" ]
+                    do
+                        file=${fileList[count]}
+                        # assume and strip airr.tsv
+                        fileOutname="${file##*/}"
+                        fileBasename="${fileOutname%.*}"
+                        fileBasename="${fileBasename%.*}"
+        
+                        echo "$RSCRIPT clonal_abundance.R -d $file -o $fileBasename" >> joblist-clones
+        
+                        count=$(( $count + 1 ))
+                    done
+                done
+            else
+                processing_stage=igblast.allele.clone
+                fileList=($(ls *.${processing_stage}.airr.tsv))
+    
+                count=0
+                while [ "x${fileList[count]}" != "x" ]
+                do
+                    file=${fileList[count]}
+                    # assume and strip airr.tsv
+                    fileOutname="${file##*/}"
+                    fileBasename="${fileOutname%.*}"
+                    fileBasename="${fileBasename%.*}"
+    
+                    echo "$RSCRIPT clonal_abundance.R -d $file -o $fileBasename" >> joblist-clones
+    
+                    count=$(( $count + 1 ))
+                done
+            fi
         fi
 
         if [[ $has_makedb_clone -eq 1 ]]; then
-            processing_stage=igblast.makedb.allele.clone
-            fileList=($(ls *.${processing_stage}.airr.tsv))
-
-            count=0
-            while [ "x${fileList[count]}" != "x" ]
-            do
-                file=${fileList[count]}
-                # assume and strip airr.tsv
-                fileOutname="${file##*/}"
-                fileBasename="${fileOutname%.*}"
-                fileBasename="${fileBasename%.*}"
-
-                echo "$RSCRIPT clonal_abundance.R -d $file -o $fileBasename" >> joblist-clones
-
-                count=$(( $count + 1 ))
-            done
+            if [[ $split_locus -eq 1 ]]; then
+                for locus_name in $makedb_clone_locus; do
+                    processing_stage=${locus_name}.igblast.makedb.allele.clone
+                    fileList=($(ls *.${processing_stage}.airr.tsv))
+        
+                    count=0
+                    while [ "x${fileList[count]}" != "x" ]
+                    do
+                        file=${fileList[count]}
+                        # assume and strip airr.tsv
+                        fileOutname="${file##*/}"
+                        fileBasename="${fileOutname%.*}"
+                        fileBasename="${fileBasename%.*}"
+        
+                        echo "$RSCRIPT clonal_abundance.R -d $file -o $fileBasename" >> joblist-clones
+        
+                        count=$(( $count + 1 ))
+                    done
+                done
+            else
+                processing_stage=igblast.makedb.allele.clone
+                fileList=($(ls *.${processing_stage}.airr.tsv))
+    
+                count=0
+                while [ "x${fileList[count]}" != "x" ]
+                do
+                    file=${fileList[count]}
+                    # assume and strip airr.tsv
+                    fileOutname="${file##*/}"
+                    fileBasename="${fileOutname%.*}"
+                    fileBasename="${fileBasename%.*}"
+    
+                    echo "$RSCRIPT clonal_abundance.R -d $file -o $fileBasename" >> joblist-clones
+    
+                    count=$(( $count + 1 ))
+                done
+            fi
         fi
 
         if [[ $has_gene_clone -eq 1 ]]; then
-            processing_stage=igblast.makedb.gene.clone
-            fileList=($(ls *.${processing_stage}.airr.tsv))
-
-            count=0
-            while [ "x${fileList[count]}" != "x" ]
-            do
-                file=${fileList[count]}
-                # assume and strip airr.tsv
-                fileOutname="${file##*/}"
-                fileBasename="${fileOutname%.*}"
-                fileBasename="${fileBasename%.*}"
-
-                echo "$RSCRIPT clonal_abundance.R -d $file -o $fileBasename" >> joblist-clones
-
-                count=$(( $count + 1 ))
-            done
+            if [[ $split_locus -eq 1 ]]; then
+                for locus_name in $gene_clone_locus; do
+                    processing_stage=${locus_name}.igblast.makedb.gene.clone
+                    fileList=($(ls *.${processing_stage}.airr.tsv))
+        
+                    count=0
+                    while [ "x${fileList[count]}" != "x" ]
+                    do
+                        file=${fileList[count]}
+                        # assume and strip airr.tsv
+                        fileOutname="${file##*/}"
+                        fileBasename="${fileOutname%.*}"
+                        fileBasename="${fileBasename%.*}"
+        
+                        echo "$RSCRIPT clonal_abundance.R -d $file -o $fileBasename" >> joblist-clones
+        
+                        count=$(( $count + 1 ))
+                    done
+                done
+            else
+                processing_stage=igblast.makedb.gene.clone
+                fileList=($(ls *.${processing_stage}.airr.tsv))
+    
+                count=0
+                while [ "x${fileList[count]}" != "x" ]
+                do
+                    file=${fileList[count]}
+                    # assume and strip airr.tsv
+                    fileOutname="${file##*/}"
+                    fileBasename="${fileOutname%.*}"
+                    fileBasename="${fileBasename%.*}"
+    
+                    echo "$RSCRIPT clonal_abundance.R -d $file -o $fileBasename" >> joblist-clones
+    
+                    count=$(( $count + 1 ))
+                done
+            fi
         fi
 
         # check number of jobs to be run
@@ -782,21 +1484,48 @@ function run_repcalc_workflow() {
             group=${rep_id//./_}
 
             if [[ $has_igblast_clone -eq 1 ]]; then
-                processing_stage=igblast.allele.clone
-                addEntryToFile clone_entries.csv output ${rep_id}.${processing_stage}.abundance.tsv ${rep_id}.${processing_stage}.airr.tsv.gz clonal_abundance "${rep_id} Clonal Abundance (${processing_stage})" "tsv"
-                addEntryToFile clone_entries.csv output ${rep_id}.${processing_stage}.count.tsv ${rep_id}.${processing_stage}.airr.tsv.gz clonal_abundance "${rep_id} Clone Counts (${processing_stage})" "tsv"
+                orig_processing_stage=igblast.allele.clone
+                if [[ $split_locus -eq 1 ]]; then
+                    for locus_name in $igblast_clone_locus; do
+                        processing_stage=${locus_name}.igblast.allele.clone
+                        addEntryToFile clone_entries.csv output ${rep_id}.${processing_stage}.abundance.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz clonal_abundance "${rep_id} Clonal Abundance (${processing_stage})" "tsv"
+                        addEntryToFile clone_entries.csv output ${rep_id}.${processing_stage}.count.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz clonal_abundance "${rep_id} Clone Counts (${processing_stage})" "tsv"
+                    done
+                else
+                    processing_stage=igblast.allele.clone
+                    addEntryToFile clone_entries.csv output ${rep_id}.${processing_stage}.abundance.tsv ${rep_id}.${processing_stage}.airr.tsv.gz clonal_abundance "${rep_id} Clonal Abundance (${processing_stage})" "tsv"
+                    addEntryToFile clone_entries.csv output ${rep_id}.${processing_stage}.count.tsv ${rep_id}.${processing_stage}.airr.tsv.gz clonal_abundance "${rep_id} Clone Counts (${processing_stage})" "tsv"
+                fi
             fi
 
             if [[ $has_makedb_clone -eq 1 ]]; then
-                processing_stage=igblast.makedb.allele.clone
-                addEntryToFile clone_entries.csv output ${rep_id}.${processing_stage}.abundance.tsv ${rep_id}.${processing_stage}.airr.tsv.gz clonal_abundance "${rep_id} Clonal Abundance (${processing_stage})" "tsv"
-                addEntryToFile clone_entries.csv output ${rep_id}.${processing_stage}.count.tsv ${rep_id}.${processing_stage}.airr.tsv.gz clonal_abundance "${rep_id} Clone Counts (${processing_stage})" "tsv"
+                orig_processing_stage=igblast.makedb.allele.clone
+                if [[ $split_locus -eq 1 ]]; then
+                    for locus_name in $makedb_clone_locus; do
+                        processing_stage=${locus_name}.igblast.makedb.allele.clone
+                        addEntryToFile clone_entries.csv output ${rep_id}.${processing_stage}.abundance.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz clonal_abundance "${rep_id} Clonal Abundance (${processing_stage})" "tsv"
+                        addEntryToFile clone_entries.csv output ${rep_id}.${processing_stage}.count.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz clonal_abundance "${rep_id} Clone Counts (${processing_stage})" "tsv"
+                    done
+                else
+                    processing_stage=igblast.makedb.allele.clone
+                    addEntryToFile clone_entries.csv output ${rep_id}.${processing_stage}.abundance.tsv ${rep_id}.${processing_stage}.airr.tsv.gz clonal_abundance "${rep_id} Clonal Abundance (${processing_stage})" "tsv"
+                    addEntryToFile clone_entries.csv output ${rep_id}.${processing_stage}.count.tsv ${rep_id}.${processing_stage}.airr.tsv.gz clonal_abundance "${rep_id} Clone Counts (${processing_stage})" "tsv"
+                fi
             fi
 
             if [[ $has_gene_clone -eq 1 ]]; then
-                processing_stage=igblast.makedb.gene.clone
-                addEntryToFile clone_entries.csv output ${rep_id}.${processing_stage}.abundance.tsv ${rep_id}.${processing_stage}.airr.tsv.gz clonal_abundance "${rep_id} Clonal Abundance (${processing_stage})" "tsv"
-                addEntryToFile clone_entries.csv output ${rep_id}.${processing_stage}.count.tsv ${rep_id}.${processing_stage}.airr.tsv.gz clonal_abundance "${rep_id} Clone Counts (${processing_stage})" "tsv"
+                orig_processing_stage=igblast.makedb.gene.clone
+                if [[ $split_locus -eq 1 ]]; then
+                    for locus_name in $gene_clone_locus; do
+                        processing_stage=${locus_name}.igblast.makedb.gene.clone
+                        addEntryToFile clone_entries.csv output ${rep_id}.${processing_stage}.abundance.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz clonal_abundance "${rep_id} Clonal Abundance (${processing_stage})" "tsv"
+                        addEntryToFile clone_entries.csv output ${rep_id}.${processing_stage}.count.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz clonal_abundance "${rep_id} Clone Counts (${processing_stage})" "tsv"
+                    done
+                else
+                    processing_stage=igblast.makedb.gene.clone
+                    addEntryToFile clone_entries.csv output ${rep_id}.${processing_stage}.abundance.tsv ${rep_id}.${processing_stage}.airr.tsv.gz clonal_abundance "${rep_id} Clonal Abundance (${processing_stage})" "tsv"
+                    addEntryToFile clone_entries.csv output ${rep_id}.${processing_stage}.count.tsv ${rep_id}.${processing_stage}.airr.tsv.gz clonal_abundance "${rep_id} Clone Counts (${processing_stage})" "tsv"
+                fi
             fi
 
             count=$(( $count + 1 ))
@@ -821,60 +1550,123 @@ function run_repcalc_workflow() {
         touch joblist-diversity
 
         if [[ $has_igblast_clone -eq 1 ]]; then
-            processing_stage=igblast.allele.clone
-            fileList=($(ls *.${processing_stage}.airr.tsv))
-
-            count=0
-            while [ "x${fileList[count]}" != "x" ]
-            do
-                file=${fileList[count]}
-                # assume and strip airr.tsv
-                fileOutname="${file##*/}"
-                fileBasename="${fileOutname%.*}"
-                fileBasename="${fileBasename%.*}"
-
-                echo "$RSCRIPT diversity_curve.R -d $file -o $fileBasename" >> joblist-diversity
-
-                count=$(( $count + 1 ))
-            done
+            if [[ $split_locus -eq 1 ]]; then
+                for locus_name in $igblast_clone_locus; do
+                    processing_stage=${locus_name}.igblast.allele.clone
+                    fileList=($(ls *.${processing_stage}.airr.tsv))
+        
+                    count=0
+                    while [ "x${fileList[count]}" != "x" ]
+                    do
+                        file=${fileList[count]}
+                        # assume and strip airr.tsv
+                        fileOutname="${file##*/}"
+                        fileBasename="${fileOutname%.*}"
+                        fileBasename="${fileBasename%.*}"
+        
+                        echo "$RSCRIPT diversity_curve.R -d $file -o $fileBasename" >> joblist-diversity
+        
+                        count=$(( $count + 1 ))
+                    done
+                done
+            else
+                processing_stage=igblast.allele.clone
+                fileList=($(ls *.${processing_stage}.airr.tsv))
+    
+                count=0
+                while [ "x${fileList[count]}" != "x" ]
+                do
+                    file=${fileList[count]}
+                    # assume and strip airr.tsv
+                    fileOutname="${file##*/}"
+                    fileBasename="${fileOutname%.*}"
+                    fileBasename="${fileBasename%.*}"
+    
+                    echo "$RSCRIPT diversity_curve.R -d $file -o $fileBasename" >> joblist-diversity
+    
+                    count=$(( $count + 1 ))
+                done
+            fi
         fi
 
         if [[ $has_makedb_clone -eq 1 ]]; then
-            processing_stage=igblast.makedb.allele.clone
-            fileList=($(ls *.${processing_stage}.airr.tsv))
-
-            count=0
-            while [ "x${fileList[count]}" != "x" ]
-            do
-                file=${fileList[count]}
-                # assume and strip airr.tsv
-                fileOutname="${file##*/}"
-                fileBasename="${fileOutname%.*}"
-                fileBasename="${fileBasename%.*}"
-
-                echo "$RSCRIPT diversity_curve.R -d $file -o $fileBasename" >> joblist-diversity
-
-                count=$(( $count + 1 ))
-            done
+            if [[ $split_locus -eq 1 ]]; then
+                for locus_name in $makedb_clone_locus; do
+                    processing_stage=${locus_name}.igblast.makedb.allele.clone
+                    fileList=($(ls *.${processing_stage}.airr.tsv))
+        
+                    count=0
+                    while [ "x${fileList[count]}" != "x" ]
+                    do
+                        file=${fileList[count]}
+                        # assume and strip airr.tsv
+                        fileOutname="${file##*/}"
+                        fileBasename="${fileOutname%.*}"
+                        fileBasename="${fileBasename%.*}"
+        
+                        echo "$RSCRIPT diversity_curve.R -d $file -o $fileBasename" >> joblist-diversity
+        
+                        count=$(( $count + 1 ))
+                    done
+                done
+            else
+                processing_stage=igblast.makedb.allele.clone
+                fileList=($(ls *.${processing_stage}.airr.tsv))
+    
+                count=0
+                while [ "x${fileList[count]}" != "x" ]
+                do
+                    file=${fileList[count]}
+                    # assume and strip airr.tsv
+                    fileOutname="${file##*/}"
+                    fileBasename="${fileOutname%.*}"
+                    fileBasename="${fileBasename%.*}"
+    
+                    echo "$RSCRIPT diversity_curve.R -d $file -o $fileBasename" >> joblist-diversity
+    
+                    count=$(( $count + 1 ))
+                done
+            fi
         fi
 
         if [[ $has_gene_clone -eq 1 ]]; then
-            processing_stage=igblast.makedb.gene.clone
-            fileList=($(ls *.${processing_stage}.airr.tsv))
-
-            count=0
-            while [ "x${fileList[count]}" != "x" ]
-            do
-                file=${fileList[count]}
-                # assume and strip airr.tsv
-                fileOutname="${file##*/}"
-                fileBasename="${fileOutname%.*}"
-                fileBasename="${fileBasename%.*}"
-
-                echo "$RSCRIPT diversity_curve.R -d $file -o $fileBasename" >> joblist-diversity
-
-                count=$(( $count + 1 ))
-            done
+            if [[ $split_locus -eq 1 ]]; then
+                for locus_name in $gene_clone_locus; do
+                    processing_stage=${locus_name}.igblast.makedb.gene.clone
+                    fileList=($(ls *.${processing_stage}.airr.tsv))
+        
+                    count=0
+                    while [ "x${fileList[count]}" != "x" ]
+                    do
+                        file=${fileList[count]}
+                        # assume and strip airr.tsv
+                        fileOutname="${file##*/}"
+                        fileBasename="${fileOutname%.*}"
+                        fileBasename="${fileBasename%.*}"
+        
+                        echo "$RSCRIPT diversity_curve.R -d $file -o $fileBasename" >> joblist-diversity
+        
+                        count=$(( $count + 1 ))
+                    done
+                done
+            else
+                processing_stage=igblast.makedb.gene.clone
+                fileList=($(ls *.${processing_stage}.airr.tsv))
+    
+                count=0
+                while [ "x${fileList[count]}" != "x" ]
+                do
+                    file=${fileList[count]}
+                    # assume and strip airr.tsv
+                    fileOutname="${file##*/}"
+                    fileBasename="${fileOutname%.*}"
+                    fileBasename="${fileBasename%.*}"
+    
+                    echo "$RSCRIPT diversity_curve.R -d $file -o $fileBasename" >> joblist-diversity
+    
+                    count=$(( $count + 1 ))
+                done
+            fi
         fi
 
         # check number of jobs to be run
@@ -899,18 +1691,42 @@ function run_repcalc_workflow() {
             group=${rep_id//./_}
 
             if [[ $has_igblast_clone -eq 1 ]]; then
-                processing_stage=igblast.allele.clone
-                addEntryToFile diversity_entries.csv output ${rep_id}.${processing_stage}.diversity.tsv ${rep_id}.${processing_stage}.airr.tsv.gz diversity_curve "${rep_id} Diversity Curve (${processing_stage})" "tsv"
+                orig_processing_stage=igblast.allele.clone
+                if [[ $split_locus -eq 1 ]]; then
+                    for locus_name in $igblast_clone_locus; do
+                        processing_stage=${locus_name}.igblast.allele.clone
+                        addEntryToFile diversity_entries.csv output ${rep_id}.${processing_stage}.diversity.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz diversity_curve "${rep_id} Diversity Curve (${processing_stage})" "tsv"
+                    done
+                else
+                    processing_stage=igblast.allele.clone
+                    addEntryToFile diversity_entries.csv output ${rep_id}.${processing_stage}.diversity.tsv ${rep_id}.${processing_stage}.airr.tsv.gz diversity_curve "${rep_id} Diversity Curve (${processing_stage})" "tsv"
+                fi
             fi
 
             if [[ $has_makedb_clone -eq 1 ]]; then
-                processing_stage=igblast.makedb.allele.clone
-                addEntryToFile diversity_entries.csv output ${rep_id}.${processing_stage}.diversity.tsv ${rep_id}.${processing_stage}.airr.tsv.gz diversity_curve "${rep_id} Diversity Curve (${processing_stage})" "tsv"
+                orig_processing_stage=igblast.makedb.allele.clone
+                if [[ $split_locus -eq 1 ]]; then
+                    for locus_name in $makedb_clone_locus; do
+                        processing_stage=${locus_name}.igblast.makedb.allele.clone
+                        addEntryToFile diversity_entries.csv output ${rep_id}.${processing_stage}.diversity.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz diversity_curve "${rep_id} Diversity Curve (${processing_stage})" "tsv"
+                    done
+                else
+                    processing_stage=igblast.makedb.allele.clone
+                    addEntryToFile diversity_entries.csv output ${rep_id}.${processing_stage}.diversity.tsv ${rep_id}.${processing_stage}.airr.tsv.gz diversity_curve "${rep_id} Diversity Curve (${processing_stage})" "tsv"
+                fi
             fi
 
             if [[ $has_gene_clone -eq 1 ]]; then
-                processing_stage=igblast.makedb.gene.clone
-                addEntryToFile diversity_entries.csv output ${rep_id}.${processing_stage}.diversity.tsv ${rep_id}.${processing_stage}.airr.tsv.gz diversity_curve "${rep_id} Diversity Curve (${processing_stage})" "tsv"
+                orig_processing_stage=igblast.makedb.gene.clone
+                if [[ $split_locus -eq 1 ]]; then
+                    for locus_name in $gene_clone_locus; do
+                        processing_stage=${locus_name}.igblast.makedb.gene.clone
+                        addEntryToFile diversity_entries.csv output ${rep_id}.${processing_stage}.diversity.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz diversity_curve "${rep_id} Diversity Curve (${processing_stage})" "tsv"
+                    done
+                else
+                    processing_stage=igblast.makedb.gene.clone
+                    addEntryToFile diversity_entries.csv output ${rep_id}.${processing_stage}.diversity.tsv ${rep_id}.${processing_stage}.airr.tsv.gz diversity_curve "${rep_id} Diversity Curve (${processing_stage})" "tsv"
+                fi
             fi
 
             count=$(( $count + 1 ))
@@ -943,15 +1759,31 @@ function run_repcalc_workflow() {
             rep_id=${repertoires[count]}
 
             if [[ $has_makedb_clone -eq 1 ]]; then
-                processing_stage=igblast.makedb.allele.clone
-                file=${rep_id}.${processing_stage}.airr.tsv
-                echo "apptainer exec -e ${repcalc_image} bash ./mutational_analysis.sh ${AIRRMetadata} $rep_id $germline_fasta $species $file $processing_stage" >> joblist-mutations
+                if [[ $split_locus -eq 1 ]]; then
+                    for locus_name in $makedb_clone_locus; do
+                        processing_stage=${locus_name}.igblast.makedb.allele.clone
+                        file=${rep_id}.${processing_stage}.airr.tsv
+                        echo "apptainer exec -e ${repcalc_image} bash ./mutational_analysis.sh ${AIRRMetadata} $rep_id $germline_fasta $species $file $processing_stage" >> joblist-mutations
+                    done
+                else
+                    processing_stage=igblast.makedb.allele.clone
+                    file=${rep_id}.${processing_stage}.airr.tsv
+                    echo "apptainer exec -e ${repcalc_image} bash ./mutational_analysis.sh ${AIRRMetadata} $rep_id $germline_fasta $species $file $processing_stage" >> joblist-mutations
+                fi
             fi
 
             if [[ $has_gene_clone -eq 1 ]]; then
-                processing_stage=igblast.makedb.gene.clone
-                file=${rep_id}.${processing_stage}.airr.tsv
-                echo "apptainer exec -e ${repcalc_image} bash ./mutational_analysis.sh ${AIRRMetadata} $rep_id $germline_fasta $species $file $processing_stage" >> joblist-mutations
+                if [[ $split_locus -eq 1 ]]; then
+                    for locus_name in $gene_clone_locus; do
+                        processing_stage=${locus_name}.igblast.makedb.gene.clone
+                        file=${rep_id}.${processing_stage}.airr.tsv
+                        echo "apptainer exec -e ${repcalc_image} bash ./mutational_analysis.sh ${AIRRMetadata} $rep_id $germline_fasta $species $file $processing_stage" >> joblist-mutations
+                    done
+                else
+                    processing_stage=igblast.makedb.gene.clone
+                    file=${rep_id}.${processing_stage}.airr.tsv
+                    echo "apptainer exec -e ${repcalc_image} bash ./mutational_analysis.sh ${AIRRMetadata} $rep_id $germline_fasta $species $file $processing_stage" >> joblist-mutations
+                fi
             fi
 
             count=$(( $count + 1 ))
@@ -979,36 +1811,68 @@ function run_repcalc_workflow() {
             rep_id=${repertoires[count]}
 
             if [[ $has_makedb_clone -eq 1 ]]; then
-                processing_stage=igblast.makedb.allele.clone
-                # addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-mutations ${rep_id}.${processing_stage}.mutations.airr.tsv.gz "${rep_id} Mutations AIRR TSV (${processing_stage})" "tsv" null
-                addEntryToFile mutation_entries.csv output ${rep_id}.${processing_stage}.mutations.airr.tsv.gz ${rep_id}.${processing_stage}.airr.tsv.gz mutations "${rep_id} Mutations AIRR TSV (${processing_stage})" "tsv"
-                gzipFile ${rep_id}.${processing_stage}.mutations.airr.tsv
-                addArchiveFile ${rep_id}.${processing_stage}.mutations.airr.tsv.gz
-                # addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-selection ${rep_id}.${processing_stage}.selection.tsv "${rep_id} Selection Pressure TSV (${processing_stage})" "tsv" null
-                addEntryToFile mutation_entries.csv output ${rep_id}.${processing_stage}.selection.tsv ${rep_id}.${processing_stage}.airr.tsv.gz selection "${rep_id} Selection Pressure TSV (${processing_stage})" "tsv"
-                addArchiveFile ${rep_id}.${processing_stage}.selection.tsv
-                # addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-create_germlines "${rep_id}.${processing_stage}.germ.json" "${rep_id} Create Germlines Log (${processing_stage})" "json" null
-                addEntryToFile mutation_entries.csv output "${rep_id}.${processing_stage}.germ.json" ${rep_id}.${processing_stage}.airr.tsv.gz create_germlines "${rep_id} Create Germlines Log (${processing_stage})" "json"
-                addArchiveFile ${rep_id}.${processing_stage}.germ.json
-                if [ -e "${rep_id}.${processing_stage}.germ-fail.airr.tsv" ]; then
-                    # addEntryToFile mutation_entries.csv output $group $APP_NAME ${processing_stage//./_}-germ_fail ${rep_id}.${processing_stage}.germ-fail.airr.tsv "${rep_id} Create Germlines Failed AIRR TSV (${processing_stage})" "tsv" null
-                    addEntryToFile mutation_entries.csv output ${rep_id}.${processing_stage}.germ-fail.airr.tsv ${rep_id}.${processing_stage}.airr.tsv.gz germ_fail "${rep_id} Create Germlines Failed AIRR TSV (${processing_stage})" "tsv"
-                    addArchiveFile ${rep_id}.${processing_stage}.germ-fail.airr.tsv
+                orig_processing_stage=igblast.makedb.allele.clone
+                if [[ $split_locus -eq 1 ]]; then
+                    for locus_name in $makedb_clone_locus; do
+                        processing_stage=${locus_name}.igblast.makedb.allele.clone
+                        addEntryToFile mutation_entries.csv output ${rep_id}.${processing_stage}.mutations.airr.tsv.gz ${rep_id}.${orig_processing_stage}.airr.tsv.gz mutations "${rep_id} Mutations AIRR TSV (${processing_stage})" "tsv"
+                        gzipFile ${rep_id}.${processing_stage}.mutations.airr.tsv
+                        addArchiveFile ${rep_id}.${processing_stage}.mutations.airr.tsv.gz
+                        addEntryToFile mutation_entries.csv output ${rep_id}.${processing_stage}.selection.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz selection "${rep_id} Selection Pressure TSV (${processing_stage})" "tsv"
+                        addArchiveFile ${rep_id}.${processing_stage}.selection.tsv
+                        addEntryToFile mutation_entries.csv output "${rep_id}.${processing_stage}.germ.json" ${rep_id}.${orig_processing_stage}.airr.tsv.gz create_germlines "${rep_id} Create Germlines Log (${processing_stage})" "json"
+                        addArchiveFile ${rep_id}.${processing_stage}.germ.json
+                        if [ -e "${rep_id}.${processing_stage}.germ-fail.airr.tsv" ]; then
+                            addEntryToFile mutation_entries.csv output ${rep_id}.${processing_stage}.germ-fail.airr.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz germ_fail "${rep_id} Create Germlines Failed AIRR TSV (${processing_stage})" "tsv"
+                            addArchiveFile ${rep_id}.${processing_stage}.germ-fail.airr.tsv
+                        fi
+                    done
+                else
+                    processing_stage=igblast.makedb.allele.clone
+                    addEntryToFile mutation_entries.csv output ${rep_id}.${processing_stage}.mutations.airr.tsv.gz ${rep_id}.${processing_stage}.airr.tsv.gz mutations "${rep_id} Mutations AIRR TSV (${processing_stage})" "tsv"
+                    gzipFile ${rep_id}.${processing_stage}.mutations.airr.tsv
+                    addArchiveFile ${rep_id}.${processing_stage}.mutations.airr.tsv.gz
+                    addEntryToFile mutation_entries.csv output ${rep_id}.${processing_stage}.selection.tsv ${rep_id}.${processing_stage}.airr.tsv.gz selection "${rep_id} Selection Pressure TSV (${processing_stage})" "tsv"
+                    addArchiveFile ${rep_id}.${processing_stage}.selection.tsv
+                    addEntryToFile mutation_entries.csv output "${rep_id}.${processing_stage}.germ.json" ${rep_id}.${processing_stage}.airr.tsv.gz create_germlines "${rep_id} Create Germlines Log (${processing_stage})" "json"
+                    addArchiveFile ${rep_id}.${processing_stage}.germ.json
+                    if [ -e "${rep_id}.${processing_stage}.germ-fail.airr.tsv" ]; then
+                        addEntryToFile mutation_entries.csv output ${rep_id}.${processing_stage}.germ-fail.airr.tsv ${rep_id}.${processing_stage}.airr.tsv.gz germ_fail "${rep_id} Create Germlines Failed AIRR TSV (${processing_stage})" "tsv"
+                        addArchiveFile ${rep_id}.${processing_stage}.germ-fail.airr.tsv
+                    fi
                 fi
             fi
 
             if [[ $has_gene_clone -eq 1 ]]; then
-                processing_stage=igblast.makedb.gene.clone
-                addEntryToFile mutation_entries.csv output ${rep_id}.${processing_stage}.mutations.airr.tsv.gz ${rep_id}.${processing_stage}.airr.tsv.gz mutations "${rep_id} Mutations AIRR TSV (${processing_stage})" "tsv"
-                gzipFile ${rep_id}.${processing_stage}.mutations.airr.tsv
-                addArchiveFile ${rep_id}.${processing_stage}.mutations.airr.tsv.gz
-                addEntryToFile mutation_entries.csv output ${rep_id}.${processing_stage}.selection.tsv ${rep_id}.${processing_stage}.airr.tsv.gz selection "${rep_id} Selection Pressure TSV (${processing_stage})" "tsv"
-                addArchiveFile ${rep_id}.${processing_stage}.selection.tsv
-                addEntryToFile mutation_entries.csv output "${rep_id}.${processing_stage}.germ.json" ${rep_id}.${processing_stage}.airr.tsv.gz create_germlines "${rep_id} Create Germlines Log (${processing_stage})" "json"
-                addArchiveFile ${rep_id}.${processing_stage}.germ.json
-                if [ -e "${rep_id}.${processing_stage}.germ-fail.airr.tsv" ]; then
-                    addEntryToFile mutation_entries.csv output ${rep_id}.${processing_stage}.germ-fail.airr.tsv ${rep_id}.${processing_stage}.airr.tsv.gz germ_fail "${rep_id} Create Germlines Failed AIRR TSV (${processing_stage})" "tsv"
-                    addArchiveFile ${rep_id}.${processing_stage}.germ-fail.airr.tsv
+                orig_processing_stage=igblast.makedb.gene.clone
+                if [[ $split_locus -eq 1 ]]; then
+                    for locus_name in $gene_clone_locus; do
+                        processing_stage=${locus_name}.igblast.makedb.gene.clone
+                        addEntryToFile mutation_entries.csv output ${rep_id}.${processing_stage}.mutations.airr.tsv.gz ${rep_id}.${orig_processing_stage}.airr.tsv.gz mutations "${rep_id} Mutations AIRR TSV (${processing_stage})" "tsv"
+                        gzipFile ${rep_id}.${processing_stage}.mutations.airr.tsv
+                        addArchiveFile ${rep_id}.${processing_stage}.mutations.airr.tsv.gz
+                        addEntryToFile mutation_entries.csv output ${rep_id}.${processing_stage}.selection.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz selection "${rep_id} Selection Pressure TSV (${processing_stage})" "tsv"
+                        addArchiveFile ${rep_id}.${processing_stage}.selection.tsv
+                        addEntryToFile mutation_entries.csv output "${rep_id}.${processing_stage}.germ.json" ${rep_id}.${orig_processing_stage}.airr.tsv.gz create_germlines "${rep_id} Create Germlines Log (${processing_stage})" "json"
+                        addArchiveFile ${rep_id}.${processing_stage}.germ.json
+                        if [ -e "${rep_id}.${processing_stage}.germ-fail.airr.tsv" ]; then
+                            addEntryToFile mutation_entries.csv output ${rep_id}.${processing_stage}.germ-fail.airr.tsv ${rep_id}.${orig_processing_stage}.airr.tsv.gz germ_fail "${rep_id} Create Germlines Failed AIRR TSV (${processing_stage})" "tsv"
+                            addArchiveFile ${rep_id}.${processing_stage}.germ-fail.airr.tsv
+                        fi
+                    done
+                else
+                    processing_stage=igblast.makedb.gene.clone
+                    addEntryToFile mutation_entries.csv output ${rep_id}.${processing_stage}.mutations.airr.tsv.gz ${rep_id}.${processing_stage}.airr.tsv.gz mutations "${rep_id} Mutations AIRR TSV (${processing_stage})" "tsv"
+                    gzipFile ${rep_id}.${processing_stage}.mutations.airr.tsv
+                    addArchiveFile ${rep_id}.${processing_stage}.mutations.airr.tsv.gz
+                    addEntryToFile mutation_entries.csv output ${rep_id}.${processing_stage}.selection.tsv ${rep_id}.${processing_stage}.airr.tsv.gz selection "${rep_id} Selection Pressure TSV (${processing_stage})" "tsv"
+                    addArchiveFile ${rep_id}.${processing_stage}.selection.tsv
+                    addEntryToFile mutation_entries.csv output "${rep_id}.${processing_stage}.germ.json" ${rep_id}.${processing_stage}.airr.tsv.gz create_germlines "${rep_id} Create Germlines Log (${processing_stage})" "json"
+                    addArchiveFile ${rep_id}.${processing_stage}.germ.json
+                    if [ -e "${rep_id}.${processing_stage}.germ-fail.airr.tsv" ]; then
+                        addEntryToFile mutation_entries.csv output ${rep_id}.${processing_stage}.germ-fail.airr.tsv ${rep_id}.${processing_stage}.airr.tsv.gz germ_fail "${rep_id} Create Germlines Failed AIRR TSV (${processing_stage})" "tsv"
+                        addArchiveFile ${rep_id}.${processing_stage}.germ-fail.airr.tsv
+                    fi
                 fi
             fi
 
@@ -1019,84 +1883,131 @@ function run_repcalc_workflow() {
         echo "Calculate mutational summaries"
 
         if [[ $has_makedb_clone -eq 1 ]]; then
-            processing_stage=igblast.makedb.allele.clone.mutations
-            # generate config
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init mutational_analysis_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --stage ${processing_stage} mutational_analysis.${processing_stage}.json
-            else
-                python3 repcalc_create_config.py --init mutational_analysis_template.json ${AIRRMetadata} --stage ${processing_stage} mutational_analysis.${processing_stage}.json
-            fi
-            $REPCALC_EXE mutational_analysis.${processing_stage}.json
-
-            # addLogFile $APP_NAME log ${processing_stage//./_}-mutation_count ${processing_stage}.repertoire.count.mutational_report.csv "Mutational Count Statistics (${processing_stage})" "csv" null
-            # addLogFile $APP_NAME log ${processing_stage//./_}-mutation_frequency ${processing_stage}.repertoire.frequency.mutational_report.csv "Mutational Frequency Statistics (${processing_stage})" "csv" null
-
-            # addLogFile $APP_NAME log ${processing_stage//./_}-mutation_count ${processing_stage}.repertoire.count.mutational_report.csv "Mutational Count Statistics (${processing_stage})" "csv" null
-            # addLogFile $APP_NAME log ${processing_stage//./_}-mutation_frequency ${processing_stage}.repertoire.frequency.mutational_report.csv "Mutational Frequency Statistics (${processing_stage})" "csv" null
-            wasGeneratedBy ${processing_stage}.repertoire.count.mutational_report.csv ${ACTIVITY_NAME} mutation_count "Mutational Count Statistics (${processing_stage})" "csv"
-            wasGeneratedBy ${processing_stage}.repertoire.frequency.mutational_report.csv ${ACTIVITY_NAME} mutation_frequency "Mutational Frequency Statistics (${processing_stage})" "csv"
-
-            # add group summaries
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                grpcnt=0
-                while [ "x${repertoire_groups[grpcnt]}" != "x" ]
-                do
-                    rep_group_id=${repertoire_groups[grpcnt]}
-                    group=${rep_group_id//./_}
-    
-                    # addLogFile $APP_NAME log ${processing_stage//./_}-group_mutation_count ${rep_group_id}.${processing_stage}.repertoire.count.mutational_report.csv "${rep_group_id} Mutational Count Statistics (${processing_stage})" "csv" null
-                    # addLogFile $APP_NAME log ${processing_stage//./_}-group_mutation_frequency ${rep_group_id}.${processing_stage}.repertoire.frequency.mutational_report.csv "${rep_group_id} Mutational Frequency Statistics (${processing_stage})" "csv" null
-
-                    wasGeneratedBy ${rep_group_id}.${processing_stage}.repertoire.count.mutational_report.csv ${ACTIVITY_NAME} group_mutation_count "${rep_group_id} Mutational Count Statistics (${processing_stage})" "csv"
-                    wasGeneratedBy ${rep_group_id}.${processing_stage}.repertoire.frequency.mutational_report.csv ${ACTIVITY_NAME} group_mutation_frequency "${rep_group_id} Mutational Frequency Statistics (${processing_stage})" "csv"
-    
-                    grpcnt=$(( $grpcnt + 1 ))
+            if [[ $split_locus -eq 1 ]]; then
+                for locus_name in $makedb_clone_locus; do
+                    processing_stage=${locus_name}.igblast.makedb.allele.clone.mutations
+                    # generate config
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        python3 repcalc_create_config.py --init mutational_analysis_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --stage ${processing_stage} mutational_analysis.${processing_stage}.json
+                    else
+                        python3 repcalc_create_config.py --init mutational_analysis_template.json ${AIRRMetadata} --stage ${processing_stage} mutational_analysis.${processing_stage}.json
+                    fi
+                    $REPCALC_EXE mutational_analysis.${processing_stage}.json
+        
+                    wasGeneratedBy ${processing_stage}.repertoire.count.mutational_report.csv ${ACTIVITY_NAME} mutation_count "Mutational Count Statistics (${processing_stage})" "csv"
+                    wasGeneratedBy ${processing_stage}.repertoire.frequency.mutational_report.csv ${ACTIVITY_NAME} mutation_frequency "Mutational Frequency Statistics (${processing_stage})" "csv"
+        
+                    # add group summaries
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        grpcnt=0
+                        while [ "x${repertoire_groups[grpcnt]}" != "x" ]
+                        do
+                            rep_group_id=${repertoire_groups[grpcnt]}
+                            group=${rep_group_id//./_}
+            
+                            wasGeneratedBy ${rep_group_id}.${processing_stage}.repertoire.count.mutational_report.csv ${ACTIVITY_NAME} group_mutation_count "${rep_group_id} Mutational Count Statistics (${processing_stage})" "csv"
+                            wasGeneratedBy ${rep_group_id}.${processing_stage}.repertoire.frequency.mutational_report.csv ${ACTIVITY_NAME} group_mutation_frequency "${rep_group_id} Mutational Frequency Statistics (${processing_stage})" "csv"
+            
+                            grpcnt=$(( $grpcnt + 1 ))
+                        done
+        
+                        wasGeneratedBy ${processing_stage}.repertoire_group.count.mutational_report.csv ${ACTIVITY_NAME} group_mutation_count "Group Mutational Count Statistics (${processing_stage})" "csv"
+                        wasGeneratedBy ${processing_stage}.repertoire_group.frequency.mutational_report.csv ${ACTIVITY_NAME} group_mutation_frequency "Group Mutational Frequency Statistics (${processing_stage})" "csv"
+                    fi
                 done
-                # addLogFile $APP_NAME log ${processing_stage//./_}-group_mutation_count ${processing_stage}.repertoire_group.count.mutational_report.csv "Group Mutational Count Statistics (${processing_stage})" "csv" null
-                # addLogFile $APP_NAME log ${processing_stage//./_}-group_mutation_frequency ${processing_stage}.repertoire_group.frequency.mutational_report.csv "Group Mutational Frequency Statistics (${processing_stage})" "csv" null
-
-                wasGeneratedBy ${processing_stage}.repertoire_group.count.mutational_report.csv ${ACTIVITY_NAME} group_mutation_count "Group Mutational Count Statistics (${processing_stage})" "csv"
-                wasGeneratedBy ${processing_stage}.repertoire_group.frequency.mutational_report.csv ${ACTIVITY_NAME} group_mutation_frequency "Group Mutational Frequency Statistics (${processing_stage})" "csv"
+            else
+                processing_stage=igblast.makedb.allele.clone.mutations
+                # generate config
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    python3 repcalc_create_config.py --init mutational_analysis_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --stage ${processing_stage} mutational_analysis.${processing_stage}.json
+                else
+                    python3 repcalc_create_config.py --init mutational_analysis_template.json ${AIRRMetadata} --stage ${processing_stage} mutational_analysis.${processing_stage}.json
+                fi
+                $REPCALC_EXE mutational_analysis.${processing_stage}.json
+    
+                wasGeneratedBy ${processing_stage}.repertoire.count.mutational_report.csv ${ACTIVITY_NAME} mutation_count "Mutational Count Statistics (${processing_stage})" "csv"
+                wasGeneratedBy ${processing_stage}.repertoire.frequency.mutational_report.csv ${ACTIVITY_NAME} mutation_frequency "Mutational Frequency Statistics (${processing_stage})" "csv"
+    
+                # add group summaries
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    grpcnt=0
+                    while [ "x${repertoire_groups[grpcnt]}" != "x" ]
+                    do
+                        rep_group_id=${repertoire_groups[grpcnt]}
+                        group=${rep_group_id//./_}
+        
+                        wasGeneratedBy ${rep_group_id}.${processing_stage}.repertoire.count.mutational_report.csv ${ACTIVITY_NAME} group_mutation_count "${rep_group_id} Mutational Count Statistics (${processing_stage})" "csv"
+                        wasGeneratedBy ${rep_group_id}.${processing_stage}.repertoire.frequency.mutational_report.csv ${ACTIVITY_NAME} group_mutation_frequency "${rep_group_id} Mutational Frequency Statistics (${processing_stage})" "csv"
+        
+                        grpcnt=$(( $grpcnt + 1 ))
+                    done
+                    wasGeneratedBy ${processing_stage}.repertoire_group.count.mutational_report.csv ${ACTIVITY_NAME} group_mutation_count "Group Mutational Count Statistics (${processing_stage})" "csv"
+                    wasGeneratedBy ${processing_stage}.repertoire_group.frequency.mutational_report.csv ${ACTIVITY_NAME} group_mutation_frequency "Group Mutational Frequency Statistics (${processing_stage})" "csv"
+                fi
             fi
         fi
 
         if [[ $has_gene_clone -eq 1 ]]; then
-            processing_stage=igblast.makedb.gene.clone.mutations
-            # generate config
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                python3 repcalc_create_config.py --init mutational_analysis_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --stage ${processing_stage} mutational_analysis.${processing_stage}.json
-            else
-                python3 repcalc_create_config.py --init mutational_analysis_template.json ${AIRRMetadata} --stage ${processing_stage} mutational_analysis.${processing_stage}.json
-            fi
-            $REPCALC_EXE mutational_analysis.${processing_stage}.json
-
-            # addLogFile $APP_NAME log ${processing_stage//./_}-mutation_count ${processing_stage}.repertoire.count.mutational_report.csv "Mutational Count Statistics (${processing_stage})" "csv" null
-            # addLogFile $APP_NAME log ${processing_stage//./_}-mutation_frequency ${processing_stage}.repertoire.frequency.mutational_report.csv "Mutational Frequency Statistics (${processing_stage})" "csv" null
-
-            wasGeneratedBy ${processing_stage}.repertoire.count.mutational_report.csv ${ACTIVITY_NAME} mutation_count "Mutational Count Statistics (${processing_stage})" "csv"
-            wasGeneratedBy ${processing_stage}.repertoire.frequency.mutational_report.csv ${ACTIVITY_NAME} mutation_frequency "Mutational Frequency Statistics (${processing_stage})" "csv"
-
-            # add group summaries
-            if [ "x${RepertoireGroupMetadata}" != "x" ]; then
-                grpcnt=0
-                while [ "x${repertoire_groups[grpcnt]}" != "x" ]
-                do
-                    rep_group_id=${repertoire_groups[grpcnt]}
-                    group=${rep_group_id//./_}
-    
-                    # addLogFile $APP_NAME log ${processing_stage//./_}-group_mutation_count ${rep_group_id}.${processing_stage}.repertoire.count.mutational_report.csv "${rep_group_id} Mutational Count Statistics (${processing_stage})" "csv" null
-                    # addLogFile $APP_NAME log ${processing_stage//./_}-group_mutation_frequency ${rep_group_id}.${processing_stage}.repertoire.frequency.mutational_report.csv "${rep_group_id} Mutational Frequency Statistics (${processing_stage})" "csv" null
-
-                    wasGeneratedBy ${rep_group_id}.${processing_stage}.repertoire.count.mutational_report.csv ${ACTIVITY_NAME} group_mutation_count "${rep_group_id} Mutational Count Statistics (${processing_stage})" "csv"
-                    wasGeneratedBy ${rep_group_id}.${processing_stage}.repertoire.frequency.mutational_report.csv ${ACTIVITY_NAME} group_mutation_frequency "${rep_group_id} Mutational Frequency Statistics (${processing_stage})" "csv"
-    
-                    grpcnt=$(( $grpcnt + 1 ))
+            if [[ $split_locus -eq 1 ]]; then
+                for locus_name in $gene_clone_locus; do
+                    processing_stage=${locus_name}.igblast.makedb.gene.clone.mutations
+                    # generate config
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        python3 repcalc_create_config.py --init mutational_analysis_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --stage ${processing_stage} mutational_analysis.${processing_stage}.json
+                    else
+                        python3 repcalc_create_config.py --init mutational_analysis_template.json ${AIRRMetadata} --stage ${processing_stage} mutational_analysis.${processing_stage}.json
+                    fi
+                    $REPCALC_EXE mutational_analysis.${processing_stage}.json
+        
+                    wasGeneratedBy ${processing_stage}.repertoire.count.mutational_report.csv ${ACTIVITY_NAME} mutation_count "Mutational Count Statistics (${processing_stage})" "csv"
+                    wasGeneratedBy ${processing_stage}.repertoire.frequency.mutational_report.csv ${ACTIVITY_NAME} mutation_frequency "Mutational Frequency Statistics (${processing_stage})" "csv"
+        
+                    # add group summaries
+                    if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                        grpcnt=0
+                        while [ "x${repertoire_groups[grpcnt]}" != "x" ]
+                        do
+                            rep_group_id=${repertoire_groups[grpcnt]}
+                            group=${rep_group_id//./_}
+            
+                            wasGeneratedBy ${rep_group_id}.${processing_stage}.repertoire.count.mutational_report.csv ${ACTIVITY_NAME} group_mutation_count "${rep_group_id} Mutational Count Statistics (${processing_stage})" "csv"
+                            wasGeneratedBy ${rep_group_id}.${processing_stage}.repertoire.frequency.mutational_report.csv ${ACTIVITY_NAME} group_mutation_frequency "${rep_group_id} Mutational Frequency Statistics (${processing_stage})" "csv"
+            
+                            grpcnt=$(( $grpcnt + 1 ))
+                        done
+                        wasGeneratedBy ${processing_stage}.repertoire_group.count.mutational_report.csv ${ACTIVITY_NAME} group_mutation_count "Group Mutational Count Statistics (${processing_stage})" "csv"
+                        wasGeneratedBy ${processing_stage}.repertoire_group.frequency.mutational_report.csv ${ACTIVITY_NAME} group_mutation_frequency "Group Mutational Frequency Statistics (${processing_stage})" "csv"
+                    fi
                 done
-                # addLogFile $APP_NAME log ${processing_stage//./_}-group_mutation_count ${processing_stage}.repertoire_group.count.mutational_report.csv "Group Mutational Count Statistics (${processing_stage})" "csv" null
-                # addLogFile $APP_NAME log ${processing_stage//./_}-group_mutation_frequency ${processing_stage}.repertoire_group.frequency.mutational_report.csv "Group Mutational Frequency Statistics (${processing_stage})" "csv" null
-
-                wasGeneratedBy ${processing_stage}.repertoire_group.count.mutational_report.csv ${ACTIVITY_NAME} group_mutation_count "Group Mutational Count Statistics (${processing_stage})" "csv"
-                wasGeneratedBy ${processing_stage}.repertoire_group.frequency.mutational_report.csv ${ACTIVITY_NAME} group_mutation_frequency "Group Mutational Frequency Statistics (${processing_stage})" "csv"
+            else
+                processing_stage=igblast.makedb.gene.clone.mutations
+                # generate config
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    python3 repcalc_create_config.py --init mutational_analysis_template.json ${AIRRMetadata} --group ${RepertoireGroupMetadata} --stage ${processing_stage} mutational_analysis.${processing_stage}.json
+                else
+                    python3 repcalc_create_config.py --init mutational_analysis_template.json ${AIRRMetadata} --stage ${processing_stage} mutational_analysis.${processing_stage}.json
+                fi
+                $REPCALC_EXE mutational_analysis.${processing_stage}.json
+    
+                wasGeneratedBy ${processing_stage}.repertoire.count.mutational_report.csv ${ACTIVITY_NAME} mutation_count "Mutational Count Statistics (${processing_stage})" "csv"
+                wasGeneratedBy ${processing_stage}.repertoire.frequency.mutational_report.csv ${ACTIVITY_NAME} mutation_frequency "Mutational Frequency Statistics (${processing_stage})" "csv"
+    
+                # add group summaries
+                if [ "x${RepertoireGroupMetadata}" != "x" ]; then
+                    grpcnt=0
+                    while [ "x${repertoire_groups[grpcnt]}" != "x" ]
+                    do
+                        rep_group_id=${repertoire_groups[grpcnt]}
+                        group=${rep_group_id//./_}
+        
+                        wasGeneratedBy ${rep_group_id}.${processing_stage}.repertoire.count.mutational_report.csv ${ACTIVITY_NAME} group_mutation_count "${rep_group_id} Mutational Count Statistics (${processing_stage})" "csv"
+                        wasGeneratedBy ${rep_group_id}.${processing_stage}.repertoire.frequency.mutational_report.csv ${ACTIVITY_NAME} group_mutation_frequency "${rep_group_id} Mutational Frequency Statistics (${processing_stage})" "csv"
+        
+                        grpcnt=$(( $grpcnt + 1 ))
+                    done
+                    wasGeneratedBy ${processing_stage}.repertoire_group.count.mutational_report.csv ${ACTIVITY_NAME} group_mutation_count "Group Mutational Count Statistics (${processing_stage})" "csv"
+                    wasGeneratedBy ${processing_stage}.repertoire_group.frequency.mutational_report.csv ${ACTIVITY_NAME} group_mutation_frequency "Group Mutational Frequency Statistics (${processing_stage})" "csv"
+                fi
             fi
         fi
     fi
