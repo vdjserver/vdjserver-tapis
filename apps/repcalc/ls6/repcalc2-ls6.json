@@ -1,16 +1,16 @@
 {
     "id":"repcalc2-ls6",
-    "version":"0.10",
+    "version":"0.11",
     "description":"RepCalc on Lonestar6",
     "runtime":"ZIP",
     "runtimeOptions": ["NONE"],
-    "containerImage":"tapis://data-storage.vdjserver.org/apps/repcalc2-ls6-0.10.tgz",
+    "containerImage":"tapis://data-storage.vdjserver.org/apps/repcalc2-ls6-0.11.tgz",
     "jobType":"BATCH",
     "jobAttributes": {
         "description": "default job description",
         "execSystemId": "test-ls6.tacc.utexas.edu",
         "fileInputs":[
-            { "name":"repcalc_image", "inputMode": "FIXED", "envKey":"repcalc_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/repcalc-v2.3.4-imm4.4.sif", "targetPath":"repcalc-v2.3.3-imm4.4.sif" },
+            { "name":"repcalc_image", "inputMode": "FIXED", "envKey":"repcalc_image", "sourceUrl":"tapis://data-storage.vdjserver.org/singularity/repcalc-v2.3.5-imm4.4.sif", "targetPath":"repcalc-v2.3.5-imm4.4.sif" },
             { "name":"analysis_provenance", "inputMode": "REQUIRED", "envKey":"analysis_provenance", "targetPath":"." },
             { "name":"AIRRMetadata", "inputMode": "REQUIRED", "envKey":"AIRRMetadata", "targetPath":"." },
             { "name":"RepertoireGroupMetadata", "inputMode": "OPTIONAL", "envKey":"RepertoireGroupMetadata", "targetPath":"." }
@@ -36,6 +36,7 @@
                 {"key": "species", "inputMode": "REQUIRED", "value": "NCBITAXON:9606" },
                 {"key": "locus", "inputMode": "REQUIRED" },
                 {"key": "germline_db", "inputMode": "REQUIRED" },
+                {"key": "split_locus", "inputMode": "REQUIRED", "value": "1" },
                 {"key": "GeneSegmentFlag", "inputMode": "REQUIRED", "value": "0" },
                 {"key": "CDR3Flag", "inputMode": "REQUIRED", "value": "0" },
                 {"key": "DiversityFlag", "inputMode": "REQUIRED", "value": "0" },
