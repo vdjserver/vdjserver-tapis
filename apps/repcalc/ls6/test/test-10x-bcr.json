@@ -4,8 +4,9 @@
     "appVersion": "0.11",
     "maxMinutes": 30,
     "fileInputs":[
-      { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/3a2a605e-acf9-42f0-b935-a210cd5a78f4/analyses/f6043b14-222b-4bf6-9e0c-ef939ce5c4bb/analysis_document.json", "targetPath":"analysis_document.json" },
-      { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/3a2a605e-acf9-42f0-b935-a210cd5a78f4/analyses/f6043b14-222b-4bf6-9e0c-ef939ce5c4bb/repertoires.airr.json", "targetPath":"repertoires.airr.json" }
+      { "name":"analysis_provenance", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/3a2a605e-acf9-42f0-b935-a210cd5a78f4/analyses/85bf0ab5-ae33-40cd-a963-7c402fac9e36/analysis_document.json", "targetPath":"analysis_document.json" },
+      { "name":"AIRRMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/3a2a605e-acf9-42f0-b935-a210cd5a78f4/analyses/85bf0ab5-ae33-40cd-a963-7c402fac9e36/repertoires.airr.json", "targetPath":"repertoires.airr.json" },
+      { "name":"RepertoireGroupMetadata", "sourceUrl":"tapis://data-storage.vdjserver.org/projects/3a2a605e-acf9-42f0-b935-a210cd5a78f4/analyses/85bf0ab5-ae33-40cd-a963-7c402fac9e36/repertoires.airr.json", "targetPath":"repertoires.airr.json" }
     ],
     "fileInputArrays":[
       { "name":"JobFiles", "sourceUrls": [ "tapis://data-storage.vdjserver.org/projects/3a2a605e-acf9-42f0-b935-a210cd5a78f4/analyses/f6043b14-222b-4bf6-9e0c-ef939ce5c4bb/0efaa13b-ca99-4564-88d8-1a8f6710adcf-007/0efaa13b-ca99-4564-88d8-1a8f6710adcf-007.zip" ]}
