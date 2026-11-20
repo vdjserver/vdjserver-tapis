@@ -739,9 +739,11 @@ function single_presto_workflow() {
         fi
 
         # Split by barcode
-        if [[ $BarcodeSplitFlag -eq 1 ]]; then
-            echo "Split by barcode"
-            $SPLIT_SEQ_PY group -s $prevPassFile -f MID
+        if [[ $Barcode -eq 1 ]]; then
+            if [[ $BarcodeSplitFlag -eq 1 ]]; then
+                echo "Split by barcode"
+                $SPLIT_SEQ_PY group -s $prevPassFile -f MID
+            fi
         fi
     fi
 

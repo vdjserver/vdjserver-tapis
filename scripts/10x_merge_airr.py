@@ -42,7 +42,7 @@ if (__name__=="__main__"):
         print('Processing 10x AIRR file ' + file_input_10x)
         input_10x = airr.read_rearrangement(file_input_10x)
         input_igblast = airr.read_rearrangement(file_input_igblast)
-        more_fields = ['repertoire_id', 'data_processing_id', 'umi_count', 'adc_annotation_sequence_id']
+        more_fields = ['repertoire_id', 'data_processing_id', 'umi_count', 'adc_annotation_sequence_id', 'adc_annotation_cell_id', 'adc_annotation_clone_id']
         for f in input_10x.fields:
             if f not in input_igblast.fields:
                 more_fields.append(f)
@@ -67,9 +67,9 @@ if (__name__=="__main__"):
                 sys.exit(1)
 
             for f in more_fields:
-                # manually handle duplicate_count, which is umi_count in AIRR spec
+                # manually handle consensus_count, which is umi_count in AIRR spec
                 if f == 'umi_count':
-                    row[f] = row_10x['duplicate_count']
+                    row[f] = row_10x['consensus_count']
                 elif f == 'duplicate_count':
                     row[f] = 1
                 elif f == 'repertoire_id':
@@ -79,6 +79,10 @@ if (__name__=="__main__"):
                 elif f == 'adc_annotation_sequence_id':
                     row['adc_annotation_sequence_id'] = row['sequence_id']
                     row['sequence_id'] = 'vdjserver:rearrangement:' + str(uuid.uuid1())
+                elif f == 'adc_annotation_cell_id':
+                    row[f] = row_10x['cell_id']
+                elif f == 'adc_annotation_clone_id':
+                    row[f] = row_10x['clone_id']
                 else:
                     row[f] = row_10x[f]
 
