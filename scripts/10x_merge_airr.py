@@ -70,6 +70,8 @@ if (__name__=="__main__"):
                 # manually handle consensus_count, which is umi_count in AIRR spec
                 if f == 'umi_count':
                     row[f] = row_10x['consensus_count']
+                elif f == 'duplicate_count':
+                    row[f] = 1
                 elif f == 'repertoire_id':
                     row[f] = args.repertoire_id
                 elif f == 'data_processing_id':
