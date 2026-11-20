@@ -8,7 +8,7 @@
 # This script relies upon global variables
 # source presto_common.sh
 #
-# Copyright (C) 2016-2024 The University of Texas Southwestern Medical Center
+# Copyright (C) 2016-2026 The University of Texas Southwestern Medical Center
 # Author: Scott Christley
 # Date: August 11, 2016
 # 
@@ -151,9 +151,6 @@ function takara_bio_umi_workflow() {
         echo "Unknown workflow: " $Workflow
         exit 1
     fi
-
-    #group="group${count}"
-    #addGroup $group file
 
     # TODO: need to add parameters to app
 
@@ -325,9 +322,7 @@ function takara_bio_umi_workflow() {
     if [ $? -ne 0 ]; then
         return 1
     fi
-    # addOutputFile $group $APP_NAME processed_sequence "${OUTNAME}-final_total.fastq" "Total Post-Filter Sequences (${OUTNAME})" "fastq" null
     wasDerivedFrom "${OUTNAME}-final_total.fastq" "${prov_file}" "sequence_reads,sequence_quality" "Total Post-Filter Sequences (${OUTNAME})" "fastq"
-    #wasDerivedFrom "${OUTNAME}-final_total.fastq" "${R2_READS}" "sequence_reads,sequence_quality" "Total Post-Filter Sequences (${OUTNAME})" "fastq"
     
     # Remove duplicate sequences
     printf "  %2d: %-*s $(date +'%H:%M %D')\n" $((++STEP)) 24 "CollapseSeq"
@@ -338,7 +333,6 @@ function takara_bio_umi_workflow() {
     if [ $? -ne 0 ]; then
         return 1
     fi
-    # addOutputFile $group $APP_NAME sequence "${OUTNAME}-final_collapse-unique.fastq" "Unique Post-Filter Sequences (${OUTNAME})" "fastq" null
     wasDerivedFrom "${OUTNAME}-final_collapse-unique.fastq" "${OUTNAME}-final_total.fastq" "sequence,collapse_uniques" "Unique Post-Filter Sequences (${OUTNAME})" "fastq" 
 
     # Subset to sequences seen at least twice
@@ -349,9 +343,10 @@ function takara_bio_umi_workflow() {
     if [ $? -ne 0 ]; then
         return 1
     fi
-    # addOutputFile $group $APP_NAME sequence_ge2 "${OUTNAME}-final_collapse-unique_atleast-2.fastq" "Unique At Least 2 Post-Filter Sequences (${OUTNAME})" "fastq" null
     wasDerivedFrom "${OUTNAME}-final_collapse-unique_atleast-2.fastq" "${OUTNAME}-final_collapse-unique.fastq" "sequence_at_least_2" "Unique At Least 2 Post-Filter Sequences (${OUTNAME})" "fastq" 
+
     # Create table of final repertoire
+    # TODO: are these additional output files we need?
     printf "  %2d: %-*s $(date +'%H:%M %D')\n" $((++STEP)) 24 "ParseHeaders table"
     $PARSE_HEADERS_PY table -s "${OUTNAME}-final_total.fastq" -f ID ${C_FIELD} CONSCOUNT \
         --outname "final-total" --outdir ${LOGDIR} >> $PIPELINE_LOG 2> $ERROR_LOG
@@ -409,15 +404,6 @@ function single_presto_workflow() {
         echo "Generate pre-filter statistics"
 
         $PYTHON3 ./statistics.py statistics-template.json $file "pre-filter_" "pre-statistics.json"
-        
-
-        
-        # addStatisticsFile $group pre composition "pre-filter_${file}.composition.csv" "Nucleotide Composition" "tsv" null
-        # addStatisticsFile $group pre gc_hist "pre-filter_${file}.gc_hist.csv" "GC% Histogram" "tsv" null
-        # addStatisticsFile $group pre heat_map "pre-filter_${file}.heat_map.csv" "Heatmap" "tsv" null
-        # addStatisticsFile $group pre len_hist "pre-filter_${file}.len_hist.csv" "Sequence Length Histogram" "tsv" null
-        # addStatisticsFile $group pre mean_q_hist "pre-filter_${file}.mean_q_hist.csv" "Mean Quality Histogram" "tsv" null
-        # addStatisticsFile $group pre qstats "pre-filter_${file}.qstats.csv" "Quality Scores" "tsv" null
 
         wasGeneratedBy "pre-filter_${file}.composition.csv" "${ACTIVITY_NAME}" "quality_statistics,composition" "Nucleotide Composition" "tsv"
         wasGeneratedBy "pre-filter_${file}.gc_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,gc_histogram" "GC% Histogram" tsv
@@ -466,12 +452,6 @@ function single_presto_workflow() {
         echo "Generate post-filter statistics"
 
         $PYTHON3 ./statistics.py statistics-template.json $prevPassFile "post-filter_" "post-statistics.json"
-        # addStatisticsFile $group post composition "post-filter_${prevPassFile}.composition.csv" "Nucleotide Composition" "tsv" null
-        # addStatisticsFile $group post gc_hist "post-filter_${prevPassFile}.gc_hist.csv" "GC% Histogram" "tsv" null
-        # addStatisticsFile $group post heat_map "post-filter_${prevPassFile}.heat_map.csv" "Heatmap" "tsv" null
-        # addStatisticsFile $group post len_hist "post-filter_${prevPassFile}.len_hist.csv" "Sequence Length Histogram" "tsv" null
-        # addStatisticsFile $group post mean_q_hist "post-filter_${prevPassFile}.mean_q_hist.csv" "Mean Quality Histogram" "tsv" null
-        # addStatisticsFile $group post qstats "post-filter_${prevPassFile}.qstats.csv" "Quality Scores" "tsv" null
 
         wasGeneratedBy "post-filter_${prevPassFile}.composition.csv" "${ACTIVITY_NAME}" "quality_statistics,composition" "Nucleotide Composition" tsv
         wasGeneratedBy "post-filter_${prevPassFile}.gc_hist.csv" "${ACTIVITY_NAME}" "quality_statistics,gc_histogram" "GC% Histogram" tsv
@@ -702,8 +682,6 @@ function single_presto_workflow() {
     intermediateFiles[${#intermediateFiles[@]}]=$prevPassFile
     cp $prevPassFile ${OutputPrefix}-final.${fileExtension}
     prevPassFile="${OutputPrefix}-final.${fileExtension}"
-    #addOutputFile $group $APP_NAME processed_sequence "$prevPassFile" "Total Post-Filter Sequences (${OutputPrefix})" "read" null
-    ## the source_entity is file as we are not sure of the intermediary files.
     wasDerivedFrom "$prevPassFile" "${file}" "sequence_reads" "Total Post-Filter Sequences (${OutputPrefix})" "fastq"
 
     # Split by barcode
@@ -749,18 +727,16 @@ function single_presto_workflow() {
         addCalculation "${ACTIVITY_NAME}" "find_unique_sequences"
 
         prevPassFile="${OutputPrefix}_collapse-unique.${fileExtension}"
-        # addOutputFile $group $APP_NAME sequence "$prevPassFile" "Unique Post-Filter Sequences (${OutputPrefix})" "read" null
-        # Not sure of the source entity for was derived here either.
-        wasDerivedFrom "$prevPassFile" "${file}" "sequence,collapse_uniques" "Unique Post-Filter Sequences (${OutputPrefix})" "fastq"
 
-        # don't exclude DUPCOUNT=1 sequences
-        #noArchive "$prevPassFile"
-        #intermediateFiles[${#intermediateFiles[@]}]=$prevPassFile
-
-        #$SPLIT_SEQ_PY group -s $prevPassFile -f DUPCOUNT --num 2 --outname "${OutputPrefix}"
-        #prevPassFile="${OutputPrefix}_atleast-2.${fileExtension}"
-        #addOutputFile $group $APP_NAME singletons "${OutputPrefix}_under-2.${fileExtension}" "Singleton Post-Filter Sequences (${OutputPrefix})" "read" null
-        #addOutputFile $group $APP_NAME sequence "$prevPassFile" "Unique Post-Filter Sequences (${OutputPrefix})" "read" null
+        # exclude CONSCOUNT=1 sequences for UMI
+        if [[ $UMIConsensus -eq 1 ]]; then
+            intermediateFiles[${#intermediateFiles[@]}]=$prevPassFile
+            $SPLIT_SEQ_PY group -s $prevPassFile -f CONSCOUNT --num 2 --outname "${OutputPrefix}"
+            prevPassFile="${OutputPrefix}_atleast-2.${fileExtension}"
+            wasDerivedFrom "$prevPassFile" "${file}" "sequence,collapse_uniques" "Unique Post-Filter Sequences (${OutputPrefix})" "fastq"
+        else
+            wasDerivedFrom "$prevPassFile" "${file}" "sequence,collapse_uniques" "Unique Post-Filter Sequences (${OutputPrefix})" "fastq"
+        fi
 
         # Split by barcode
         if [[ $BarcodeSplitFlag -eq 1 ]]; then
@@ -775,7 +751,6 @@ function single_presto_workflow() {
         zip ${OutputPrefix}_intermediateFiles.zip $file
     done
     wasGeneratedBy "${OutputPrefix}_intermediateFiles.zip" "${ACTIVITY_NAME}" archive "Archive of Intermediate Files (${OutputPrefix})" zip
-    #addLogFile $group $APP_NAME intermediate "${OutputPrefix}_intermediateFiles.zip" "Intermediate Files (${OutputPrefix})" "zip" null
 }
 
 # Entry function for running VDJServer's pRESTO workflow
@@ -808,7 +783,7 @@ function run_presto_workflow() {
             exit 1
     esac
 
-    # Exclude input files from archive
+    # extract input from previous jobs
     for file in $JobFiles; do
         if [ -f $file ]; then
             unzip $file
@@ -824,9 +799,6 @@ function run_presto_workflow() {
             count=0
             while [ "x${forwardReads[count]}" != "x" ]
             do
-                #group="merge${count}"
-                #addGroup $group file
-
                 # uncompress if needed
                 file=${reverseReads[count]}
                 expandfile $file
@@ -880,10 +852,9 @@ function run_presto_workflow() {
 
                     # after merge, do the single workflow
                     DO_SINGLE=1
-                    SequenceFiles="$SequenceFiles ${OutputName}_assemble-pass.${fileExtension}"
-                    # cp ${OutputName}_assemble-pass.${fileExtension} ${OutputPrefix}_assemble.${fileExtension}
-                    # addOutputFile $group $APP_NAME merged_sequence "${OutputPrefix}_assemble.${fileExtension}" "Merged Pre-Filter Sequences (${OutputPrefix})" "read" null
-                    wasDerivedFrom "${OutputPrefix}_assemble-pass.${fileExtension}" "${prov_file}" "sequence_reads" "Merged Pre-Filter Sequences (${OutputPrefix})" "fastq"
+                    mv ${OutputName}_assemble-pass.${fileExtension} ${OutputPrefix}_assemble.${fileExtension}
+                    SequenceFiles="$SequenceFiles ${OutputName}_assemble.${fileExtension}"
+                    wasDerivedFrom "${OutputPrefix}_assemble.${fileExtension}" "${prov_file}" "sequence_reads" "Merged Pre-Filter Sequences (${OutputPrefix})" "fastq"
                 else
                     takara_bio_umi_workflow $file $rfile $count $prov_file
                 fi
@@ -921,6 +892,5 @@ function run_presto_workflow() {
     done
 
     zip ${_tapisJobUUID}.zip ${_tapisJobUUID}/*
-    #addLogFile $APP_NAME log output_archive ${_tapisJobUUID}.zip "Archive of Output Files" "zip" null
     cp ${_tapisJobUUID}.zip output
 }
